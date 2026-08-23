@@ -10,6 +10,7 @@
 namespace arpg
 {
 
+/// Title screen, and the only screen there is for now.
 class main_menu_screen : public screen
 {
 public:

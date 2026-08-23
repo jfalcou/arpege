@@ -126,6 +126,39 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: CPM source cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-doc-${{ hashFiles('cmake/dependencies.cmake') }}
+          restore-keys: cpm-doc-
+
+      - name: System dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends doxygen graphviz ninja-build
+
+      # Configuring is enough: the doc target reads the sources, it does not
+      # need them compiled.
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DARPG_BUILD_DOCUMENTATION=ON -DARPG_BUILD_TESTS=OFF
+
+      - name: Generate
+        run: cmake --build build --target doc
+
+      - name: Upload the site
+        uses: actions/upload-artifact@v7
+        with:
+          name: documentation
+          path: build/doc/html
+          retention-days: 14
+
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}

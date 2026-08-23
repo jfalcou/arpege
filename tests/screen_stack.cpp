@@ -55,7 +55,7 @@ std::string joined(const std::vector<std::string>& trace)
 }
 
 std::unique_ptr<arpg::screen> make_screen(std::vector<std::string>& trace, std::string name, bool blocks_update = true,
-                                         bool blocks_render = true)
+                                          bool blocks_render = true)
 {
   return std::make_unique<fake_screen>(trace, std::move(name), blocks_update, blocks_render);
 }

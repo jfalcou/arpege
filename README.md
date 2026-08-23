@@ -120,6 +120,18 @@ cmake --build build-coverage --target coverage
 
 It prints a summary and writes an HTML report to `build-coverage/coverage`.
 
+API documentation, which needs Doxygen and optionally Graphviz for the class
+diagrams:
+
+```sh
+cmake -S . -B build-doc -DARPG_BUILD_DOCUMENTATION=ON
+cmake --build build-doc --target doc
+```
+
+It writes a browsable site to `build-doc/doc/html`, styled with
+[doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css). CI
+builds it on every pull request and uploads it as an artifact.
+
 Formatting is settled by `.clang-format` and enforced by a hook, installed once
 per clone:
 

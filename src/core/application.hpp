@@ -20,30 +20,43 @@
 namespace arpg
 {
 
+/// How the window and the canvas are set up.
 struct app_config
 {
-  std::string title = "ARPG";
-  int canvas_width = 320;
-  int canvas_height = 180;
-  int window_scale = 4;
-  bool vsync = true;
-  bool resizable = true;
+  std::string title = "ARPG"; ///< Window title.
+  int canvas_width = 320;     ///< Logical width of the world, in pixels.
+  int canvas_height = 180;    ///< Logical height of the world, in pixels.
+  int window_scale = 4;       ///< Window size at startup, as a multiple of the canvas.
+  bool vsync = true;          ///< Cap the render rate to the refresh rate.
+  bool resizable = true;      ///< Let the window be resized; the canvas rescales to fit.
 };
 
-// Window, game loop and shared services.
+/// Window, game loop and shared services.
+///
+/// Owns the fixed timestep loop: the simulation advances in steps of
+/// #fixed_dt while rendering happens at whatever rate the screen runs at.
 class application
 {
 public:
+  /// Length of a simulation step. Fixed, so a replay of the same inputs gives
+  /// the same game.
   static constexpr float fixed_dt = 1.0f / 60.0f;
+
+  /// Most steps caught up in one frame, past which the backlog is dropped
+  /// rather than chased, which would spiral.
   static constexpr int max_steps_per_frame = 5;
 
+  /// Opens the window and the audio device, and sets the tooling up.
   explicit application(app_config config = {});
+  /// Tears everything down in the order the backend expects.
   ~application();
 
   application(const application&) = delete;
   application& operator=(const application&) = delete;
 
-  // Runs until the window closes or the stack empties.
+  /// Runs until the window closes or the screen stack empties.
+  ///
+  /// @param initial the first screen, stacked before the loop starts.
   void run(std::unique_ptr<screen> initial);
 
 private:

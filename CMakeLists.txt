@@ -26,6 +26,7 @@ endif()
 
 option(ARPG_BUILD_TESTS "Build the unit tests" ON)
 option(ARPG_ENABLE_COVERAGE "Instrument the code for gcov coverage" OFF)
+option(ARPG_BUILD_DOCUMENTATION "Enable the doc target" OFF)
 
 # --- Dependencies -----------------------------------------------------------
 include(CPM)
@@ -40,6 +41,7 @@ else()
 endif()
 
 include(coverage)
+include(documentation)
 
 # --- Game logic -------------------------------------------------------------
 # Everything here must stay free of raylib and of any other GUI call, so it can

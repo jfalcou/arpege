@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/AppContext.hpp"
-#include "core/Screen.hpp"
+#include "core/app_context.hpp"
+#include "core/screen.hpp"
 
 #include <cstddef>
 #include <memory>
@@ -12,18 +12,18 @@ namespace arpg
 
 // Stack of screens. Change requests are queued and applied at the end of the
 // frame: applying them during an update would destroy a running screen.
-class ScreenManager
+class screen_manager
 {
 public:
-  void setContext(const AppContext& context) { m_context = context; }
+  void set_context(const app_context& context) { m_context = context; }
 
-  void push(std::unique_ptr<Screen> screen);
+  void push(std::unique_ptr<screen> value);
   void pop();
-  void replace(std::unique_ptr<Screen> screen);
+  void replace(std::unique_ptr<screen> value);
   void clear();
 
   // Applies the queued requests. Call once per frame, after update and render.
-  void applyPending();
+  void apply_pending();
 
   // Updates screens from the top down to the first blocking one.
   void update(float dt);
@@ -31,34 +31,34 @@ public:
   // Draws from the topmost opaque screen up to the top of the stack.
   void render(float alpha);
 
-  // Empties the stack immediately, calling onExit on every screen.
+  // Empties the stack immediately, calling on_exit on every screen.
   void shutdown();
 
   bool empty() const { return m_stack.empty(); }
   std::size_t size() const { return m_stack.size(); }
-  Screen* top() { return m_stack.empty() ? nullptr : m_stack.back().get(); }
+  screen* top() { return m_stack.empty() ? nullptr : m_stack.back().get(); }
 
 private:
-  enum class CommandKind
+  enum class command_kind
   {
-    Push,
-    Pop,
-    Replace,
-    Clear
+    push,
+    pop,
+    replace,
+    clear
   };
 
-  struct Command
+  struct command
   {
-    CommandKind kind;
-    std::unique_ptr<Screen> screen;
+    command_kind kind;
+    std::unique_ptr<screen> value;
   };
 
-  void enter(std::unique_ptr<Screen> screen);
-  void leaveTop();
+  void enter(std::unique_ptr<screen> value);
+  void leave_top();
 
-  std::vector<std::unique_ptr<Screen>> m_stack;
-  std::vector<Command> m_pending;
-  AppContext m_context{};
+  std::vector<std::unique_ptr<screen>> m_stack;
+  std::vector<command> m_pending;
+  app_context m_context{};
 };
 
 } // namespace arpg

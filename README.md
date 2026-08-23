@@ -63,9 +63,26 @@ les tests utilisent. Tout ce qui touche a raylib vit dans la cible `arpg`.
 ctest --test-dir build --output-on-failure
 ```
 
-Les tests ne s'executent jamais contre une fenetre : un composant se teste avec
-une fausse sortie, comme le `FakeScreen` de `tests/screen_stack.cpp` qui journalise
-les appels recus au lieu de dessiner.
+Deux familles de tests :
+
+- **Tests unitaires** (TTS) sur la logique sans GUI. Un composant oriente rendu se
+  teste avec une fausse sortie, comme le `fake_screen` de `tests/screen_stack.cpp`
+  qui journalise les appels recus au lieu de dessiner.
+- **Tests de compilation** (`tests/compile/`, sans framework) pour la couche GUI :
+  le fichier decrit le cas d usage habituel de l API, et la seule assertion est
+  qu il compile et s edite de liens. Rien n y est execute.
+
+## Couverture
+
+```sh
+cmake -S . -B build-coverage -G Ninja -DCMAKE_BUILD_TYPE=Debug -DARPG_ENABLE_COVERAGE=ON
+cmake --build build-coverage --target coverage
+```
+
+Produit un resume dans le terminal et un rapport HTML dans
+`build-coverage/coverage/index.html`, plus un `cobertura.xml` pour la CI. Seule la
+logique est mesuree : la couche GUI est exclue puisque les tests ne l executent pas.
+Necessite gcc ou clang et `gcovr`.
 
 ## Formatage
 

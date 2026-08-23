@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSL-1.0
+
 // Compile test: nothing here is executed. Building and linking it is the whole
 // assertion, which is how the GUI layer gets checked at all.
 

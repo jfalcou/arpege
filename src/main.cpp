@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSL-1.0
+
 #include "core/application.hpp"
 #include "screens/main_menu_screen.hpp"
 

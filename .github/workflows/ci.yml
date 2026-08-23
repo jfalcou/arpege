@@ -114,8 +114,16 @@ jobs:
           key: cpm-ucrt64-${{ hashFiles('cmake/dependencies.cmake') }}
           restore-keys: cpm-ucrt64-
 
+      # The CPM cache only spares the download; raylib and imgui still had to be
+      # compiled on every run, which is what made this the slowest job.
+      - name: Compiler cache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          variant: sccache
+          key: sccache-ucrt64
+
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Build
         run: cmake --build build --parallel
@@ -133,7 +141,7 @@ jobs:
           - name: Linux (gcc)
             os: ubuntu-latest
             config: Release
-            preset_args: -G Ninja
+            preset_args: -G Ninja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           - name: Windows (msvc)
             os: windows-latest
             config: Release
@@ -156,6 +164,14 @@ jobs:
           path: ${{ env.CPM_SOURCE_CACHE }}
           key: cpm-${{ runner.os }}-${{ hashFiles('cmake/dependencies.cmake') }}
           restore-keys: cpm-${{ runner.os }}-
+
+      # Only the Ninja jobs: CMAKE_<LANG>_COMPILER_LAUNCHER is ignored by the
+      # Visual Studio generator, so the MSVC jobs cannot use it.
+      - name: Compiler cache
+        if: runner.os == 'Linux'
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ccache-${{ matrix.name }}
 
       - name: System dependencies (Linux)
         if: runner.os == 'Linux'

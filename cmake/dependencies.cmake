@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: BSL-1.0
 
+include(quiet_dependency)
+
 # Set the CPM_SOURCE_CACHE environment variable to share downloaded sources
 # between build directories:
 #   export CPM_SOURCE_CACHE=$HOME/.cache/CPM
@@ -60,12 +62,10 @@ add_library(rlimgui STATIC "${rlImGui_SOURCE_DIR}/rlImGui.cpp")
 target_include_directories(rlimgui SYSTEM PUBLIC "${rlImGui_SOURCE_DIR}")
 target_link_libraries(rlimgui PUBLIC imgui raylib)
 
-foreach(_dep imgui rlimgui)
-  if(MSVC)
-    target_compile_options(${_dep} PRIVATE /W0)
-  else()
-    target_compile_options(${_dep} PRIVATE -w)
-  endif()
+# glfw is a target of its own inside raylib, and raylib compiles vendored
+# libraries such as miniaudio and jar_mod that warn on their own.
+foreach(_dep raylib glfw EnTT imgui rlimgui)
+  arpg_quiet_dependency(${_dep})
 endforeach()
 
 # --- TTS ----------------------------------------------------------------------
@@ -81,4 +81,5 @@ if(ARPG_BUILD_TESTS)
 
   add_library(tts INTERFACE)
   target_include_directories(tts SYSTEM INTERFACE "${tts_SOURCE_DIR}/include")
+  arpg_quiet_dependency(tts)
 endif()

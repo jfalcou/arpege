@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSL-1.0
+
 // Compile test: nothing here is executed. Constructing an application opens a
 // window, so this only ever has to build and link.
 

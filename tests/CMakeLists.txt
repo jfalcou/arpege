@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSL-1.0
+
 # Unit tests: one executable per file, TTS_MAIN provides a main() per file.
 function(arpg_add_test name)
   add_executable(${name} ${name}.cpp)

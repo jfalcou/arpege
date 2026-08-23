@@ -112,6 +112,7 @@ Trois couches d'état :
 - Style `.clang-format` : Allman, 2 espaces, 120 colonnes, applique par un hook `pre-commit`.
 - Commentaires en **anglais**, et uniquement des explications techniques : pas de journal de décision, pas de paraphrase du code.
 - Messages de commit en anglais.
+- Licence **BSL-1.0** : en-tête `SPDX-License-Identifier: BSL-1.0` en première ligne de chaque fichier source, header, CMake et YAML. Les composants tiers vendorés gardent leur propre licence.
 
 ## Testabilité (règle d'architecture)
 

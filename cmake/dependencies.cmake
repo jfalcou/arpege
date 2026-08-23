@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSL-1.0
+
 # Set the CPM_SOURCE_CACHE environment variable to share downloaded sources
 # between build directories:
 #   export CPM_SOURCE_CACHE=$HOME/.cache/CPM

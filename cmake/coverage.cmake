@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSL-1.0
+
 # Coverage instrumentation, carried by an INTERFACE target so enabling it is a
 # single link away. Left empty when the option is off.
 add_library(arpg_coverage INTERFACE)
@@ -9,6 +11,8 @@ endif()
 if(MSVC)
   message(FATAL_ERROR "ARPG_ENABLE_COVERAGE relies on gcov and needs GCC or Clang")
 endif()
+
+set(ARPG_COVERAGE_FAIL_UNDER "" CACHE STRING "Minimum line coverage percentage; empty disables the check")
 
 # -O0 keeps the line mapping honest; without it gcov reports lines that were
 # folded away as never executed.
@@ -23,6 +27,11 @@ if(NOT GCOVR_EXECUTABLE)
 endif()
 
 set(_coverage_dir "${CMAKE_BINARY_DIR}/coverage")
+
+set(_coverage_threshold_args "")
+if(ARPG_COVERAGE_FAIL_UNDER)
+  list(APPEND _coverage_threshold_args --fail-under-line "${ARPG_COVERAGE_FAIL_UNDER}")
+endif()
 
 # Runs the suite, then turns the .gcda files into a report. Only src/ is
 # measured, and the GUI layer is excluded: it is never executed by the tests, so
@@ -40,6 +49,8 @@ add_custom_target(coverage
           --print-summary
           --html-details "${_coverage_dir}/index.html"
           --xml "${_coverage_dir}/cobertura.xml"
+          --markdown-summary "${_coverage_dir}/summary.md"
+          ${_coverage_threshold_args}
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
   COMMENT "Running the tests and collecting coverage into ${_coverage_dir}"
   USES_TERMINAL

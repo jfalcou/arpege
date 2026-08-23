@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSL-1.0
+
 #include "screens/main_menu_screen.hpp"
 
 #include "core/pixel_canvas.hpp"

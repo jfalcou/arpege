@@ -97,3 +97,9 @@ pre-commit install
 
 - `F1` : panneau de debug ImGui
 - `ESC` : quitter (depuis le menu)
+
+## Licence
+
+[Boost Software License 1.0](LICENSE). Chaque fichier porte un en-tete
+`SPDX-License-Identifier: BSL-1.0`, sauf `cmake/CPM.cmake` qui est un composant
+tiers sous licence MIT et garde la sienne.

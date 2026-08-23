@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSL-1.0
+
 name: CI
 
 on:
@@ -12,6 +14,11 @@ concurrency:
 
 env:
   CPM_SOURCE_CACHE: ${{ github.workspace }}/.cache/CPM
+  LINUX_PACKAGES: >-
+    ninja-build
+    libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev
+    libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev
+    wayland-protocols libasound2-dev
 
 jobs:
   format:
@@ -29,6 +36,57 @@ jobs:
 
       - name: Check formatting
         run: pre-commit run --all-files --show-diff-on-failure
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # The distribution package lags behind and misses the report options the
+      # coverage target relies on.
+      - name: Install gcovr
+        run: pip install gcovr
+
+      - name: CPM source cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-coverage-${{ hashFiles('cmake/dependencies.cmake') }}
+          restore-keys: cpm-coverage-
+
+      - name: System dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ${{ env.LINUX_PACKAGES }}
+
+      # Debug and -O0: gcov line mapping is only meaningful on an unoptimised
+      # build.
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DARPG_ENABLE_COVERAGE=ON \
+                -DARPG_COVERAGE_FAIL_UNDER=70
+
+      - name: Run tests and collect coverage
+        run: cmake --build build --target coverage
+
+      - name: Report to the job summary
+        if: always()
+        run: cat build/coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/coverage/
+          retention-days: 14
 
   build:
     name: ${{ matrix.name }}
@@ -52,18 +110,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.CPM_SOURCE_CACHE }}
-          key: cpm-${{ runner.os }}-${{ hashFiles('cmake/Dependencies.cmake') }}
+          key: cpm-${{ runner.os }}-${{ hashFiles('cmake/dependencies.cmake') }}
           restore-keys: cpm-${{ runner.os }}-
 
       - name: System dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            ninja-build \
-            libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev \
-            libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev \
-            wayland-protocols libasound2-dev
+          sudo apt-get install -y --no-install-recommends ${{ env.LINUX_PACKAGES }}
 
       - name: Configure
         run: cmake -S . -B build ${{ matrix.preset_args }} -DARPG_BUILD_TESTS=ON

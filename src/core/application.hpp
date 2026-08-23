@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include "core/action.hpp"
 #include "core/app_context.hpp"
+#include "core/input_snapshot.hpp"
 #include "core/pixel_canvas.hpp"
+#include "core/raylib_input.hpp"
 #include "core/screen.hpp"
 #include "core/screen_manager.hpp"
 
@@ -12,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace arpg
 {
@@ -43,6 +47,7 @@ public:
   void run(std::unique_ptr<screen> initial);
 
 private:
+  void sample_input();
   void render_frame(float alpha);
   void render_dev_overlay();
 
@@ -53,6 +58,10 @@ private:
 
   screen_manager m_screens;
   entt::dispatcher m_events;
+
+  raylib_input m_input_source;
+  input_snapshot m_input;
+  std::vector<binding> m_watched;
   bool m_quit = false;
   bool m_dev_overlay = false;
   float m_last_alpha = 0.0f;

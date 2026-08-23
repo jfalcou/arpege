@@ -49,11 +49,11 @@ TTS_CASE("The canvas is centered inside a larger window")
 
 TTS_CASE("Window positions map back to canvas pixels")
 {
-  const auto origin = arpg::window_to_canvas(arpg::viewport_point{0.0f, 0.0f}, 320, 180, 1280, 720);
+  const auto origin = arpg::window_to_canvas(arpg::vec2{0.0f, 0.0f}, 320, 180, 1280, 720);
   TTS_EQUAL(origin.x, 0.0f);
   TTS_EQUAL(origin.y, 0.0f);
 
-  const auto middle = arpg::window_to_canvas(arpg::viewport_point{640.0f, 360.0f}, 320, 180, 1280, 720);
+  const auto middle = arpg::window_to_canvas(arpg::vec2{640.0f, 360.0f}, 320, 180, 1280, 720);
   TTS_EQUAL(middle.x, 160.0f);
   TTS_EQUAL(middle.y, 90.0f);
 };
@@ -61,7 +61,7 @@ TTS_CASE("Window positions map back to canvas pixels")
 TTS_CASE("A letterboxed position maps outside the canvas")
 {
   // 1400x800 window: the canvas starts at x = 60, so x = 10 is in the border.
-  const auto point = arpg::window_to_canvas(arpg::viewport_point{10.0f, 40.0f}, 320, 180, 1400, 800);
+  const auto point = arpg::window_to_canvas(arpg::vec2{10.0f, 40.0f}, 320, 180, 1400, 800);
 
   TTS_EXPECT(point.x < 0.0f);
   TTS_EQUAL(point.y, 0.0f);
@@ -70,7 +70,7 @@ TTS_CASE("A letterboxed position maps outside the canvas")
 TTS_CASE("Mapping is the inverse of the destination rectangle")
 {
   const auto rect = arpg::canvas_destination(320, 180, 1400, 800);
-  const auto corner = arpg::window_to_canvas(arpg::viewport_point{rect.x, rect.y}, 320, 180, 1400, 800);
+  const auto corner = arpg::window_to_canvas(arpg::vec2{rect.x, rect.y}, 320, 180, 1400, 800);
 
   TTS_EQUAL(corner.x, 0.0f);
   TTS_EQUAL(corner.y, 0.0f);

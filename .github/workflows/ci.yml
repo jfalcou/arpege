@@ -14,6 +14,22 @@ env:
   CPM_SOURCE_CACHE: ${{ github.workspace }}/.cache/CPM
 
 jobs:
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Check formatting
+        run: pre-commit run --all-files --show-diff-on-failure
+
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -50,10 +66,15 @@ jobs:
             wayland-protocols libasound2-dev
 
       - name: Configure
-        run: cmake -S . -B build ${{ matrix.preset_args }}
+        run: cmake -S . -B build ${{ matrix.preset_args }} -DARPG_BUILD_TESTS=ON
 
       - name: Build
         run: cmake --build build --config Release --parallel
+
+      # The tests only cover code that is free of any GUI call, so they run
+      # headless on the runners.
+      - name: Test
+        run: ctest --test-dir build --build-config Release --output-on-failure
 
       - name: Check the produced binary
         shell: bash

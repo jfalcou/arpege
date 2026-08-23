@@ -65,3 +65,18 @@ foreach(_dep imgui rlimgui)
     target_compile_options(${_dep} PRIVATE -w)
   endif()
 endforeach()
+
+# --- TTS ----------------------------------------------------------------------
+# Header-only. Pulled without its own CMakeLists, which would drag in copacabana
+# and build the tests of TTS itself.
+if(ARPG_BUILD_TESTS)
+  CPMAddPackage(
+    NAME tts
+    GITHUB_REPOSITORY jfalcou/tts
+    GIT_TAG 3.0
+    DOWNLOAD_ONLY YES
+  )
+
+  add_library(tts INTERFACE)
+  target_include_directories(tts SYSTEM INTERFACE "${tts_SOURCE_DIR}/include")
+endif()

@@ -49,8 +49,31 @@ src/core/     boucle de jeu, pile d'ecrans, canvas basse resolution
 src/screens/  modes de jeu (menu, carte, donjon, pause)
 src/ecs/      composants et systemes
 src/ui/       widgets maison
+tests/        tests unitaires (TTS), un executable par fichier
 assets/       textures, sons, shaders, data (JSON/TOML)
 cmake/        CPM et declaration des dependances
+```
+
+La cible `arpg_core` regroupe la logique sans aucun appel GUI et c'est elle que
+les tests utilisent. Tout ce qui touche a raylib vit dans la cible `arpg`.
+
+## Tests
+
+```sh
+ctest --test-dir build --output-on-failure
+```
+
+Les tests ne s'executent jamais contre une fenetre : un composant se teste avec
+une fausse sortie, comme le `FakeScreen` de `tests/screen_stack.cpp` qui journalise
+les appels recus au lieu de dessiner.
+
+## Formatage
+
+Le style est fixe par `.clang-format` et applique par un hook `pre-commit`, a
+installer une fois par clone :
+
+```sh
+pre-commit install
 ```
 
 ## Raccourcis de dev

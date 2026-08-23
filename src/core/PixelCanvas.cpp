@@ -1,6 +1,6 @@
 #include "core/PixelCanvas.hpp"
 
-#include <algorithm>
+#include "core/Viewport.hpp"
 
 namespace arpg
 {
@@ -31,18 +31,13 @@ void PixelCanvas::endDraw() const
 
 int PixelCanvas::scale() const
 {
-  const int byWidth = GetScreenWidth() / m_width;
-  const int byHeight = GetScreenHeight() / m_height;
-  return std::max(1, std::min(byWidth, byHeight));
+  return integerScale(m_width, m_height, GetScreenWidth(), GetScreenHeight());
 }
 
 Rectangle PixelCanvas::destination() const
 {
-  const float factor = static_cast<float>(scale());
-  const float w = static_cast<float>(m_width) * factor;
-  const float h = static_cast<float>(m_height) * factor;
-  return Rectangle{(static_cast<float>(GetScreenWidth()) - w) * 0.5f,
-                   (static_cast<float>(GetScreenHeight()) - h) * 0.5f, w, h};
+  const ViewportRect rect = canvasDestination(m_width, m_height, GetScreenWidth(), GetScreenHeight());
+  return Rectangle{rect.x, rect.y, rect.width, rect.height};
 }
 
 void PixelCanvas::present() const
@@ -55,9 +50,9 @@ void PixelCanvas::present() const
 
 Vector2 PixelCanvas::screenToCanvas(Vector2 screenPosition) const
 {
-  const Rectangle dest = destination();
-  const float factor = static_cast<float>(scale());
-  return Vector2{(screenPosition.x - dest.x) / factor, (screenPosition.y - dest.y) / factor};
+  const ViewportPoint point = windowToCanvas(ViewportPoint{screenPosition.x, screenPosition.y}, m_width, m_height,
+                                             GetScreenWidth(), GetScreenHeight());
+  return Vector2{point.x, point.y};
 }
 
 } // namespace arpg

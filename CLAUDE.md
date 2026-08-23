@@ -106,24 +106,36 @@ Trois couches d'état :
 - Seed par run stockée dans la RunState : carte reproductible, daily runs, partage de seeds, repro de bugs. Séparer le RNG *contenu* (seedé) du RNG *cosmétique* (libre).
 - Design méta : déblocages **horizontaux** (options, armes, personnages) plutôt que verticaux (+X % cumulables).
 
+## Testabilité (règle d'architecture)
+
+Le jeu est visuel, donc rien ne se teste « à l'écran » : **le maximum de logique doit vivre hors de toute dépendance GUI**, et chaque composant doit pouvoir tourner contre une fausse sortie.
+
+- Cible **`arpg_core`** : logique pure, ne link ni raylib ni rlImGui. C'est la seule cible que les tests utilisent.
+- Cible **`arpg`** : tout ce qui appelle raylib (fenêtre, textures, audio, input) — couche mince qui délègue à `arpg_core`.
+- Quand un calcul dépend d'un état GUI (taille de fenêtre, position souris), il devient une **fonction pure prenant cet état en paramètre**. Exemple : `core/Viewport` calcule échelle, letterbox et conversion fenêtre→canvas sans appeler raylib ; `PixelCanvas` se contente de lui passer `GetScreenWidth()`.
+- Un composant orienté rendu se teste avec un **double qui enregistre au lieu de dessiner** (`FakeScreen` dans `tests/screen_stack.cpp`).
+- Tests avec **TTS** (`jfalcou/tts`), un exécutable par fichier, enregistrés dans CTest et lancés en CI sur les deux plateformes.
+
 ## État d'avancement
 
 **Fait — socle technique** (branche `bootstrap`) :
-- `CMakeLists.txt` + `cmake/Dependencies.cmake` : raylib 5.5, EnTT 3.16, Dear ImGui 1.92.9b-docking, rlImGui (pas de tag en amont → épinglé au commit `db823914`). ImGui et rlImGui n'ayant pas de CMakeLists, leurs cibles sont déclarées chez nous.
+- `CMakeLists.txt` + `cmake/Dependencies.cmake` : raylib 5.5, EnTT 3.16, Dear ImGui 1.92.9b-docking, rlImGui (pas de tag en amont → épinglé au commit `db823914`), TTS 3.0. ImGui, rlImGui et TTS n'ayant pas de CMakeLists exploitable, leurs cibles sont déclarées chez nous.
 - `core/Application` : boucle à pas fixe 60 Hz (accumulateur, plafond de 5 pas/frame), `alpha` d'interpolation transmis au rendu.
-- `core/ScreenManager` : pile d'écrans, commandes appliquées en fin de frame, update/rendu s'arrêtant au premier écran bloquant.
-- `core/PixelCanvas` : monde en 320×180 dans une `RenderTexture`, upscale à facteur entier en nearest, letterbox, conversion fenêtre→canvas.
+- `core/ScreenManager` : pile d'écrans, commandes appliquées en fin de frame, update/rendu s'arrêtant au premier écran bloquant. Sans dépendance GUI, donc testé.
+- `core/Viewport` : géométrie du canvas (échelle entière, letterbox, fenêtre→canvas) en fonctions pures, testée.
+- `core/PixelCanvas` : coquille raylib au-dessus de `Viewport`, rend le monde en 320×180 puis l'agrandit.
 - Overlay de debug ImGui sur F1, en résolution native (hors canvas).
-- CI GitHub Actions : Linux (gcc/ninja) + Windows (msvc), sources CPM mises en cache.
-- Validé localement : MSYS2 UCRT64 g++ 15.2 + CMake 4.2.3, zéro warning en `-Wall -Wextra -Wpedantic`.
+- Style `.clang-format` (Allman, 2 espaces, 120 colonnes) appliqué par un hook `pre-commit`.
+- CI GitHub Actions : job clang-format, puis build + `ctest` sur Linux (gcc/ninja) et Windows (msvc).
+- Validé localement : MSYS2 UCRT64 g++ 15.2 + CMake 4.2.3, zéro warning en `-Wall -Wextra -Wpedantic`, 43 assertions vertes.
 
 Points ouverts laissés par cette étape :
 - **raylib 6.0 est sorti** ; on est resté en 5.5 comme spécifié plus haut. À arbitrer avant que le code ne grossisse.
 - CMake 4 refuse le `cmake_minimum_required` du GLFW embarqué dans raylib 5.5 → contournement local par `CMAKE_POLICY_VERSION_MINIMUM 3.5`, à retirer si l'on passe à raylib 6.
-- Pas encore de dossier de tests ni de framework choisi.
+- `Application`, `PixelCanvas` et les écrans concrets restent non testés : ils sont, par construction, la part GUI irréductible.
 
 ## Reste à faire
-- **Couche d'actions (inputs)** : rien n'est implémenté ; `Application::run` a un TODO à l'endroit exact de la capture. C'est le prochain maillon, tout le gameplay en dépend.
+- **Couche d'actions (inputs)** : rien n'est implémenté ; `Application::run` a un TODO à l'endroit exact de la capture. C'est le prochain maillon, tout le gameplay en dépend. À concevoir d'emblée testable : la table de mapping et le buffering sont de la logique pure, seule la lecture du périphérique touche raylib.
 - **Resource Manager** + atlas + hot-reload.
 - **ECS du donjon** : composants, systèmes, spatial hash.
 - **Patterns de tir** : schéma de données puis chargement JSON/TOML.

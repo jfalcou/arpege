@@ -1,0 +1,17 @@
+# LF in the repository, whatever the platform.
+* text=auto eol=lf
+
+# Windows files that must keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Never convert binaries.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary

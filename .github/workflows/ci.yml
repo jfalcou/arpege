@@ -1,0 +1,165 @@
+# SPDX-License-Identifier: BSL-1.0
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CPM_SOURCE_CACHE: ${{ github.workspace }}/.cache/CPM
+  LINUX_PACKAGES: >-
+    ninja-build
+    libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev
+    libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev
+    wayland-protocols libasound2-dev
+
+jobs:
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Check formatting
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # The distribution package lags behind and misses the report options the
+      # coverage target relies on.
+      - name: Install gcovr
+        run: pip install gcovr
+
+      - name: CPM source cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-coverage-${{ hashFiles('cmake/dependencies.cmake') }}
+          restore-keys: cpm-coverage-
+
+      - name: System dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ${{ env.LINUX_PACKAGES }}
+
+      # Debug and -O0: gcov line mapping is only meaningful on an unoptimised
+      # build.
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DARPG_ENABLE_COVERAGE=ON \
+                -DARPG_COVERAGE_FAIL_UNDER=70
+
+      - name: Run tests and collect coverage
+        run: cmake --build build --target coverage
+
+      - name: Report to the job summary
+        if: always()
+        run: cat build/coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/coverage/
+          retention-days: 14
+
+  windows-ucrt64:
+    name: Windows (ucrt64)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Mirrors the local development toolchain, which MSVC does not exercise.
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux (gcc)
+            os: ubuntu-latest
+            preset_args: -G Ninja -DCMAKE_BUILD_TYPE=Release
+          - name: Windows (msvc)
+            os: windows-latest
+            preset_args: -DCMAKE_BUILD_TYPE=Release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cached so raylib and imgui are not recloned on every push.
+      - name: CPM source cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-${{ runner.os }}-${{ hashFiles('cmake/dependencies.cmake') }}
+          restore-keys: cpm-${{ runner.os }}-
+
+      - name: System dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ${{ env.LINUX_PACKAGES }}
+
+      - name: Configure
+        run: cmake -S . -B build ${{ matrix.preset_args }} -DARPG_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      # The tests only cover code that is free of any GUI call, so they run
+      # headless on the runners.
+      - name: Test
+        run: ctest --test-dir build --build-config Release --output-on-failure
+
+      - name: Check the produced binary
+        shell: bash
+        run: |
+          test -x build/bin/arpg || test -f build/bin/Release/arpg.exe || test -f build/bin/arpg.exe
+          echo "binary produced"

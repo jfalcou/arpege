@@ -1,0 +1,17 @@
+# Normalisation des fins de ligne : LF dans le depot, quelle que soit la plateforme.
+* text=auto eol=lf
+
+# Fichiers Windows qui doivent rester en CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaires : jamais de conversion.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary

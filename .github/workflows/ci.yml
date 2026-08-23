@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CPM_SOURCE_CACHE: ${{ github.workspace }}/.cache/CPM
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux (gcc)
+            os: ubuntu-latest
+            preset_args: -G Ninja -DCMAKE_BUILD_TYPE=Release
+          - name: Windows (msvc)
+            os: windows-latest
+            preset_args: -DCMAKE_BUILD_TYPE=Release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Les sources tirees par CPM sont mises en cache : on ne reclone pas
+      # raylib et imgui a chaque push.
+      - name: Cache des dependances CPM
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-${{ runner.os }}-${{ hashFiles('cmake/Dependencies.cmake') }}
+          restore-keys: cpm-${{ runner.os }}-
+
+      - name: Dependances systeme (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ninja-build \
+            libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev \
+            libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev \
+            wayland-protocols libasound2-dev
+
+      - name: Configuration
+        run: cmake -S . -B build ${{ matrix.preset_args }}
+
+      - name: Compilation
+        run: cmake --build build --config Release --parallel
+
+      - name: Verification de l'artefact
+        shell: bash
+        run: |
+          test -x build/bin/arpg || test -f build/bin/Release/arpg.exe || test -f build/bin/arpg.exe
+          echo "binaire produit"

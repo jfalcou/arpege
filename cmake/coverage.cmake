@@ -44,6 +44,7 @@ add_custom_target(coverage
           --filter "${CMAKE_SOURCE_DIR}/src/"
           --exclude "${CMAKE_SOURCE_DIR}/src/core/application.cpp"
           --exclude "${CMAKE_SOURCE_DIR}/src/core/pixel_canvas.cpp"
+          --exclude "${CMAKE_SOURCE_DIR}/src/core/raylib_input.cpp"
           --exclude "${CMAKE_SOURCE_DIR}/src/screens/"
           --exclude "${CMAKE_SOURCE_DIR}/src/main.cpp"
           --print-summary

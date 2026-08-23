@@ -2,10 +2,14 @@
 
 #include "core/application.hpp"
 
+#include "core/action_state.hpp"
+#include "core/default_bindings.hpp"
+
 #include <imgui.h>
 #include <raylib.h>
 #include <rlImGui.h>
 
+#include <algorithm>
 #include <utility>
 
 namespace arpg
@@ -37,7 +41,21 @@ application::application(app_config config)
 
   rlImGuiSetup(true);
 
-  m_screens.set_context(app_context{&m_events, &m_screens, &(*m_canvas), &m_quit});
+  // Poll the union of the default bindings: what no map mentions cannot
+  // trigger anything, so there is no point reading it.
+  const control_codes codes = raylib_input::codes();
+  for (const action_map& map : {dungeon_bindings(codes), menu_bindings(codes)})
+  {
+    for (const binding& control : map.controls())
+    {
+      if (std::find(m_watched.begin(), m_watched.end(), control) == m_watched.end())
+      {
+        m_watched.push_back(control);
+      }
+    }
+  }
+
+  m_screens.set_context(app_context{&m_events, &m_screens, &(*m_canvas), &m_quit, &m_input});
 }
 
 application::~application()
@@ -64,8 +82,9 @@ void application::run(std::unique_ptr<screen> initial)
 
   while (!WindowShouldClose() && !m_quit && !m_screens.empty())
   {
-    // TODO(input): sample the action layer once here, then let the simulation
-    // steps below consume that snapshot.
+    // Sampled once per rendered frame: every simulation step below sees the
+    // same input, which is what keeps the fixed step deterministic.
+    sample_input();
 
     double frame_time = static_cast<double>(GetFrameTime());
     if (frame_time > 0.25)
@@ -95,6 +114,14 @@ void application::run(std::unique_ptr<screen> initial)
 
     m_screens.apply_pending();
   }
+}
+
+void application::sample_input()
+{
+  const input_device previous = m_input.device;
+
+  m_input_source.sample(m_watched, *m_canvas, m_input);
+  m_input.device = active_device(m_input, previous);
 }
 
 void application::render_frame(float alpha)

@@ -28,6 +28,10 @@ function(arpg_add_compile_test name)
   set_tests_properties(compile_${name} PROPERTIES RESOURCE_LOCK arpg_build_tree)
 endfunction()
 
+arpg_add_test(action_buffer)
+arpg_add_test(actions)
+arpg_add_test(bindings)
+arpg_add_test(deadzone)
 arpg_add_test(viewport)
 arpg_add_test(screen_stack)
 

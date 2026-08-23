@@ -6,6 +6,7 @@
 #include "core/app_context.hpp"
 #include "core/application.hpp"
 #include "core/pixel_canvas.hpp"
+#include "core/raylib_input.hpp"
 #include "screens/main_menu_screen.hpp"
 
 #include <memory>
@@ -49,6 +50,24 @@ static_assert(std::is_default_constructible_v<arpg::app_config>);
   (void)mouse;
   (void)canvas.scale();
   (void)canvas.target();
+}
+
+[[maybe_unused]] static void input_usage()
+{
+  const arpg::control_codes codes = arpg::raylib_input::codes();
+  const arpg::action_map map = arpg::dungeon_bindings(codes);
+
+  const arpg::pixel_canvas canvas(320, 180);
+  arpg::input_snapshot snapshot;
+  const arpg::raylib_input source;
+
+  source.sample(map.controls(), canvas, snapshot);
+
+  arpg::action_state state;
+  state.advance(map.resolve(snapshot));
+  (void)state.consume(arpg::action::dash);
+  (void)arpg::movement_direction(map.resolve(snapshot), snapshot.left_stick);
+  (void)arpg::resolve_aim(snapshot, snapshot.device);
 }
 
 int main()

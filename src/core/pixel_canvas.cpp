@@ -52,8 +52,8 @@ void pixel_canvas::present() const
 
 Vector2 pixel_canvas::screen_to_canvas(Vector2 screen_position) const
 {
-  const viewport_point point = window_to_canvas(viewport_point{screen_position.x, screen_position.y}, m_width, m_height,
-                                                GetScreenWidth(), GetScreenHeight());
+  const vec2 point = window_to_canvas(vec2{screen_position.x, screen_position.y}, m_width, m_height, GetScreenWidth(),
+                                      GetScreenHeight());
   return Vector2{point.x, point.y};
 }
 

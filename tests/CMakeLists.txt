@@ -4,6 +4,14 @@
 function(arpg_add_test name)
   add_executable(${name} ${name}.cpp)
   target_link_libraries(${name} PRIVATE arpg_core tts arpg_warnings)
+
+  # GCC raises -Wformat-truncation from its middle-end, past the point where a
+  # header is still known to be a system one, so declaring TTS as SYSTEM does
+  # not silence what its text formatting triggers.
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${name} PRIVATE -Wno-format-truncation)
+  endif()
+
   add_test(NAME ${name} COMMAND ${name})
 
   # The coverage target runs ctest, which needs the executables built first.

@@ -102,9 +102,6 @@ jobs:
         with:
           msystem: UCRT64
           update: false
-          # The compiler cache is installed on the Windows side, and a minimal
-          # path would leave ninja unable to spawn it.
-          path-type: inherit
           install: >-
             mingw-w64-ucrt-x86_64-gcc
             mingw-w64-ucrt-x86_64-cmake
@@ -117,20 +114,11 @@ jobs:
           key: cpm-ucrt64-${{ hashFiles('cmake/dependencies.cmake') }}
           restore-keys: cpm-ucrt64-
 
-      # The CPM cache only spares the download; raylib and imgui still had to be
-      # compiled on every run, which is what made this the slowest job.
-      - name: Compiler cache
-        uses: hendrikmuhs/ccache-action@v1.2.23
-        with:
-          variant: sccache
-          key: sccache-ucrt64
-
-      # cmake accepts a launcher without checking it exists, so a missing one
-      # only surfaces as a CreateProcess failure in the middle of the build.
+      # No compiler cache here. sccache identifies a compiler by its binary, and
+      # setup-msys2 reinstalls the toolchain on every run, so every hash changes
+      # and the hit rate is zero on anything but a re-run of the same commit.
       - name: Configure
-        run: |
-          command -v sccache
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON
 
       - name: Build
         run: cmake --build build --parallel

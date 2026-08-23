@@ -11,46 +11,50 @@
 #include <optional>
 #include <string>
 
-namespace arpg {
+namespace arpg
+{
 
-struct AppConfig {
-    std::string title = "ARPG";
-    int canvasWidth = 320;     // resolution logique du monde
-    int canvasHeight = 180;
-    int windowScale = 4;       // taille de la fenetre au demarrage
-    bool vsync = true;
-    bool resizable = true;
+struct AppConfig
+{
+  std::string title = "ARPG";
+  int canvasWidth = 320;
+  int canvasHeight = 180;
+  int windowScale = 4;
+  bool vsync = true;
+  bool resizable = true;
 };
 
-// Fenetre, boucle de jeu et services partages.
-class Application {
+// Window, game loop and shared services.
+class Application
+{
 public:
-    // Pas de simulation : 60 Hz, quoi qu'il arrive.
-    static constexpr float kFixedDt = 1.0f / 60.0f;
-    // Plafond de pas rattrapes par frame (anti spirale de la mort).
-    static constexpr int kMaxStepsPerFrame = 5;
+  static constexpr float kFixedDt = 1.0f / 60.0f;
+  static constexpr int kMaxStepsPerFrame = 5;
 
-    explicit Application(AppConfig config = {});
-    ~Application();
+  explicit Application(AppConfig config = {});
+  ~Application();
 
-    Application(const Application&) = delete;
-    Application& operator=(const Application&) = delete;
+  Application(const Application&) = delete;
+  Application& operator=(const Application&) = delete;
 
-    // Prend la main jusqu'a la fermeture. `initial` est le premier ecran.
-    void run(std::unique_ptr<Screen> initial);
+  // Runs until the window closes or the stack empties.
+  void run(std::unique_ptr<Screen> initial);
 
 private:
-    void renderFrame(float alpha);
-    void renderDevOverlay();
+  void renderFrame(float alpha);
+  void renderDevOverlay();
 
-    AppConfig m_config;
-    std::optional<PixelCanvas> m_canvas;  // construit apres InitWindow
-    ScreenManager m_screens;
-    entt::dispatcher m_events;
-    bool m_quit = false;
-    bool m_devOverlay = false;
-    float m_lastAlpha = 0.0f;
-    int m_lastSteps = 0;
+  AppConfig m_config;
+
+  // Built after InitWindow: a render texture needs a live GL context.
+  std::optional<PixelCanvas> m_canvas;
+
+  ScreenManager m_screens;
+  entt::dispatcher m_events;
+  bool m_quit = false;
+  bool m_devOverlay = false;
+  float m_lastAlpha = 0.0f;
+  int m_lastSteps = 0;
 };
 
 } // namespace arpg

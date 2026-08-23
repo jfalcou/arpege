@@ -1,13 +1,10 @@
-# Dependances du projet, gerees par CPM.cmake (vendore dans cmake/CPM.cmake).
-#
-# Definir CPM_SOURCE_CACHE (variable d'environnement) pour partager les sources
-# telechargees entre plusieurs dossiers de build :
+# Set the CPM_SOURCE_CACHE environment variable to share downloaded sources
+# between build directories:
 #   export CPM_SOURCE_CACHE=$HOME/.cache/CPM
 
 # --- raylib -------------------------------------------------------------------
-# raylib 5.5 embarque une version de GLFW dont le cmake_minimum_required est
-# anterieur a 3.5, refuse par CMake >= 4. On abaisse le plancher le temps de
-# configurer raylib, puis on restaure.
+# raylib 5.5 vendors a GLFW whose cmake_minimum_required predates 3.5, which
+# CMake 4 rejects. Lower the floor while configuring raylib, then restore it.
 set(_arpg_policy_min_backup "${CMAKE_POLICY_VERSION_MINIMUM}")
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
@@ -23,15 +20,15 @@ CPMAddPackage(
 
 set(CMAKE_POLICY_VERSION_MINIMUM "${_arpg_policy_min_backup}")
 
-# --- EnTT (header-only : ECS + dispatcher) ------------------------------------
+# --- EnTT ---------------------------------------------------------------------
 CPMAddPackage(
   NAME EnTT
   GITHUB_REPOSITORY skypjack/entt
   GIT_TAG v3.16.0
 )
 
-# --- Dear ImGui (outils de dev uniquement) ------------------------------------
-# Pas de CMakeLists en amont : on compile nous-memes les sources.
+# --- Dear ImGui ---------------------------------------------------------------
+# No CMakeLists upstream, so the target is declared here.
 CPMAddPackage(
   NAME imgui
   GITHUB_REPOSITORY ocornut/imgui
@@ -48,8 +45,8 @@ add_library(imgui STATIC
 )
 target_include_directories(imgui SYSTEM PUBLIC "${imgui_SOURCE_DIR}")
 
-# --- rlImGui (backend raylib pour ImGui) --------------------------------------
-# Le depot n'a ni tag ni CMakeLists : on epingle un commit et on compile a la main.
+# --- rlImGui ------------------------------------------------------------------
+# No upstream tag and no CMakeLists: pinned to a commit and built here.
 CPMAddPackage(
   NAME rlImGui
   GITHUB_REPOSITORY raylib-extras/rlImGui
@@ -61,7 +58,6 @@ add_library(rlimgui STATIC "${rlImGui_SOURCE_DIR}/rlImGui.cpp")
 target_include_directories(rlimgui SYSTEM PUBLIC "${rlImGui_SOURCE_DIR}")
 target_link_libraries(rlimgui PUBLIC imgui raylib)
 
-# Les dependances tierces ne doivent pas polluer nos warnings.
 foreach(_dep imgui rlimgui)
   if(MSVC)
     target_compile_options(${_dep} PRIVATE /W0)

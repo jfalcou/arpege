@@ -8,25 +8,25 @@ project(arpg
   LANGUAGES C CXX
 )
 
-# --- Options globales ---------------------------------------------------------
+# --- Global options ---------------------------------------------------------
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Un seul dossier de sortie : l'exe trouve assets/ par un chemin stable.
+# Single output directory, so the executable resolves assets/ from a stable path.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type de build" FORCE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
-# --- Dependances (CPM) --------------------------------------------------------
+# --- Dependencies -----------------------------------------------------------
 include(CPM)
 include(Dependencies)
 
-# --- Cible principale ---------------------------------------------------------
+# --- Main target ------------------------------------------------------------
 add_executable(arpg
   src/main.cpp
   src/core/Application.cpp
@@ -44,16 +44,16 @@ else()
   target_compile_options(arpg PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-# Sur Windows, pas de console derriere le jeu en Release.
+# No console window behind the game in Release builds.
 if(WIN32)
   set_target_properties(arpg PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
 endif()
 
-# assets/ copie a cote de l'exe a chaque build (les fichiers restent editables
-# a chaud : c'est la copie qui est lue, on la rafraichit a chaque compilation).
+# assets/ is mirrored next to the executable on every build; that copy is the
+# one the game reads and hot-reloads.
 add_custom_command(TARGET arpg POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
           "${CMAKE_CURRENT_SOURCE_DIR}/assets"
           "$<TARGET_FILE_DIR:arpg>/assets"
-  COMMENT "Copie des assets"
+  COMMENT "Mirroring assets"
 )

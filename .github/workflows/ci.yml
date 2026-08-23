@@ -139,13 +139,14 @@ jobs:
           key: cpm-doc-${{ hashFiles('cmake/dependencies.cmake') }}
           restore-keys: cpm-doc-
 
+      # doxygen reads the sources, but configuring the project still configures
+      # raylib, which looks for X11 and stops the whole thing when it is absent.
       - name: System dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends doxygen graphviz ninja-build
+          sudo apt-get install -y --no-install-recommends doxygen graphviz ${{ env.LINUX_PACKAGES }}
 
-      # Configuring is enough: the doc target reads the sources, it does not
-      # need them compiled.
+      # Configuring is enough: nothing has to be compiled to document it.
       - name: Configure
         run: cmake -S . -B build -G Ninja -DARPG_BUILD_DOCUMENTATION=ON -DARPG_BUILD_TESTS=OFF
 

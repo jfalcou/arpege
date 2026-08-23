@@ -4,6 +4,19 @@
 function(arpg_add_test name)
   add_executable(${name} ${name}.cpp)
   target_link_libraries(${name} PRIVATE arpg_core tts arpg_warnings)
+
+  # GCC raises these from its middle-end, after inlining, past the point where
+  # a header is still known to be a system one. Declaring TTS as SYSTEM does not
+  # silence them, and they only appear on an optimised build, which is why a
+  # Debug build looks clean. They all come from the string handling of TTS.
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${name} PRIVATE
+      -Wno-format-truncation
+      -Wno-stringop-truncation
+      -Wno-stringop-overflow
+    )
+  endif()
+
   add_test(NAME ${name} COMMAND ${name})
 
   # The coverage target runs ctest, which needs the executables built first.

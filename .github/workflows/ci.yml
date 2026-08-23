@@ -25,9 +25,9 @@ jobs:
     name: clang-format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
 
@@ -41,9 +41,9 @@ jobs:
     name: Coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
 
@@ -53,7 +53,7 @@ jobs:
         run: pip install gcovr
 
       - name: CPM source cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.CPM_SOURCE_CACHE }}
           key: cpm-coverage-${{ hashFiles('cmake/dependencies.cmake') }}
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload the HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: build/coverage/
@@ -95,7 +95,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Mirrors the local development toolchain, which MSVC does not exercise.
       - uses: msys2/setup-msys2@v2
@@ -106,6 +106,13 @@ jobs:
             mingw-w64-ucrt-x86_64-gcc
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-ninja
+
+      - name: CPM source cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-ucrt64-${{ hashFiles('cmake/dependencies.cmake') }}
+          restore-keys: cpm-ucrt64-
 
       - name: Configure
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON
@@ -125,17 +132,26 @@ jobs:
         include:
           - name: Linux (gcc)
             os: ubuntu-latest
-            preset_args: -G Ninja -DCMAKE_BUILD_TYPE=Release
+            config: Release
+            preset_args: -G Ninja
           - name: Windows (msvc)
             os: windows-latest
-            preset_args: -DCMAKE_BUILD_TYPE=Release
+            config: Release
+            preset_args: ""
+          # MSVC in Debug turns on checked iterators, which no other job does:
+          # an invalidated iterator or an out of range vector access aborts
+          # instead of going unnoticed.
+          - name: Windows (msvc, debug)
+            os: windows-latest
+            config: Debug
+            preset_args: ""
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Cached so raylib and imgui are not recloned on every push.
       - name: CPM source cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.CPM_SOURCE_CACHE }}
           key: cpm-${{ runner.os }}-${{ hashFiles('cmake/dependencies.cmake') }}
@@ -148,18 +164,18 @@ jobs:
           sudo apt-get install -y --no-install-recommends ${{ env.LINUX_PACKAGES }}
 
       - name: Configure
-        run: cmake -S . -B build ${{ matrix.preset_args }} -DARPG_BUILD_TESTS=ON
+        run: cmake -S . -B build ${{ matrix.preset_args }} -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DARPG_BUILD_TESTS=ON
 
       - name: Build
-        run: cmake --build build --config Release --parallel
+        run: cmake --build build --config ${{ matrix.config }} --parallel
 
       # The tests only cover code that is free of any GUI call, so they run
       # headless on the runners.
       - name: Test
-        run: ctest --test-dir build --build-config Release --output-on-failure
+        run: ctest --test-dir build --build-config ${{ matrix.config }} --output-on-failure
 
       - name: Check the produced binary
         shell: bash
         run: |
-          test -x build/bin/arpg || test -f build/bin/Release/arpg.exe || test -f build/bin/arpg.exe
+          test -x build/bin/arpg || test -f "build/bin/${{ matrix.config }}/arpg.exe" || test -f build/bin/arpg.exe
           echo "binary produced"

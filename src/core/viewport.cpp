@@ -29,13 +29,12 @@ viewport_rect canvas_destination(int canvas_width, int canvas_height, int window
                        (static_cast<float>(window_height) - height) * 0.5f, width, height};
 }
 
-viewport_point window_to_canvas(viewport_point window_position, int canvas_width, int canvas_height, int window_width,
-                                int window_height)
+vec2 window_to_canvas(vec2 window_position, int canvas_width, int canvas_height, int window_width, int window_height)
 {
   const viewport_rect dest = canvas_destination(canvas_width, canvas_height, window_width, window_height);
   const float factor = static_cast<float>(integer_scale(canvas_width, canvas_height, window_width, window_height));
 
-  return viewport_point{(window_position.x - dest.x) / factor, (window_position.y - dest.y) / factor};
+  return vec2{(window_position.x - dest.x) / factor, (window_position.y - dest.y) / factor};
 }
 
 } // namespace arpg

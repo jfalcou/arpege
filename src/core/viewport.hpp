@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "core/vec2.hpp"
+
 namespace arpg
 {
 
@@ -16,12 +18,6 @@ struct viewport_rect
   float height = 0.0f;
 };
 
-struct viewport_point
-{
-  float x = 0.0f;
-  float y = 0.0f;
-};
-
 // Largest integer factor by which the canvas fits in the window. Clamped to 1
 // so a window smaller than the canvas still renders, cropped.
 int integer_scale(int canvas_width, int canvas_height, int window_width, int window_height);
@@ -32,7 +28,6 @@ viewport_rect canvas_destination(int canvas_width, int canvas_height, int window
 
 // Window position expressed in canvas pixels. Coordinates fall outside
 // [0, canvas_width[ x [0, canvas_height[ when the position is in the letterbox.
-viewport_point window_to_canvas(viewport_point window_position, int canvas_width, int canvas_height, int window_width,
-                                int window_height);
+vec2 window_to_canvas(vec2 window_position, int canvas_width, int canvas_height, int window_width, int window_height);
 
 } // namespace arpg

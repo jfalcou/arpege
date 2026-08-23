@@ -133,11 +133,13 @@ Le jeu est visuel, donc rien ne se teste « à l'écran » : **le maximum de log
 - `core/application` : boucle à pas fixe 60 Hz (accumulateur, plafond de 5 pas/frame), `alpha` d'interpolation transmis au rendu.
 - `core/screen_manager` : pile d'écrans, commandes appliquées en fin de frame, update/rendu s'arrêtant au premier écran bloquant. Sans dépendance GUI, donc testé.
 - `core/viewport` : géométrie du canvas (échelle entière, letterbox, fenêtre→canvas) en fonctions pures, testée.
+- **Couche d'actions** entièrement dans `arpg_core` : `action` (le vocabulaire du gameplay), `action_map` (bindings → actions, une table par contexte), `action_state` (fronts + buffering), `deadzone` (radiale), `vec2`, `default_bindings` (WASD + flèches + manette). Seul `core/raylib_input` touche raylib : il remplit un `input_snapshot` que tout le reste consomme.
+- Échantillonnage **1× par frame de rendu** dans `application::sample_input`, consommé par chaque pas de simulation — c'est ce qui garde le pas fixe déterministe.
 - `core/pixel_canvas` : coquille raylib au-dessus de `viewport`, rend le monde en 320×180 puis l'agrandit.
 - Overlay de debug ImGui sur F1, en résolution native (hors canvas).
 - Style `.clang-format` (Allman, 2 espaces, 120 colonnes) appliqué par un hook `pre-commit`.
 - CI GitHub Actions : job clang-format, puis build + `ctest` sur Linux (gcc/ninja) et Windows (msvc).
-- Validé localement : MSYS2 UCRT64 g++ 15.2 + CMake 4.2.3, zéro warning en `-Wall -Wextra -Wpedantic`, 43 assertions vertes.
+- Validé localement : MSYS2 UCRT64 g++ 15.2 + CMake 4.2.3, zéro warning en `-Wall -Wextra -Wpedantic`. CI verte sur cinq jobs (format, couverture, Linux gcc, Windows MSVC, Windows UCRT64).
 
 Points ouverts laissés par cette étape :
 - **raylib 6.0 est sorti** ; on est resté en 5.5 comme spécifié plus haut. À arbitrer avant que le code ne grossisse.
@@ -145,7 +147,8 @@ Points ouverts laissés par cette étape :
 - `application`, `pixel_canvas` et les écrans concrets restent non testés : ils sont, par construction, la part GUI irréductible.
 
 ## Reste à faire
-- **Couche d'actions (inputs)** : rien n'est implémenté ; `application::run` a un TODO à l'endroit exact de la capture. C'est le prochain maillon, tout le gameplay en dépend. À concevoir d'emblée testable : la table de mapping et le buffering sont de la logique pure, seule la lecture du périphérique touche raylib.
+- **Visée** : `resolve_aim` distingue déjà souris (position absolue) et stick droit (direction), mais aucun écran ne s'en sert encore.
+- **Remapping** : `action_map` accepte `bind`/`unbind` à chaud ; reste à persister une table modifiée dans la sauvegarde des options.
 - **Resource Manager** + atlas + hot-reload.
 - **ECS du donjon** : composants, systèmes, spatial hash.
 - **Patterns de tir** : schéma de données puis chargement JSON/TOML.

@@ -2,9 +2,10 @@
 
 #pragma once
 
+#include "core/action_map.hpp"
+#include "core/action_state.hpp"
 #include "core/screen.hpp"
-
-#include <raylib.h>
+#include "core/vec2.hpp"
 
 namespace arpg
 {
@@ -17,11 +18,16 @@ public:
   void render(float alpha) override;
 
 private:
+  // The screen owns its bindings: the same key means something else in a
+  // dungeon, and neither map needs to know about the other.
+  action_map m_bindings;
+  action_state m_actions;
+
   // Two positions per entity: rendering interpolates between the previous and
   // the current simulation step.
-  Vector2 m_previous{};
-  Vector2 m_current{};
-  Vector2 m_velocity{};
+  vec2 m_previous{};
+  vec2 m_current{};
+  vec2 m_velocity{};
   float m_radius = 4.0f;
 };
 

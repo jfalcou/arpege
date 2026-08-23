@@ -5,23 +5,23 @@
 namespace arpg
 {
 
-class ScreenManager;
-class PixelCanvas;
+class screen_manager;
+class pixel_canvas;
 
 // Services reachable by a screen outside of its own world. Screens hold no
 // pointer to each other and talk through the dispatcher.
-struct AppContext
+struct app_context
 {
   entt::dispatcher* events = nullptr;
-  ScreenManager* screens = nullptr;
-  const PixelCanvas* canvas = nullptr;
-  bool* quitFlag = nullptr;
+  screen_manager* screens = nullptr;
+  const pixel_canvas* canvas = nullptr;
+  bool* quit_flag = nullptr;
 
-  void requestQuit() const
+  void request_quit() const
   {
-    if (quitFlag != nullptr)
+    if (quit_flag != nullptr)
     {
-      *quitFlag = true;
+      *quit_flag = true;
     }
   }
 };

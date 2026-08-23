@@ -1,16 +1,16 @@
 #pragma once
 
-#include "core/Screen.hpp"
+#include "core/screen.hpp"
 
 #include <raylib.h>
 
 namespace arpg
 {
 
-class MainMenuScreen : public Screen
+class main_menu_screen : public screen
 {
 public:
-  void onEnter() override;
+  void on_enter() override;
   void update(float dt) override;
   void render(float alpha) override;
 

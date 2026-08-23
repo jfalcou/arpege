@@ -21,7 +21,7 @@
 - Shaders GLSL = ressources rechargeables à chaud.
 
 ## Architecture des modes de jeu (Screens)
-- Interface `Screen` (virtual : `update(dt)`, `render()`, `onEnter/onExit`, `blocksUpdate()`, `blocksRender()`) + `ScreenManager` gérant une **pile**.
+- Interface `screen` (virtual : `update(dt)`, `render()`, `on_enter/on_exit`, `blocks_update()`, `blocks_render()`) + `screen_manager` gérant une **pile**.
 - `push()`/`pop()`/`replace()` : MainMenu → *replace* → RogueMap → *push* → DungeonScreen → *push* → PauseScreen. La carte roguelike survit intacte sous le donjon.
 - Transitions (fade, wipe) = écrans spéciaux réutilisables.
 - Changements d'écran mis en file, traités **en fin de frame** (jamais au milieu d'un update).
@@ -33,7 +33,7 @@
 Arborescence :
 ```
 src/
-  core/     # ScreenManager, événements, ressources, input, boucle
+  core/     # screen_manager, événements, ressources, input, boucle
   screens/  # MainMenu, RogueMap, Dungeon, Pause, Upgrade...
   ecs/      # composants + systèmes
   ui/       # widgets maison réutilisables
@@ -52,7 +52,7 @@ assets/     # textures, sons, shaders, data (JSON/TOML)
 
 ## Ressources
 - **Resource Manager** centralisé : cache par clé (chargement unique), distribution par **handles** légers (jamais de copies).
-- Durée de vie par écran : chaque écran déclare ses besoins (chargés à `onEnter`, libérables à `onExit`) ; ressources globales permanentes. À cette échelle, tout garder en RAM est acceptable.
+- Durée de vie par écran : chaque écran déclare ses besoins (chargés à `on_enter`, libérables à `on_exit`) ; ressources globales permanentes. À cette échelle, tout garder en RAM est acceptable.
 - **Atlas de textures** pour le batching (crucial avec des centaines de projectiles).
 - Animations = données (rectangles d'atlas + durées, en fichier).
 - **Data-driven** : ennemis, patterns, améliorations, salles = fichiers JSON/TOML référençant les ressources par nom. Ajouter du contenu sans recompiler.
@@ -106,24 +106,33 @@ Trois couches d'état :
 - Seed par run stockée dans la RunState : carte reproductible, daily runs, partage de seeds, repro de bugs. Séparer le RNG *contenu* (seedé) du RNG *cosmétique* (libre).
 - Design méta : déblocages **horizontaux** (options, armes, personnages) plutôt que verticaux (+X % cumulables).
 
+## Conventions de code
+
+- Fichiers en **minuscules avec underscores** (`screen_manager.hpp`), symboles en **snake_case** — jamais de PascalCase ni de camelCase. Les API tierces gardent leur orthographe d origine.
+- Style `.clang-format` : Allman, 2 espaces, 120 colonnes, applique par un hook `pre-commit`.
+- Commentaires en **anglais**, et uniquement des explications techniques : pas de journal de décision, pas de paraphrase du code.
+- Messages de commit en anglais.
+
 ## Testabilité (règle d'architecture)
 
 Le jeu est visuel, donc rien ne se teste « à l'écran » : **le maximum de logique doit vivre hors de toute dépendance GUI**, et chaque composant doit pouvoir tourner contre une fausse sortie.
 
 - Cible **`arpg_core`** : logique pure, ne link ni raylib ni rlImGui. C'est la seule cible que les tests utilisent.
-- Cible **`arpg`** : tout ce qui appelle raylib (fenêtre, textures, audio, input) — couche mince qui délègue à `arpg_core`.
-- Quand un calcul dépend d'un état GUI (taille de fenêtre, position souris), il devient une **fonction pure prenant cet état en paramètre**. Exemple : `core/Viewport` calcule échelle, letterbox et conversion fenêtre→canvas sans appeler raylib ; `PixelCanvas` se contente de lui passer `GetScreenWidth()`.
-- Un composant orienté rendu se teste avec un **double qui enregistre au lieu de dessiner** (`FakeScreen` dans `tests/screen_stack.cpp`).
+- Cible **`arpg_app`** : tout ce qui appelle raylib (fenêtre, textures, audio, input) — couche mince qui délègue à `arpg_core`. C est une bibliothèque et non l exécutable, pour que les tests de compilation puissent s y lier ; `arpg` se réduit à `main.cpp`.
+- Quand un calcul dépend d'un état GUI (taille de fenêtre, position souris), il devient une **fonction pure prenant cet état en paramètre**. Exemple : `core/viewport` calcule échelle, letterbox et conversion fenêtre→canvas sans appeler raylib ; `pixel_canvas` se contente de lui passer `GetScreenWidth()`.
+- Un composant orienté rendu se teste avec un **double qui enregistre au lieu de dessiner** (`fake_screen` dans `tests/screen_stack.cpp`).
+- Ce qui ne peut pas être exécuté du tout reçoit un **test de compilation** (`tests/compile/`, sans framework) : le fichier décrit le cas d usage habituel, la seule assertion est qu il compile et s édite de liens, plus des `static_assert` sur les traits qui comptent. Branché dans CTest via la commande de build elle-même.
+- **Couverture** via `-DARPG_ENABLE_COVERAGE=ON` et la cible `coverage` (gcov + gcovr) : résumé terminal, HTML et `cobertura.xml`. Mesure la logique seule, la couche GUI étant exclue.
 - Tests avec **TTS** (`jfalcou/tts`), un exécutable par fichier, enregistrés dans CTest et lancés en CI sur les deux plateformes.
 
 ## État d'avancement
 
 **Fait — socle technique** (branche `bootstrap`) :
 - `CMakeLists.txt` + `cmake/Dependencies.cmake` : raylib 5.5, EnTT 3.16, Dear ImGui 1.92.9b-docking, rlImGui (pas de tag en amont → épinglé au commit `db823914`), TTS 3.0. ImGui, rlImGui et TTS n'ayant pas de CMakeLists exploitable, leurs cibles sont déclarées chez nous.
-- `core/Application` : boucle à pas fixe 60 Hz (accumulateur, plafond de 5 pas/frame), `alpha` d'interpolation transmis au rendu.
-- `core/ScreenManager` : pile d'écrans, commandes appliquées en fin de frame, update/rendu s'arrêtant au premier écran bloquant. Sans dépendance GUI, donc testé.
-- `core/Viewport` : géométrie du canvas (échelle entière, letterbox, fenêtre→canvas) en fonctions pures, testée.
-- `core/PixelCanvas` : coquille raylib au-dessus de `Viewport`, rend le monde en 320×180 puis l'agrandit.
+- `core/application` : boucle à pas fixe 60 Hz (accumulateur, plafond de 5 pas/frame), `alpha` d'interpolation transmis au rendu.
+- `core/screen_manager` : pile d'écrans, commandes appliquées en fin de frame, update/rendu s'arrêtant au premier écran bloquant. Sans dépendance GUI, donc testé.
+- `core/viewport` : géométrie du canvas (échelle entière, letterbox, fenêtre→canvas) en fonctions pures, testée.
+- `core/pixel_canvas` : coquille raylib au-dessus de `viewport`, rend le monde en 320×180 puis l'agrandit.
 - Overlay de debug ImGui sur F1, en résolution native (hors canvas).
 - Style `.clang-format` (Allman, 2 espaces, 120 colonnes) appliqué par un hook `pre-commit`.
 - CI GitHub Actions : job clang-format, puis build + `ctest` sur Linux (gcc/ninja) et Windows (msvc).
@@ -132,10 +141,10 @@ Le jeu est visuel, donc rien ne se teste « à l'écran » : **le maximum de log
 Points ouverts laissés par cette étape :
 - **raylib 6.0 est sorti** ; on est resté en 5.5 comme spécifié plus haut. À arbitrer avant que le code ne grossisse.
 - CMake 4 refuse le `cmake_minimum_required` du GLFW embarqué dans raylib 5.5 → contournement local par `CMAKE_POLICY_VERSION_MINIMUM 3.5`, à retirer si l'on passe à raylib 6.
-- `Application`, `PixelCanvas` et les écrans concrets restent non testés : ils sont, par construction, la part GUI irréductible.
+- `application`, `pixel_canvas` et les écrans concrets restent non testés : ils sont, par construction, la part GUI irréductible.
 
 ## Reste à faire
-- **Couche d'actions (inputs)** : rien n'est implémenté ; `Application::run` a un TODO à l'endroit exact de la capture. C'est le prochain maillon, tout le gameplay en dépend. À concevoir d'emblée testable : la table de mapping et le buffering sont de la logique pure, seule la lecture du périphérique touche raylib.
+- **Couche d'actions (inputs)** : rien n'est implémenté ; `application::run` a un TODO à l'endroit exact de la capture. C'est le prochain maillon, tout le gameplay en dépend. À concevoir d'emblée testable : la table de mapping et le buffering sont de la logique pure, seule la lecture du périphérique touche raylib.
 - **Resource Manager** + atlas + hot-reload.
 - **ECS du donjon** : composants, systèmes, spatial hash.
 - **Patterns de tir** : schéma de données puis chargement JSON/TOML.

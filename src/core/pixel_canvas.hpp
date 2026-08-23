@@ -7,23 +7,23 @@ namespace arpg
 
 // Low resolution render target holding the world. Its content is upscaled to
 // the window by an integer factor, with nearest neighbour filtering.
-class PixelCanvas
+class pixel_canvas
 {
 public:
-  PixelCanvas(int width, int height);
-  ~PixelCanvas();
+  pixel_canvas(int width, int height);
+  ~pixel_canvas();
 
-  PixelCanvas(const PixelCanvas&) = delete;
-  PixelCanvas& operator=(const PixelCanvas&) = delete;
+  pixel_canvas(const pixel_canvas&) = delete;
+  pixel_canvas& operator=(const pixel_canvas&) = delete;
 
-  void beginDraw(Color clear = BLACK) const;
-  void endDraw() const;
+  void begin_draw(Color clear = BLACK) const;
+  void end_draw() const;
 
   // Upscales the canvas to the window, centered, with letterboxing.
   void present() const;
 
   // Maps a window position, such as the mouse, to a canvas pixel.
-  Vector2 screenToCanvas(Vector2 screenPosition) const;
+  Vector2 screen_to_canvas(Vector2 screen_position) const;
 
   int width() const { return m_width; }
   int height() const { return m_height; }

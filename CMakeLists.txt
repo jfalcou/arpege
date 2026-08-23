@@ -23,12 +23,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(ARPG_BUILD_TESTS "Build the unit tests" ON)
+option(ARPG_ENABLE_COVERAGE "Instrument the code for gcov coverage" OFF)
 
 # --- Dependencies -----------------------------------------------------------
 include(CPM)
-include(Dependencies)
+include(dependencies)
 
-# --- Warning flags shared by our own targets --------------------------------
+# --- Flags shared by our own targets ----------------------------------------
 add_library(arpg_warnings INTERFACE)
 if(MSVC)
   target_compile_options(arpg_warnings INTERFACE /W4 /permissive- /utf-8)
@@ -36,26 +37,33 @@ else()
   target_compile_options(arpg_warnings INTERFACE -Wall -Wextra -Wpedantic)
 endif()
 
+include(coverage)
+
 # --- Game logic -------------------------------------------------------------
 # Everything here must stay free of raylib and of any other GUI call, so it can
 # be unit tested without a window, a GPU context or an audio device.
 add_library(arpg_core STATIC
-  src/core/ScreenManager.cpp
-  src/core/Viewport.cpp
+  src/core/screen_manager.cpp
+  src/core/viewport.cpp
 )
 
 target_include_directories(arpg_core PUBLIC src)
-target_link_libraries(arpg_core PUBLIC EnTT::EnTT PRIVATE arpg_warnings)
+target_link_libraries(arpg_core PUBLIC EnTT::EnTT arpg_coverage PRIVATE arpg_warnings)
 
-# --- Game executable --------------------------------------------------------
-add_executable(arpg
-  src/main.cpp
-  src/core/Application.cpp
-  src/core/PixelCanvas.cpp
-  src/screens/MainMenuScreen.cpp
+# --- GUI layer --------------------------------------------------------------
+# Kept as a library rather than folded into the executable so the compile tests
+# can link it.
+add_library(arpg_app STATIC
+  src/core/application.cpp
+  src/core/pixel_canvas.cpp
+  src/screens/main_menu_screen.cpp
 )
 
-target_link_libraries(arpg PRIVATE arpg_core raylib rlimgui arpg_warnings)
+target_link_libraries(arpg_app PUBLIC arpg_core raylib rlimgui PRIVATE arpg_warnings)
+
+# --- Game executable --------------------------------------------------------
+add_executable(arpg src/main.cpp)
+target_link_libraries(arpg PRIVATE arpg_app arpg_warnings)
 
 # No console window behind the game in Release builds.
 if(WIN32)

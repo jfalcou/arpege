@@ -70,6 +70,12 @@ target_link_libraries(arpg PRIVATE arpg_app arpg_warnings)
 # No console window behind the game in Release builds.
 if(WIN32)
   set_target_properties(arpg PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+
+  # The WINDOWS subsystem makes MSVC look for WinMain. MinGW ships a WinMain
+  # that forwards to main, MSVC does not, so point it back at the usual entry.
+  if(MSVC)
+    target_link_options(arpg PRIVATE $<$<CONFIG:Release>:/ENTRY:mainCRTStartup>)
+  endif()
 endif()
 
 # assets/ is mirrored next to the executable on every build; that copy is the

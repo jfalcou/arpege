@@ -21,9 +21,25 @@ struct aim_input
   vec2 value{};
 };
 
-// Movement direction, normalised. The stick wins when it is out of its
-// deadzone, otherwise the digital actions give the usual eight directions.
-vec2 movement_direction(const action_set& held, vec2 stick);
+// Which four actions stand for the four directions. A dungeon and a menu bind
+// different ones, so both go through the same code.
+struct direction_actions
+{
+  action up = action::move_up;
+  action down = action::move_down;
+  action left = action::move_left;
+  action right = action::move_right;
+};
+
+inline constexpr direction_actions movement_actions{action::move_up, action::move_down, action::move_left,
+                                                    action::move_right};
+
+inline constexpr direction_actions menu_actions{action::menu_up, action::menu_down, action::menu_left,
+                                                action::menu_right};
+
+// Direction, normalised. The stick wins when it is out of its deadzone,
+// otherwise the digital actions give the usual eight directions.
+vec2 movement_direction(const action_set& held, vec2 stick, direction_actions mapping = movement_actions);
 
 // Aim from the mouse when it is the device in use, from the right stick
 // otherwise. Returns a zero direction when neither says anything.

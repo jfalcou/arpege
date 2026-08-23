@@ -49,7 +49,6 @@ FULL_SIDEBAR           = NO
 HTML_COLORSTYLE        = LIGHT
 HTML_EXTRA_STYLESHEET  = @ARPG_DOC_AWESOME@/doxygen-awesome.css \
                          @ARPG_DOC_AWESOME@/doxygen-awesome-sidebar-only.css
-HTML_COPY_CLIPBOARD    = NO
 
 HAVE_DOT               = @ARPG_DOC_HAVE_DOT@
 DOT_IMAGE_FORMAT       = svg

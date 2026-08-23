@@ -43,7 +43,7 @@ void main_menu_screen::update(float dt)
   m_previous = m_current;
 
   // Driven by the action layer, so a stick, the arrows and WASD all work.
-  const vec2 steering = movement_direction(m_bindings.resolve(*ctx().input), ctx().input->left_stick);
+  const vec2 steering = movement_direction(m_bindings.resolve(*ctx().input), ctx().input->left_stick, menu_actions);
   const vec2 velocity = (length_squared(steering) > 0.0f) ? steering * 90.0f : m_velocity;
 
   m_current = m_current + velocity * dt;

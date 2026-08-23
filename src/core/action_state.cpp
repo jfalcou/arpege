@@ -12,7 +12,7 @@ action_state::action_state()
   m_since_press.fill(never);
 }
 
-vec2 movement_direction(const action_set& held, vec2 stick)
+vec2 movement_direction(const action_set& held, vec2 stick, direction_actions mapping)
 {
   if (length_squared(stick) > 0.0f)
   {
@@ -20,10 +20,10 @@ vec2 movement_direction(const action_set& held, vec2 stick)
   }
 
   vec2 direction;
-  direction.x -= held.test(index_of(action::move_left)) ? 1.0f : 0.0f;
-  direction.x += held.test(index_of(action::move_right)) ? 1.0f : 0.0f;
-  direction.y -= held.test(index_of(action::move_up)) ? 1.0f : 0.0f;
-  direction.y += held.test(index_of(action::move_down)) ? 1.0f : 0.0f;
+  direction.x -= held.test(index_of(mapping.left)) ? 1.0f : 0.0f;
+  direction.x += held.test(index_of(mapping.right)) ? 1.0f : 0.0f;
+  direction.y -= held.test(index_of(mapping.up)) ? 1.0f : 0.0f;
+  direction.y += held.test(index_of(mapping.down)) ? 1.0f : 0.0f;
 
   // Normalised so a diagonal is not faster than an axis.
   return normalized(direction);

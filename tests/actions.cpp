@@ -119,6 +119,30 @@ TTS_CASE("The stick wins over the keys and keeps its magnitude")
   TTS_EQUAL(direction.y, 0.5f);
 };
 
+TTS_CASE("Menu navigation uses the menu actions, not the dungeon ones")
+{
+  arpg::action_set held;
+  held.set(arpg::index_of(arpg::action::menu_up));
+
+  // A menu binds its keys to menu_up and friends, so reading move_up there
+  // would leave the keyboard doing nothing at all.
+  const auto navigating = arpg::movement_direction(held, arpg::vec2{}, arpg::menu_actions);
+  TTS_EQUAL(navigating.y, -1.0f);
+
+  const auto moving = arpg::movement_direction(held, arpg::vec2{});
+  TTS_EQUAL(moving.x, 0.0f);
+  TTS_EQUAL(moving.y, 0.0f);
+};
+
+TTS_CASE("Both direction sets read their own actions")
+{
+  arpg::action_set held;
+  held.set(arpg::index_of(arpg::action::move_right));
+
+  TTS_EQUAL(arpg::movement_direction(held, arpg::vec2{}).x, 1.0f);
+  TTS_EQUAL(arpg::movement_direction(held, arpg::vec2{}, arpg::menu_actions).x, 0.0f);
+};
+
 TTS_CASE("The active device follows whoever last said something")
 {
   arpg::input_snapshot snapshot;

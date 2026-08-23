@@ -31,16 +31,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Les sources tirees par CPM sont mises en cache : on ne reclone pas
-      # raylib et imgui a chaque push.
-      - name: Cache des dependances CPM
+      # Cached so raylib and imgui are not recloned on every push.
+      - name: CPM source cache
         uses: actions/cache@v4
         with:
           path: ${{ env.CPM_SOURCE_CACHE }}
           key: cpm-${{ runner.os }}-${{ hashFiles('cmake/Dependencies.cmake') }}
           restore-keys: cpm-${{ runner.os }}-
 
-      - name: Dependances systeme (Linux)
+      - name: System dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -50,14 +49,14 @@ jobs:
             libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev \
             wayland-protocols libasound2-dev
 
-      - name: Configuration
+      - name: Configure
         run: cmake -S . -B build ${{ matrix.preset_args }}
 
-      - name: Compilation
+      - name: Build
         run: cmake --build build --config Release --parallel
 
-      - name: Verification de l'artefact
+      - name: Check the produced binary
         shell: bash
         run: |
           test -x build/bin/arpg || test -f build/bin/Release/arpg.exe || test -f build/bin/arpg.exe
-          echo "binaire produit"
+          echo "binary produced"

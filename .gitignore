@@ -54,5 +54,5 @@ compile_commands.json
 .Trashes
 ehthumbs.db
 Thumbs.db
-# Cache local des dependances CPM
+# Local CPM source cache
 .cache/

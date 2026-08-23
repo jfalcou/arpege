@@ -7,22 +7,15 @@ include(quiet_dependency)
 #   export CPM_SOURCE_CACHE=$HOME/.cache/CPM
 
 # --- raylib -------------------------------------------------------------------
-# raylib 5.5 vendors a GLFW whose cmake_minimum_required predates 3.5, which
-# CMake 4 rejects. Lower the floor while configuring raylib, then restore it.
-set(_arpg_policy_min_backup "${CMAKE_POLICY_VERSION_MINIMUM}")
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
-
 CPMAddPackage(
   NAME raylib
   GITHUB_REPOSITORY raysan5/raylib
-  GIT_TAG 5.5
+  GIT_TAG 6.0
   OPTIONS
     "BUILD_EXAMPLES OFF"
     "BUILD_SHARED_LIBS OFF"
     "USE_EXTERNAL_GLFW OFF"
 )
-
-set(CMAKE_POLICY_VERSION_MINIMUM "${_arpg_policy_min_backup}")
 
 # --- EnTT ---------------------------------------------------------------------
 CPMAddPackage(

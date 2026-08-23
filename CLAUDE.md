@@ -10,7 +10,7 @@
 - **Raylib** (rendu, audio, input, shaders GLSL) + **EnTT** (ECS + event dispatcher) + **Dear ImGui** via `rlImGui` (outils de dev uniquement, pas l'UI du jeu).
 - UI de jeu maison (boutons + navigation clavier/manette), esthétique pixel art.
 - Plus tard si besoin : **sol2 + Lua** pour scripter les boss ; commencer en pur data (JSON/TOML).
-- Cross-platform **Linux + Windows** : CMake + CPM.cmake, vendore dans `cmake/` (Raylib 5.5, EnTT 3.16, Dear ImGui + rlImGui). MSVC ou MinGW-w64 côté Windows. Rester sur `std::filesystem`, `std::thread`, `std::chrono` (pas d'API POSIX directes).
+- Cross-platform **Linux + Windows** : CMake + CPM.cmake, vendore dans `cmake/` (Raylib 6.0, EnTT 3.16, Dear ImGui + rlImGui). MSVC ou MinGW-w64 côté Windows. Rester sur `std::filesystem`, `std::thread`, `std::chrono` (pas d'API POSIX directes).
 - CI (GitHub/Forgejo Actions) qui compile les deux cibles à chaque push, dès le début.
 
 ## Rendu pixel art
@@ -129,7 +129,7 @@ Le jeu est visuel, donc rien ne se teste « à l'écran » : **le maximum de log
 ## État d'avancement
 
 **Fait — socle technique** (branche `bootstrap`) :
-- `CMakeLists.txt` + `cmake/Dependencies.cmake` : raylib 5.5, EnTT 3.16, Dear ImGui 1.92.9b-docking, rlImGui (pas de tag en amont → épinglé au commit `db823914`), TTS 3.0. ImGui, rlImGui et TTS n'ayant pas de CMakeLists exploitable, leurs cibles sont déclarées chez nous.
+- `CMakeLists.txt` + `cmake/dependencies.cmake` : raylib 6.0, EnTT 3.16, Dear ImGui 1.92.9b-docking, rlImGui (pas de tag en amont → épinglé au commit `db823914`), TTS 3.0. ImGui, rlImGui et TTS n'ayant pas de CMakeLists exploitable, leurs cibles sont déclarées chez nous.
 - `core/application` : boucle à pas fixe 60 Hz (accumulateur, plafond de 5 pas/frame), `alpha` d'interpolation transmis au rendu.
 - `core/screen_manager` : pile d'écrans, commandes appliquées en fin de frame, update/rendu s'arrêtant au premier écran bloquant. Sans dépendance GUI, donc testé.
 - `core/viewport` : géométrie du canvas (échelle entière, letterbox, fenêtre→canvas) en fonctions pures, testée.
@@ -142,8 +142,6 @@ Le jeu est visuel, donc rien ne se teste « à l'écran » : **le maximum de log
 - Validé localement : MSYS2 UCRT64 g++ 15.2 + CMake 4.2.3, zéro warning en `-Wall -Wextra -Wpedantic`. CI verte sur cinq jobs (format, couverture, Linux gcc, Windows MSVC, Windows UCRT64).
 
 Points ouverts laissés par cette étape :
-- **raylib 6.0 est sorti** ; on est resté en 5.5 comme spécifié plus haut. À arbitrer avant que le code ne grossisse.
-- CMake 4 refuse le `cmake_minimum_required` du GLFW embarqué dans raylib 5.5 → contournement local par `CMAKE_POLICY_VERSION_MINIMUM 3.5`, à retirer si l'on passe à raylib 6.
 - `application`, `pixel_canvas` et les écrans concrets restent non testés : ils sont, par construction, la part GUI irréductible.
 
 ## Reste à faire

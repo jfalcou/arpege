@@ -22,27 +22,40 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
+option(ARPG_BUILD_TESTS "Build the unit tests" ON)
+
 # --- Dependencies -----------------------------------------------------------
 include(CPM)
 include(Dependencies)
 
-# --- Main target ------------------------------------------------------------
+# --- Warning flags shared by our own targets --------------------------------
+add_library(arpg_warnings INTERFACE)
+if(MSVC)
+  target_compile_options(arpg_warnings INTERFACE /W4 /permissive- /utf-8)
+else()
+  target_compile_options(arpg_warnings INTERFACE -Wall -Wextra -Wpedantic)
+endif()
+
+# --- Game logic -------------------------------------------------------------
+# Everything here must stay free of raylib and of any other GUI call, so it can
+# be unit tested without a window, a GPU context or an audio device.
+add_library(arpg_core STATIC
+  src/core/ScreenManager.cpp
+  src/core/Viewport.cpp
+)
+
+target_include_directories(arpg_core PUBLIC src)
+target_link_libraries(arpg_core PUBLIC EnTT::EnTT PRIVATE arpg_warnings)
+
+# --- Game executable --------------------------------------------------------
 add_executable(arpg
   src/main.cpp
   src/core/Application.cpp
   src/core/PixelCanvas.cpp
-  src/core/ScreenManager.cpp
   src/screens/MainMenuScreen.cpp
 )
 
-target_include_directories(arpg PRIVATE src)
-target_link_libraries(arpg PRIVATE raylib EnTT::EnTT rlimgui)
-
-if(MSVC)
-  target_compile_options(arpg PRIVATE /W4 /permissive- /utf-8)
-else()
-  target_compile_options(arpg PRIVATE -Wall -Wextra -Wpedantic)
-endif()
+target_link_libraries(arpg PRIVATE arpg_core raylib rlimgui arpg_warnings)
 
 # No console window behind the game in Release builds.
 if(WIN32)
@@ -57,3 +70,9 @@ add_custom_command(TARGET arpg POST_BUILD
           "$<TARGET_FILE_DIR:arpg>/assets"
   COMMENT "Mirroring assets"
 )
+
+# --- Tests ------------------------------------------------------------------
+if(ARPG_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

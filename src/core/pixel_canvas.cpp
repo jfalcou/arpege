@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "core/pixel_canvas.hpp"
+#include <core/pixel_canvas.hpp>
 
-#include "core/viewport.hpp"
+#include <core/viewport.hpp>
 
 namespace arpg
 {

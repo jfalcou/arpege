@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "core/raylib_input.hpp"
+#include <core/raylib_input.hpp>
 
-#include "core/deadzone.hpp"
-#include "core/pixel_canvas.hpp"
+#include <core/deadzone.hpp>
+#include <core/pixel_canvas.hpp>
 
 #include <raylib.h>
 

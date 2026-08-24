@@ -74,6 +74,13 @@ target_link_libraries(arpg_app PUBLIC arpg_core raylib rlimgui PRIVATE arpg_warn
 add_executable(arpg src/main.cpp)
 target_link_libraries(arpg PRIVATE arpg_app arpg_warnings)
 
+# A MinGW build links the GCC runtime dynamically, so the executable only starts
+# where libgcc, libstdc++ and libwinpthread happen to be on the PATH: it fails
+# on a double click and cannot be handed to anyone. Link them in instead.
+if(WIN32 AND NOT MSVC)
+  target_link_options(arpg PRIVATE -static)
+endif()
+
 # No console window behind the game in Release builds.
 if(WIN32)
   set_target_properties(arpg PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
@@ -96,6 +103,15 @@ add_custom_command(TARGET arpg POST_BUILD
 
 # --- Tests ------------------------------------------------------------------
 if(ARPG_BUILD_TESTS)
-  enable_testing()
+  # --error-exitcode makes valgrind fail the test it is checking; without it
+  # ctest reports the defects and still exits zero, so a leak would pass the CI.
+  # Only definite leaks count: possible ones are mostly reachable-at-exit noise.
+  set(MEMORYCHECK_COMMAND_OPTIONS
+      "--leak-check=full --errors-for-leak-kinds=definite --error-exitcode=1 --gen-suppressions=all")
+
+  # CTest rather than enable_testing(), which is all it does beyond wiring the
+  # memory check up.
+  include(CTest)
+
   add_subdirectory(tests)
 endif()

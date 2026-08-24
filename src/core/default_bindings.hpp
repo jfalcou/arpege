@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core/action_map.hpp"
+#include <core/action_map.hpp>
 
 namespace arpg
 {

@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "core/action_map.hpp"
-#include "core/action_state.hpp"
-#include "core/screen.hpp"
-#include "core/vec2.hpp"
+#include <core/action_map.hpp>
+#include <core/action_state.hpp>
+#include <core/screen.hpp>
+#include <core/vec2.hpp>
 
 namespace arpg
 {

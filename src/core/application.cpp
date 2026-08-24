@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "core/application.hpp"
+#include <core/application.hpp>
 
-#include "core/action_state.hpp"
-#include "core/default_bindings.hpp"
+#include <core/action_state.hpp>
+#include <core/default_bindings.hpp>
 
 #include <imgui.h>
 #include <raylib.h>

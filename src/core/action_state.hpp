@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "core/action.hpp"
-#include "core/action_map.hpp"
-#include "core/input_snapshot.hpp"
-#include "core/vec2.hpp"
+#include <core/action.hpp>
+#include <core/action_map.hpp>
+#include <core/input_snapshot.hpp>
+#include <core/vec2.hpp>
 
 #include <array>
 

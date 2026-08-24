@@ -3,7 +3,7 @@
 #define TTS_MAIN
 #include <tts/tts.hpp>
 
-#include "core/action_state.hpp"
+#include <core/action_state.hpp>
 
 namespace
 {

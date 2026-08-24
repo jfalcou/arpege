@@ -3,7 +3,7 @@
 #define TTS_MAIN
 #include <tts/tts.hpp>
 
-#include "core/default_bindings.hpp"
+#include <core/default_bindings.hpp>
 
 namespace
 {

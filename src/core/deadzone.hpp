@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core/vec2.hpp"
+#include <core/vec2.hpp>
 
 namespace arpg
 {

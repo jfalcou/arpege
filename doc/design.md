@@ -68,6 +68,28 @@ Bullets are the enemy, not the enemies. What that implies:
   frame, buys nothing.
 - Bullets off screen, plus a margin, die immediately.
 
+## The camera
+
+A room is **larger than the screen** and the camera follows the player across
+it. Rooms are places to move through rather than single tableaux, which is what
+a run made of connected rooms and corridors asks for.
+
+That is a deliberate trade. A bullet hell in the strict sense keeps everything
+on one fixed screen, because a projectile arriving from outside the view cannot
+be dodged and punishes without warning. Following the player buys room to move
+and an exploration that a fixed screen cannot give, and it owes the player
+something in return:
+
+- **spawns happen on screen**, or announced, never silently behind the edge;
+- **off-screen threats are signalled** at the rim rather than left to be
+  discovered by taking the hit;
+- the denser the pattern, the closer the encounter should be framed.
+
+The view never shows past the walls: the centre is held half a view from each
+edge, and a room smaller than the view is centred instead. Following is eased
+through an exponential so it behaves identically whatever the step rate, where a
+plain lerp would trail differently on a machine that steps more often.
+
 ## Enemies
 
 A room receives a **combat budget** from its area and its depth, and each
@@ -134,4 +156,5 @@ are three of them, and it is the first thing to fix before there are thirty.
 
 - The names and roster of the mercenaries beyond the handful already written.
 - Whether the strate map is a graph the player walks or a list of nodes.
+- How an off-screen threat is signalled, which the camera decision now owes.
 - The audio direction.

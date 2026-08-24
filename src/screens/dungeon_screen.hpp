@@ -4,6 +4,7 @@
 
 #include <core/action_map.hpp>
 #include <core/action_state.hpp>
+#include <core/camera.hpp>
 #include <core/rng.hpp>
 #include <core/screen.hpp>
 #include <ecs/enemy.hpp>
@@ -28,6 +29,12 @@ public:
   void render(float alpha) override;
 
 private:
+  /// The room, larger than the screen: the camera follows the player across it.
+  viewport_rect room() const;
+
+  /// What is on screen, in room coordinates.
+  vec2 view() const;
+
   void spawn_player();
   void spawn_wave();
   void steer_player();
@@ -53,6 +60,8 @@ private:
 
   /// Seeded per room. Everything that must replay identically draws from here.
   rng m_generator{1};
+
+  camera_focus m_camera;
 };
 
 } // namespace arpg

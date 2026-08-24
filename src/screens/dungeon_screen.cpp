@@ -31,6 +31,14 @@ constexpr enemy_archetype brute{40, 20, 18.0f, 10.0f, 130.0f, 28.0f};
 
 constexpr std::array<enemy_archetype, 3> roster{parasite, cultist, brute};
 
+/// How much larger than the screen a room is, for now. Rooms come from the
+/// generator later and carry their own size.
+constexpr float room_scale = 2.0f;
+
+/// How eagerly the view catches up, in units per second. Tight enough to feel
+/// attached, loose enough not to judder on a fixed step.
+constexpr float camera_stiffness = 8.0f;
+
 /// A few pixels, far smaller than the sprite: the player must be able to thread
 /// a wall of bullets that visually looks impassable.
 constexpr float player_hitbox = 2.0f;
@@ -54,10 +62,22 @@ void dungeon_screen::on_enter()
   spawn_wave();
 }
 
-void dungeon_screen::spawn_player()
+viewport_rect dungeon_screen::room() const
+{
+  const vec2 screen = view();
+  return viewport_rect{0.0f, 0.0f, screen.x * room_scale, screen.y * room_scale};
+}
+
+vec2 dungeon_screen::view() const
 {
   const pixel_canvas& canvas = *ctx().canvas;
-  const vec2 middle{static_cast<float>(canvas.width()) * 0.5f, static_cast<float>(canvas.height()) * 0.75f};
+  return vec2{static_cast<float>(canvas.width()), static_cast<float>(canvas.height())};
+}
+
+void dungeon_screen::spawn_player()
+{
+  const viewport_rect bounds = room();
+  const vec2 middle{bounds.width * 0.5f, bounds.height * 0.75f};
 
   m_player = m_world.create();
   m_world.emplace<transform>(m_player, middle, middle);
@@ -67,13 +87,17 @@ void dungeon_screen::spawn_player()
   m_world.emplace<health>(m_player, 3, 3);
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
+
+  // Snapped rather than eased on the first step, or the room would slide into
+  // place from a corner every time it opens.
+  m_camera.centre = follow_camera(middle, middle, room(), view(), 0.0f, 0.0f);
 }
 
 void dungeon_screen::spawn_wave()
 {
-  const pixel_canvas& canvas = *ctx().canvas;
-  const float width = static_cast<float>(canvas.width());
-  const float height = static_cast<float>(canvas.height());
+  const viewport_rect bounds = room();
+  const float width = bounds.width;
+  const float height = bounds.height;
 
   // The room pays for its own enemies: what fits in the budget is what shows
   // up, so a bigger room is dangerous in proportion rather than by luck.
@@ -132,9 +156,11 @@ void dungeon_screen::fire(float dt)
   const vec2 from = m_world.get<transform>(m_player).position;
   const aim_input aim = resolve_aim(*ctx().input, ctx().input->device);
 
-  // The input layer does not know where the player stands, so an absolute aim
-  // is turned into a heading here, where that is known.
-  vec2 heading = aim.absolute ? normalized(aim.value - from) : aim.value;
+  // The mouse is reported in screen pixels while the player stands in the room,
+  // so an absolute aim is carried across before anything is subtracted from it.
+  // The input layer knows neither where the player is nor where the view looks.
+  const vec2 pointed = aim.value + view_origin(m_camera.centre, view());
+  vec2 heading = aim.absolute ? normalized(pointed - from) : aim.value;
 
   if (length_squared(heading) <= 0.0f)
   {
@@ -170,13 +196,15 @@ void dungeon_screen::update(float dt)
   integrate_motion(m_world, dt);
   expire_lifetimes(m_world, dt);
 
-  const pixel_canvas& canvas = *ctx().canvas;
-  const viewport_rect room{0.0f, 0.0f, static_cast<float>(canvas.width()), static_cast<float>(canvas.height())};
+  const viewport_rect bounds = room();
 
   // After the motion that may have pushed someone through an edge, and before
   // the collisions, so nothing is ever resolved against a position outside.
-  confine_to_bounds(m_world, room);
-  despawn_out_of_bounds(m_world, room, 16.0f);
+  confine_to_bounds(m_world, bounds);
+  despawn_out_of_bounds(m_world, bounds, 16.0f);
+
+  m_camera.centre =
+      follow_camera(m_camera.centre, m_world.get<transform>(m_player).position, bounds, view(), dt, camera_stiffness);
 
   rebuild_spatial_hash(m_world, m_hash);
   resolve_projectile_hits(m_world, m_hash, m_scratch);
@@ -185,6 +213,14 @@ void dungeon_screen::update(float dt)
 void dungeon_screen::render(float alpha)
 {
   ClearBackground(Color{10, 8, 14, 255});
+
+  const vec2 origin = view_origin(m_camera.centre, view());
+  const viewport_rect bounds = room();
+
+  // The walls of the room, so it reads as a place rather than a void that
+  // happens to stop.
+  DrawRectangleLines(static_cast<int>(bounds.x - origin.x), static_cast<int>(bounds.y - origin.y),
+                     static_cast<int>(bounds.width), static_cast<int>(bounds.height), Color{40, 34, 48, 255});
 
   for (auto [entity, place, shape, side] : m_world.view<const transform, const collider, const team>().each())
   {
@@ -195,7 +231,7 @@ void dungeon_screen::render(float alpha)
     // Drawn larger than the collider for everything but the player, whose
     // sprite would otherwise lie about how easy they are to hit.
     const float drawn = m_world.all_of<player_controlled>(entity) ? 4.0f : shape.radius;
-    DrawCircleV(to_raylib(interpolated(place, alpha)), drawn, tint);
+    DrawCircleV(to_raylib(interpolated(place, alpha) - origin), drawn, tint);
   }
 
   const auto& player_health = m_world.get<health>(m_player);

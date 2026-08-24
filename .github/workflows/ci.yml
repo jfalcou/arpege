@@ -285,7 +285,9 @@ jobs:
         if: runner.os == 'Linux'
         uses: hendrikmuhs/ccache-action@v1.2.23
         with:
-          key: ccache-${{ matrix.name }}
+          # Built from the matrix fields rather than from the job name, which
+          # holds a comma and cache keys may not.
+          key: ccache-${{ matrix.os }}-${{ matrix.config }}
 
       - name: System dependencies (Linux)
         if: runner.os == 'Linux'

@@ -2,8 +2,13 @@
 
 # Design
 
-What the game is, and the decisions the code answers to. Proper nouns are kept
-in French, they are part of the setting.
+What the game is, and the decisions the code answers to.
+
+Proper nouns are written in French because that is the language they were coined
+in, and they are the canonical name of a thing rather than its final wording.
+The game is meant to be localised, so every one of them is translatable, and no
+string the player reads should ever be written into the code. See
+[Localisation](#localisation).
 
 ## The pitch
 
@@ -13,7 +18,8 @@ the coldness of the second sharpens the first rather than defusing it.
 
 A run goes down through **strates**, each a themed layer with a name of its own:
 le Lazaret de Porcelaine, la Cathédrale Inversée, l'Abattoir Géométrique, le
-Récif de Suif, la Mer de Céruse.
+Récif de Suif, la Mer de Céruse — the Porcelain Lazaret, the Inverted Cathedral,
+the Geometric Slaughterhouse, the Tallow Reef, the Ceruse Sea.
 
 ## The loop
 
@@ -85,6 +91,24 @@ A pattern is composed rather than coded, out of four parameterised pieces:
 
 Described as data and hot-reloaded, so a boss is tuned while it is running.
 Scripting is deliberately left out until data proves insufficient.
+
+## Localisation
+
+The game is localised at the end, which is a decision about the code from the
+start: a string shown to the player is a **key resolved at display time**, never
+a literal sitting in a call to the renderer. Retrofitting that once the text has
+spread through the screens costs far more than carrying it from the beginning.
+
+Two consequences worth stating plainly:
+
+- Proper nouns are content, not identifiers. `strate_porcelain_lazaret` names the
+  thing; what appears on screen is whatever the current language says it is.
+- The identifiers of the engine half of a mercenary file are *not* text and are
+  never translated: `atk_inquisitor_cleaver` is a symbol the code matches on,
+  and it stays in English like the rest of the code.
+
+The current screens still hold their strings inline. That is fine while there
+are three of them, and it is the first thing to fix before there are thirty.
 
 ## What is deliberately not decided
 

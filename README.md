@@ -139,7 +139,8 @@ cmake --build build-doc --target doc
 
 It writes a browsable site to `build-doc/doc/html`, styled with
 [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css). CI
-builds it on every pull request and uploads it as an artifact.
+builds it on every pull request, and publishes it from the default branch to
+[the project pages](https://jfalcou.github.io/arpege/).
 
 Formatting is settled by `.clang-format` and enforced by a hook, installed once
 per clone:
@@ -148,7 +149,7 @@ per clone:
 pre-commit install
 ```
 
-CI builds on Linux, MSVC and MSYS2 UCRT64, in Release and Debug, and runs the
+CI builds on Linux, MSVC and MSYS2 UCRT64, each in Release and Debug, and runs the
 tests, the coverage, the memory check, the documentation and the formatting
 check on every pull request. Compiled objects are cached between runs on the
 jobs built with Ninja, the Visual Studio generator ignoring compiler

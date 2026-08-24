@@ -74,6 +74,13 @@ target_link_libraries(arpg_app PUBLIC arpg_core raylib rlimgui PRIVATE arpg_warn
 add_executable(arpg src/main.cpp)
 target_link_libraries(arpg PRIVATE arpg_app arpg_warnings)
 
+# A MinGW build links the GCC runtime dynamically, so the executable only starts
+# where libgcc, libstdc++ and libwinpthread happen to be on the PATH: it fails
+# on a double click and cannot be handed to anyone. Link them in instead.
+if(WIN32 AND NOT MSVC)
+  target_link_options(arpg PRIVATE -static)
+endif()
+
 # No console window behind the game in Release builds.
 if(WIN32)
   set_target_properties(arpg PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)

@@ -3,6 +3,7 @@
 #include <screens/dungeon_screen.hpp>
 
 #include <core/application.hpp>
+#include <core/events.hpp>
 #include <core/pixel_canvas.hpp>
 #include <core/raylib_input.hpp>
 #include <core/screen_manager.hpp>
@@ -175,14 +176,20 @@ void dungeon_screen::spawn_wave()
     slice = static_cast<std::uint8_t>((slice + 1) % 4);
   }
 
-  m_enemies_at_start = composition.size();
+  m_fight.opened_with = composition.size();
 }
 
-std::size_t dungeon_screen::enemies_left() const
+void dungeon_screen::settle_room()
 {
-  // The archetype is what an enemy is: a corpse is destroyed outright, so
-  // counting the component counts the living.
-  return m_world.view<const enemy_archetype>().size();
+  if (!advance_encounter(m_fight, m_world))
+  {
+    return;
+  }
+
+  const viewport_rect bounds = room();
+  m_exit.centre = vec2{bounds.x + bounds.width * 0.5f, bounds.y + bounds.height * 0.5f};
+
+  ctx().events->trigger(room_cleared{m_fight.opened_with});
 }
 
 bool dungeon_screen::player_alive() const
@@ -282,6 +289,13 @@ void dungeon_screen::update(float dt)
     ctx().screens->pop();
     return;
   }
+
+  settle_room();
+
+  if (m_fight.state == encounter_state::cleared && enter_portal(m_exit, m_world.get<transform>(m_player).position))
+  {
+    ctx().screens->pop();
+  }
 }
 
 void dungeon_screen::render(float alpha)
@@ -299,6 +313,15 @@ void dungeon_screen::render(float alpha)
   // one pixel wide and barely lighter than the background could not be seen.
   DrawRectangleRec(floor, Color{24, 20, 30, 255});
   DrawRectangleLinesEx(floor, 2.0f, Color{86, 72, 102, 255});
+
+  // Drawn before the entities so the player passes over it rather than
+  // disappearing behind it.
+  if (m_fight.state == encounter_state::cleared)
+  {
+    const Vector2 rift = to_raylib(m_exit.centre - origin);
+    DrawCircleV(rift, m_exit.radius, Color{58, 40, 82, 255});
+    DrawCircleV(rift, m_exit.radius * 0.45f, Color{176, 128, 214, 255});
+  }
 
   for (auto [entity, place, shape, side] : m_world.view<const transform, const collider, const team>().each())
   {
@@ -332,13 +355,21 @@ void dungeon_screen::render(float alpha)
     DrawText(TextFormat("HP %d", player_health.current), 4, 4, 10, Color{226, 205, 154, 255});
   }
 
-  const char* tally = TextFormat("%zu / %zu", enemies_left(), m_enemies_at_start);
+  const char* tally = TextFormat("%zu / %zu", enemies_alive(m_world), m_fight.opened_with);
   const int tally_size = 10;
 
   // Right aligned, so the number moving does not shift the whole line.
   DrawText(tally, ctx().canvas->width() - MeasureText(tally, tally_size) - 4, 4, tally_size,
-           (enemies_left() == 0) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
+           (m_fight.state == encounter_state::cleared) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
   DrawText("ESC leave", 4, 166, 10, Color{120, 110, 130, 255});
+
+  if (m_fight.state == encounter_state::cleared)
+  {
+    const char* way_out = "the rift is open";
+    const int hint_size = 10;
+    DrawText(way_out, (ctx().canvas->width() - MeasureText(way_out, hint_size)) / 2, 152, hint_size,
+             Color{176, 128, 214, 255});
+  }
 }
 
 } // namespace arpg

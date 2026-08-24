@@ -51,6 +51,7 @@ arpg_add_test(screen_stack)
 arpg_add_test(camera)
 arpg_add_test(combat)
 arpg_add_test(enemies)
+arpg_add_test(encounter)
 arpg_add_test(rng)
 arpg_add_test(spatial_hash)
 

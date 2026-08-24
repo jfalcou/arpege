@@ -47,6 +47,7 @@ include(documentation)
 # Everything here must stay free of raylib and of any other GUI call, so it can
 # be unit tested without a window, a GPU context or an audio device.
 add_library(arpg_core STATIC
+  src/ecs/encounter.cpp
   src/ecs/enemy.cpp
   src/ecs/spatial_hash.cpp
   src/ecs/systems.cpp

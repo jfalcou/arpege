@@ -312,6 +312,20 @@ TTS_CASE("An enemy that notices the player closes in")
   TTS_EXPECT(world.get<arpg::velocity>(foe).value.x > 0.0f);
 };
 
+TTS_CASE("An enemy that has noticed the player never loses interest")
+{
+  entt::registry world;
+  const entt::entity foe = make_enemy(world, arpg::vec2{0.0f, 0.0f});
+
+  arpg::advance_brains(world, 1.0f / 60.0f, 0, arpg::vec2{50.0f, 0.0f});
+
+  // Far beyond sight: retreating out of view must not put the room back to
+  // sleep, or the player could pick the crowd apart from the doorway.
+  arpg::advance_brains(world, 1.0f / 60.0f, 4, arpg::vec2{500.0f, 0.0f});
+
+  TTS_EQUAL(world.get<arpg::enemy_brain>(foe).state, arpg::enemy_state::chase);
+};
+
 TTS_CASE("An enemy holds position once within reach")
 {
   entt::registry world;

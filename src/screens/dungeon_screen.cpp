@@ -22,7 +22,17 @@ constexpr float player_speed = 70.0f;
 constexpr float focus_speed = 30.0f;
 constexpr float bullet_speed = 220.0f;
 constexpr float fire_interval = 0.12f;
-constexpr float bullet_life = 3.0f;
+constexpr float bullet_life = 1.2f;
+
+/// How far a player shot actually carries. The room is wider than the screen,
+/// so a shot must die around the edge of the view rather than cross the whole
+/// room and kill what the player cannot even see.
+constexpr float player_range = bullet_speed * bullet_life;
+
+/// Every archetype wakes at the same distance, and that distance must stay
+/// above player_range: an enemy the player can already hit but that has not
+/// noticed anything is a free kill, not an encounter.
+constexpr float awareness = player_range + 24.0f;
 
 /// Placeholder roster until archetypes come from data files.
 /// Rushes and hurts by touching. Cheap enough to come in numbers.
@@ -31,7 +41,7 @@ constexpr enemy_archetype parasite{.cost = 5,
                                    .speed = 46.0f,
                                    .radius = 3.0f,
                                    .touch = 1,
-                                   .sight = 110.0f,
+                                   .sight = awareness,
                                    .reach = 10.0f,
                                    .style = attack_style::melee};
 
@@ -39,14 +49,14 @@ constexpr enemy_archetype parasite{.cost = 5,
 /// rather than a crowd to outrun.
 constexpr enemy_archetype cultist{.cost = 10,
                                   .health = 5,
-                                  .speed = 26.0f,
+                                  .speed = 40.0f,
                                   .radius = 6.0f,
                                   .touch = 1,
-                                  .sight = 150.0f,
-                                  .reach = 90.0f,
+                                  .sight = awareness,
+                                  .reach = 120.0f,
                                   .style = attack_style::ranged,
                                   .fire_interval = 1.4f,
-                                  .shot_speed = 62.0f,
+                                  .shot_speed = 78.0f,
                                   .shot_radius = 2.0f,
                                   .shot_damage = 1};
 
@@ -56,7 +66,7 @@ constexpr enemy_archetype brute{.cost = 40,
                                 .speed = 18.0f,
                                 .radius = 10.0f,
                                 .touch = 2,
-                                .sight = 130.0f,
+                                .sight = awareness,
                                 .reach = 16.0f,
                                 .style = attack_style::melee};
 

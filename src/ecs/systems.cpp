@@ -58,20 +58,19 @@ void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 ta
       break;
 
     case enemy_state::chase:
+      // No way back to idle: a room is a fight, and an enemy that has noticed
+      // the player does not forget because the player stepped away.
       if (distance_squared < reach_squared)
       {
         brain.state = enemy_state::attack;
       }
-      else if (distance_squared > sight_squared)
-      {
-        brain.state = enemy_state::idle;
-      }
       break;
 
     case enemy_state::attack:
-      // Backing off only once the player is clearly away, rather than at the
-      // exact edge of reach, or it would swing between the two every round.
-      if (distance_squared > reach_squared * 4.0f)
+      // Backing off at half again the reach rather than at its exact edge, or
+      // the state would swing between the two every round. Any wider and a
+      // shooter would hold still firing shots that fall short.
+      if (distance_squared > reach_squared * 2.25f)
       {
         brain.state = enemy_state::chase;
       }

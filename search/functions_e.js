@@ -7,6 +7,8 @@ var searchData=
   ['request_5fquit_4',['request_quit',['../structarpg_1_1app__context.html#a9b52e85796211b6e4a560e78fc0fd2cc',1,'arpg::app_context']]],
   ['resolve_5',['resolve',['../classarpg_1_1action__map.html#adcf43091821cf0b55b278fbdf02d7a5d',1,'arpg::action_map']]],
   ['resolve_5faim_6',['resolve_aim',['../namespacearpg.html#aae48783c2f7aa3fd58c4ed81761740bb',1,'arpg']]],
-  ['resolve_5fprojectile_5fhits_7',['resolve_projectile_hits',['../namespacearpg.html#abb1a9f9358fdc61b4edd3630c63c5319',1,'arpg']]],
-  ['run_8',['run',['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application']]]
+  ['resolve_5fcontact_5fdamage_7',['resolve_contact_damage',['../namespacearpg.html#aef47d4cba6bb27915229e0303de1d49f',1,'arpg']]],
+  ['resolve_5fprojectile_5fhits_8',['resolve_projectile_hits',['../namespacearpg.html#abb1a9f9358fdc61b4edd3630c63c5319',1,'arpg']]],
+  ['rng_9',['rng',['../classarpg_1_1rng.html#ad450ccad0846691d1e0fa0866cd42ba1',1,'arpg::rng']]],
+  ['run_10',['run',['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application']]]
 ];

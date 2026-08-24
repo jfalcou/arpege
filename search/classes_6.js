@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['lifetime_0',['lifetime',['../structarpg_1_1lifetime.html',1,'arpg']]]
+  ['input_5fsnapshot_0',['input_snapshot',['../structarpg_1_1input__snapshot.html',1,'arpg']]],
+  ['invulnerable_1',['invulnerable',['../structarpg_1_1invulnerable.html',1,'arpg']]]
 ];

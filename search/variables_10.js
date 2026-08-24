@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['up_0',['up',['../structarpg_1_1direction__actions.html#a4b1a631708759fa27a6203246c530056',1,'arpg::direction_actions']]]
+  ['title_0',['title',['../structarpg_1_1app__config.html#ac9b8efe865713b49bef0d0276bc4b749',1,'arpg::app_config']]],
+  ['touch_1',['touch',['../structarpg_1_1enemy__archetype.html#a31506cabf98d81d28fecce1b6838de2c',1,'arpg::enemy_archetype']]]
 ];

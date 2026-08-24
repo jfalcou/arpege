@@ -9,5 +9,6 @@ var searchData=
   ['direction_5factions_6',['direction_actions',['../structarpg_1_1direction__actions.html',1,'arpg']]],
   ['down_7',['down',['../structarpg_1_1direction__actions.html#aef79deeac281bd0589fdd1f804f42df8',1,'arpg::direction_actions::down'],['../structarpg_1_1input__snapshot.html#a578e535d92534b88a6c6626f25fd0204',1,'arpg::input_snapshot::down']]],
   ['dungeon_5fbindings_8',['dungeon_bindings',['../namespacearpg.html#a49c1590ab4f811b34ad7d46d6b737c9d',1,'arpg']]],
-  ['dungeon_5fscreen_9',['dungeon_screen',['../classarpg_1_1dungeon__screen.html',1,'arpg']]]
+  ['dungeon_5fscreen_9',['dungeon_screen',['../classarpg_1_1dungeon__screen.html',1,'arpg']]],
+  ['duration_10',['duration',['../structarpg_1_1invulnerable.html#a205916a2523b9f9ae535c219b3005def',1,'arpg::invulnerable']]]
 ];

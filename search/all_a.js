@@ -6,5 +6,6 @@ var searchData=
   ['length_3',['length',['../namespacearpg.html#a4a6a9bcdafa41e7f863da31bcdb9622b',1,'arpg']]],
   ['length_5fsquared_4',['length_squared',['../namespacearpg.html#a17ef660e29da3bb64496f23fccf95b8d',1,'arpg']]],
   ['license_5',['License',['../index.html#autotoc_md7',1,'']]],
-  ['lifetime_6',['lifetime',['../structarpg_1_1lifetime.html',1,'arpg']]]
+  ['life_6',['life',['../structarpg_1_1shot__recipe.html#a56d63a74bcde1a8358a9fef668cbf782',1,'arpg::shot_recipe']]],
+  ['lifetime_7',['lifetime',['../structarpg_1_1lifetime.html',1,'arpg']]]
 ];

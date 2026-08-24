@@ -62,7 +62,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "action_8hpp_source.html",
-"structarpg_1_1app__context.html"
+"namespacearpg.html#ae99007ddd7095d3cea6e796032fcb43d"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

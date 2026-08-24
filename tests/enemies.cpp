@@ -86,9 +86,13 @@ TTS_CASE("A bigger room is worth more points")
 
 TTS_CASE("A cramped passage is not worth an ambush")
 {
-  // Deliberate rather than a rounding accident: a short link between two rooms
-  // is somewhere to breathe, and stuffing it would leave nowhere to.
-  TTS_EQUAL(arpg::combat_budget(60.0f * 30.0f, 1), 0);
+  // What matters is that nobody is fielded, not the exact figure: a short link
+  // between two rooms is somewhere to breathe, and stuffing it would leave
+  // nowhere to. Asserting the budget itself would break on every retuning.
+  arpg::rng generator(11);
+  const int budget = arpg::combat_budget(60.0f * 30.0f, 1);
+
+  TTS_EQUAL(arpg::compose_wave(budget, catalogue, generator).size(), 0U);
 };
 
 TTS_CASE("The same room is harsher deeper down")

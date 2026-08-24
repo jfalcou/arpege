@@ -267,15 +267,19 @@ void dungeon_screen::update(float dt)
 
 void dungeon_screen::render(float alpha)
 {
-  ClearBackground(Color{10, 8, 14, 255});
+  // Outside the room, so the floor has something to be told apart from.
+  ClearBackground(Color{6, 5, 9, 255});
 
   const vec2 origin = view_origin(m_camera.centre, view());
   const viewport_rect bounds = room();
 
-  // The walls of the room, so it reads as a place rather than a void that
-  // happens to stop.
-  DrawRectangleLines(static_cast<int>(bounds.x - origin.x), static_cast<int>(bounds.y - origin.y),
-                     static_cast<int>(bounds.width), static_cast<int>(bounds.height), Color{40, 34, 48, 255});
+  const Rectangle floor{bounds.x - origin.x, bounds.y - origin.y, bounds.width, bounds.height};
+
+  // Three shades rather than a single outline: the void, the floor standing
+  // out from it, and a wall thick enough to read at this resolution. An edge
+  // one pixel wide and barely lighter than the background could not be seen.
+  DrawRectangleRec(floor, Color{24, 20, 30, 255});
+  DrawRectangleLinesEx(floor, 2.0f, Color{86, 72, 102, 255});
 
   for (auto [entity, place, shape, side] : m_world.view<const transform, const collider, const team>().each())
   {

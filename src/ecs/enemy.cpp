@@ -13,10 +13,10 @@ namespace
 /// Points per pixel of floor.
 ///
 /// Tuned against a room of two screens by two, which is what the camera makes
-/// of one: it should field a dozen enemies, a handful of them shooters. It was
-/// five times this at first, from back when a room was a single screen, and
-/// growing the room quietly quadrupled the budget with it.
-constexpr float points_per_area = 0.00052f;
+/// of one: around thirteen enemies, four of them shooters. Three times this
+/// came from back when a room was a single screen and fielded thirty-four;
+/// half of it left the room too quiet to be a fight.
+constexpr float points_per_area = 0.00087f;
 
 /// Added share per strate, so the same room is harsher further down.
 constexpr float depth_bonus = 0.25f;

@@ -35,8 +35,8 @@ constexpr float player_range = bullet_speed * bullet_life;
 /// noticed anything is a free kill, not an encounter.
 constexpr float awareness = player_range + 24.0f;
 
-/// Where the roster is read from, relative to the executable.
-constexpr const char* roster_path = "assets/data/enemies.lua";
+/// Where the roster is read from, under the asset root.
+constexpr const char* roster_file = "data/enemies.lua";
 
 /// How much larger than the screen a room is, for now. Rooms come from the
 /// generator later and carry their own size.
@@ -68,7 +68,11 @@ void dungeon_screen::on_enter()
 
   // The player's own range is what the roster is checked against: an enemy
   // waking closer than that could never answer.
-  m_roster = load_enemies_from(m_scripts, roster_path, player_range);
+  const std::filesystem::path roster = *ctx().assets / roster_file;
+
+  m_roster = load_enemies_from(m_scripts, roster, player_range);
+  m_data_error = m_roster.error;
+  m_roster_watch = file_watch{roster};
 
   spawn_player();
   spawn_wave();
@@ -173,6 +177,30 @@ void dungeon_screen::purge_enemies()
   m_world.destroy(m_scratch.begin(), m_scratch.end());
 }
 
+void dungeon_screen::reload_roster()
+{
+  enemy_catalogue fresh = load_enemies_from(m_scripts, m_roster_watch.path(), player_range);
+
+  if (!fresh.valid())
+  {
+    // A file caught halfway through an edit must not empty the room: the last
+    // roster that made sense stays in place, and the reason is shown.
+    m_data_error = fresh.error;
+    return;
+  }
+
+  m_roster = std::move(fresh);
+  m_data_error.clear();
+
+  // Re-formed from the same seed, so a changed figure is judged against the
+  // room it was changed for rather than against a new one.
+  purge_enemies();
+  m_generator = rng{m_seed};
+  m_fight = encounter{};
+  m_exit = exit_portal{};
+  spawn_wave();
+}
+
 void dungeon_screen::settle_room()
 {
   if (!advance_encounter(m_fight, m_world))
@@ -255,6 +283,11 @@ void dungeon_screen::update(float dt)
   if (IsKeyPressed(KEY_F9))
   {
     purge_enemies();
+  }
+
+  if (m_roster_watch.poll(dt))
+  {
+    reload_roster();
   }
 
   steer_player();
@@ -366,9 +399,9 @@ void dungeon_screen::render(float alpha)
            (m_fight.state == encounter_state::cleared) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
   DrawText("ESC leave   -   F9 clear", 4, 166, 10, Color{120, 110, 130, 255});
 
-  if (!m_roster.valid())
+  if (!m_data_error.empty())
   {
-    DrawText(m_roster.error.c_str(), 4, 20, 10, Color{214, 118, 168, 255});
+    DrawText(m_data_error.c_str(), 4, 20, 10, Color{214, 118, 168, 255});
   }
 
   if (m_fight.state == encounter_state::cleared)

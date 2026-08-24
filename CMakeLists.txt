@@ -48,6 +48,8 @@ include(documentation)
 # be unit tested without a window, a GPU context or an audio device.
 add_library(arpg_core STATIC
   src/ecs/encounter.cpp
+  src/data/asset_root.cpp
+  src/data/hot_reload.cpp
   src/data/script_host.cpp
   src/data/enemy_data.cpp
   src/ecs/enemy.cpp

@@ -12,6 +12,8 @@
 
 #include <entt/signal/dispatcher.hpp>
 
+#include <filesystem>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -71,6 +73,9 @@ private:
 
   screen_manager m_screens;
   entt::dispatcher m_events;
+
+  /// Outlives the context that points at it.
+  std::filesystem::path m_assets;
 
   raylib_input m_input_source;
   input_snapshot m_input;

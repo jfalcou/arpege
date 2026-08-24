@@ -127,6 +127,18 @@ strike would die without ever noticing. A file with one bad entry loads none of
 it, because half a roster fields a wave nobody designed, and that shows up as a
 strange fight rather than as a message.
 
+Files are watched and **re-read while the game runs**, once a second rather
+than every frame: a file changes when a human saves it. A read that fails
+keeps the last version that made sense and shows the reason on screen, since a
+file caught halfway through an edit would otherwise empty the room. What is
+re-read re-forms the room **from the same seed**, so a changed figure is judged
+against the room it was changed for.
+
+The build mirrors `assets/` next to the executable, and that copy is
+overwritten by the next build. Setting `ARPG_ASSETS` points the game at the
+working copy instead, so the file being tuned live is the one under version
+control.
+
 One roster file holds every archetype while there are a handful of them. Past
 a dozen it becomes one file per enemy under a scanned directory, which changes
 neither the loading API nor its tests: the split is deferred because deferring

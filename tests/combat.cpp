@@ -119,6 +119,71 @@ TTS_CASE("A non projectile stays even when far outside")
   TTS_EXPECT(world.valid(walker));
 };
 
+TTS_CASE("Whatever is confined is held inside the room")
+{
+  entt::registry world;
+  const arpg::viewport_rect room{0.0f, 0.0f, 320.0f, 180.0f};
+
+  const entt::entity strayed = world.create();
+  world.emplace<arpg::transform>(strayed, arpg::vec2{-40.0f, 300.0f}, arpg::vec2{});
+  world.emplace<arpg::collider>(strayed, 6.0f);
+  world.emplace<arpg::confined>(strayed);
+
+  arpg::confine_to_bounds(world, room);
+
+  // The whole circle is held in, not its centre, so nothing sits half buried.
+  const auto& place = world.get<arpg::transform>(strayed);
+  TTS_EQUAL(place.position.x, 6.0f);
+  TTS_EQUAL(place.position.y, 174.0f);
+};
+
+TTS_CASE("Something already inside is left where it is")
+{
+  entt::registry world;
+  const arpg::viewport_rect room{0.0f, 0.0f, 320.0f, 180.0f};
+
+  const entt::entity settled = world.create();
+  world.emplace<arpg::transform>(settled, arpg::vec2{160.0f, 90.0f}, arpg::vec2{});
+  world.emplace<arpg::collider>(settled, 6.0f);
+  world.emplace<arpg::confined>(settled);
+
+  arpg::confine_to_bounds(world, room);
+
+  TTS_EQUAL(world.get<arpg::transform>(settled).position.x, 160.0f);
+  TTS_EQUAL(world.get<arpg::transform>(settled).position.y, 90.0f);
+};
+
+TTS_CASE("A projectile is not held in, it is meant to leave")
+{
+  entt::registry world;
+  const arpg::viewport_rect room{0.0f, 0.0f, 320.0f, 180.0f};
+
+  const entt::entity shot = make_shot(world, arpg::faction::player, arpg::vec2{-40.0f, 90.0f});
+
+  arpg::confine_to_bounds(world, room);
+
+  TTS_EQUAL(world.get<arpg::transform>(shot).position.x, -40.0f);
+};
+
+TTS_CASE("A room narrower than its occupant centres it")
+{
+  entt::registry world;
+
+  // The far edge would land before the near one, and clamping to a reversed
+  // range is undefined.
+  const arpg::viewport_rect cramped{0.0f, 0.0f, 4.0f, 4.0f};
+
+  const entt::entity squeezed = world.create();
+  world.emplace<arpg::transform>(squeezed, arpg::vec2{100.0f, 100.0f}, arpg::vec2{});
+  world.emplace<arpg::collider>(squeezed, 10.0f);
+  world.emplace<arpg::confined>(squeezed);
+
+  arpg::confine_to_bounds(world, cramped);
+
+  TTS_EQUAL(world.get<arpg::transform>(squeezed).position.x, 2.0f);
+  TTS_EQUAL(world.get<arpg::transform>(squeezed).position.y, 2.0f);
+};
+
 TTS_CASE("A shot damages the opposing side and is spent")
 {
   entt::registry world;

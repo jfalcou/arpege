@@ -129,6 +129,23 @@ void despawn_out_of_bounds(entt::registry& world, viewport_rect bounds, float ma
   world.destroy(gone.begin(), gone.end());
 }
 
+void confine_to_bounds(entt::registry& world, viewport_rect bounds)
+{
+  for (auto [entity, place, shape] : world.view<transform, const collider, const confined>().each())
+  {
+    const float left = bounds.x + shape.radius;
+    const float top = bounds.y + shape.radius;
+    const float right = bounds.x + bounds.width - shape.radius;
+    const float bottom = bounds.y + bounds.height - shape.radius;
+
+    // A room narrower than the entity would put the far edge before the near
+    // one; centring is the only sensible answer, and it keeps the clamp from
+    // depending on which axis is applied first.
+    place.position.x = (left <= right) ? std::clamp(place.position.x, left, right) : bounds.x + bounds.width * 0.5f;
+    place.position.y = (top <= bottom) ? std::clamp(place.position.y, top, bottom) : bounds.y + bounds.height * 0.5f;
+  }
+}
+
 void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash)
 {
   hash.clear();

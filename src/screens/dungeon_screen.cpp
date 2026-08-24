@@ -65,6 +65,7 @@ void dungeon_screen::spawn_player()
   m_world.emplace<collider>(m_player, player_hitbox);
   m_world.emplace<team>(m_player, faction::player);
   m_world.emplace<health>(m_player, 3, 3);
+  m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
 }
 
@@ -96,6 +97,7 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<team>(foe, faction::enemy);
     m_world.emplace<health>(foe, kind.health, kind.health);
     m_world.emplace<enemy_archetype>(foe, kind);
+    m_world.emplace<confined>(foe);
 
     // Dealt round-robin so the crowd is spread evenly over the thinking
     // rounds instead of everyone landing in the same one.
@@ -170,6 +172,10 @@ void dungeon_screen::update(float dt)
 
   const pixel_canvas& canvas = *ctx().canvas;
   const viewport_rect room{0.0f, 0.0f, static_cast<float>(canvas.width()), static_cast<float>(canvas.height())};
+
+  // After the motion that may have pushed someone through an edge, and before
+  // the collisions, so nothing is ever resolved against a position outside.
+  confine_to_bounds(m_world, room);
   despawn_out_of_bounds(m_world, room, 16.0f);
 
   rebuild_spatial_hash(m_world, m_hash);

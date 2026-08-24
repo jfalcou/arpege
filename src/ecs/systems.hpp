@@ -29,6 +29,13 @@ void expire_lifetimes(entt::registry& world, float dt);
 /// The margin leaves room for something to be spawned just outside and fly in.
 void despawn_out_of_bounds(entt::registry& world, viewport_rect bounds, float margin);
 
+/// Keeps whatever is marked confined inside @p bounds.
+///
+/// The whole circle is held in, not its centre, so nothing ends up half buried
+/// in a wall. Only the position is corrected: velocity is left alone, so
+/// pushing into an edge slides along it instead of sticking.
+void confine_to_bounds(entt::registry& world, viewport_rect bounds);
+
 /// Refills @p hash with every entity that can be hit.
 ///
 /// Called once per step, before resolving hits, since positions have just

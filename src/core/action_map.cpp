@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "core/action_map.hpp"
+#include <core/action_map.hpp>
 
 #include <algorithm>
 

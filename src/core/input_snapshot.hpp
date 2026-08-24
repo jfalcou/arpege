@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "core/action.hpp"
-#include "core/vec2.hpp"
+#include <core/action.hpp>
+#include <core/vec2.hpp>
 
 #include <algorithm>
 #include <vector>

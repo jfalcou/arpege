@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "screens/main_menu_screen.hpp"
+#include <screens/main_menu_screen.hpp>
 
-#include "core/pixel_canvas.hpp"
-#include "core/raylib_input.hpp"
+#include <core/pixel_canvas.hpp>
+#include <core/raylib_input.hpp>
 
 #include <raylib.h>
 
@@ -37,7 +37,7 @@ void main_menu_screen::update(float dt)
   const pixel_canvas& canvas = *ctx().canvas;
   const float min_x = m_radius;
   const float max_x = static_cast<float>(canvas.width()) - m_radius;
-  const float min_y = static_cast<float>(canvas.height()) * 0.45f;
+  const float min_y = m_radius;
   const float max_y = static_cast<float>(canvas.height()) - m_radius;
 
   m_previous = m_current;

@@ -3,7 +3,7 @@
 #define TTS_MAIN
 #include <tts/tts.hpp>
 
-#include "core/viewport.hpp"
+#include <core/viewport.hpp>
 
 TTS_CASE("Integer scale is the largest factor fitting the window")
 {

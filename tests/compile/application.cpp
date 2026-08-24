@@ -3,11 +3,11 @@
 // Compile test: nothing here is executed. Constructing an application opens a
 // window, so this only ever has to build and link.
 
-#include "core/application.hpp"
-#include "core/app_context.hpp"
-#include "core/pixel_canvas.hpp"
-#include "core/raylib_input.hpp"
-#include "screens/main_menu_screen.hpp"
+#include <core/application.hpp>
+#include <core/app_context.hpp>
+#include <core/pixel_canvas.hpp>
+#include <core/raylib_input.hpp>
+#include <screens/main_menu_screen.hpp>
 
 #include <memory>
 #include <type_traits>

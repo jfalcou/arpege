@@ -3,9 +3,9 @@
 // Compile test: nothing here is executed. Building and linking it is the whole
 // assertion, which is how the GUI layer gets checked at all.
 
-#include "core/screen.hpp"
-#include "core/screen_manager.hpp"
-#include "screens/main_menu_screen.hpp"
+#include <core/screen.hpp>
+#include <core/screen_manager.hpp>
+#include <screens/main_menu_screen.hpp>
 
 #include <memory>
 #include <type_traits>

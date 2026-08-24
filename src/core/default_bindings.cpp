@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "core/default_bindings.hpp"
+#include <core/default_bindings.hpp>
 
 namespace arpg
 {

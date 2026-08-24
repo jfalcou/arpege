@@ -120,6 +120,15 @@ cmake --build build-coverage --target coverage
 
 It prints a summary and writes an HTML report to `build-coverage/coverage`.
 
+Memory checking, on Linux only since it relies on Valgrind:
+
+```sh
+ctest --test-dir build -T MemCheck -LE compile
+```
+
+The compile tests are left out: they run a build command, so there is nothing to
+learn from checking a compiler for leaks. Definite leaks fail the run.
+
 API documentation, which needs Doxygen and optionally Graphviz for the class
 diagrams:
 

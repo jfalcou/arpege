@@ -37,8 +37,9 @@ function(arpg_add_compile_test name)
                    --target compile_${name} --config $<CONFIG>)
 
   # These tests drive the build tree, so they must not run concurrently with
-  # each other.
-  set_tests_properties(compile_${name} PROPERTIES RESOURCE_LOCK arpg_build_tree)
+  # each other. The label lets the memory check skip them: what they run is a
+  # build command, and checking a compiler for leaks means nothing.
+  set_tests_properties(compile_${name} PROPERTIES RESOURCE_LOCK arpg_build_tree LABELS compile)
 endfunction()
 
 arpg_add_test(action_buffer)

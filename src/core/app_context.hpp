@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core/input_snapshot.hpp"
+#include <core/input_snapshot.hpp>
 
 #include <entt/signal/dispatcher.hpp>
 

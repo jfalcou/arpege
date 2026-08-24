@@ -3,7 +3,7 @@
 #define TTS_MAIN
 #include <tts/tts.hpp>
 
-#include "core/screen_manager.hpp"
+#include <core/screen_manager.hpp>
 
 #include <memory>
 #include <string>

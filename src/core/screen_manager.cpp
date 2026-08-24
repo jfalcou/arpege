@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSL-1.0
 
-#include "core/screen_manager.hpp"
+#include <core/screen_manager.hpp>
 
 #include <utility>
 

@@ -160,6 +160,46 @@ jobs:
           path: build/doc/html
           retention-days: 14
 
+  memcheck:
+    name: MemCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: CPM source cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.CPM_SOURCE_CACHE }}
+          key: cpm-memcheck-${{ hashFiles('cmake/dependencies.cmake') }}
+          restore-keys: cpm-memcheck-
+
+      # Valgrind is Linux only, which is why this job has no counterpart on the
+      # other platforms.
+      - name: System dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends valgrind ${{ env.LINUX_PACKAGES }}
+
+      # Debug, so the reports carry line numbers rather than addresses.
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DARPG_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # The compile tests are labelled out: they run a build command, and there
+      # is nothing to learn from checking a compiler for leaks.
+      - name: Check
+        run: ctest --test-dir build -T MemCheck -LE compile --output-on-failure
+
+      - name: Upload the reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: memcheck-reports
+          path: build/Testing
+          retention-days: 14
+
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}

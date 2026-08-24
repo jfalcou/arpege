@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "core/action.hpp"
-#include "core/input_snapshot.hpp"
+#include <core/action.hpp>
+#include <core/input_snapshot.hpp>
 
 #include <bitset>
 #include <vector>

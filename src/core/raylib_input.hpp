@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "core/default_bindings.hpp"
-#include "core/input_snapshot.hpp"
+#include <core/default_bindings.hpp>
+#include <core/input_snapshot.hpp>
 
 #include <vector>
 

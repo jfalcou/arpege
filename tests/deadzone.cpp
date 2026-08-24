@@ -3,7 +3,7 @@
 #define TTS_MAIN
 #include <tts/tts.hpp>
 
-#include "core/deadzone.hpp"
+#include <core/deadzone.hpp>
 
 TTS_CASE("Anything inside the deadzone reads as neutral")
 {

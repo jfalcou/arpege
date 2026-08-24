@@ -17,7 +17,7 @@ constexpr const char* sound_roster = R"(
       touch = 1, sight = 288, reach = 10, style = "melee" },
     { name = "cultist", cost = 10, health = 5, speed = 40, radius = 6,
       touch = 1, sight = 288, reach = 120, style = "ranged",
-      fire_interval = 1.4, shot_speed = 78, shot_radius = 2, shot_damage = 1 },
+      shots = { bullets = 3, arc = 24, interval = 1.4, speed = 78 } },
   }
 )";
 
@@ -41,7 +41,9 @@ TTS_CASE("A roster is read with its names and its figures")
   TTS_EQUAL(roster.names[1], std::string{"cultist"});
   TTS_EQUAL(roster.kinds[1].style, arpg::attack_style::ranged);
   TTS_EQUAL(roster.kinds[1].reach, 120.0f);
-  TTS_EQUAL(roster.kinds[1].shot_speed, 78.0f);
+  TTS_EQUAL(roster.kinds[1].shots.speed, 78.0f);
+  TTS_EQUAL(roster.kinds[1].shots.bullets, 3);
+  TTS_EQUAL(roster.kinds[1].shots.arc, 24.0f);
 }; 
 
 TTS_CASE("A file that is not Lua at all is reported, not guessed at")
@@ -99,6 +101,57 @@ TTS_CASE("A shooter with no way to shoot is refused")
     }
   )", minimum_sight);
 
+  TTS_EXPECT_NOT(roster.valid());
+};
+
+TTS_CASE("A volley is described by a count, an arc and a rotation")
+{
+  arpg::script_host host;
+  const arpg::enemy_catalogue roster = arpg::load_enemies(host, R"(
+    return {
+      { name = "turret", cost = 20, health = 6, speed = 10, radius = 5,
+        touch = 1, sight = 288, reach = 150, style = "ranged",
+        shots = { aim = "fixed", bullets = 8, arc = 360, spin = 11,
+                  interval = 0.8, speed = 50, radius = 2, damage = 1, life = 6 } },
+    }
+  )", minimum_sight);
+
+  TTS_EXPECT(roster.valid()) << roster.error;
+  TTS_EQUAL(roster.kinds[0].shots.aim, arpg::aim_mode::fixed);
+  TTS_EQUAL(roster.kinds[0].shots.bullets, 8);
+  TTS_EQUAL(roster.kinds[0].shots.arc, 360.0f);
+  TTS_EQUAL(roster.kinds[0].shots.spin, 11.0f);
+  TTS_EQUAL(roster.kinds[0].shots.life, 6.0f);
+};
+
+TTS_CASE("An unknown way of aiming is refused")
+{
+  arpg::script_host host;
+  const arpg::enemy_catalogue roster = arpg::load_enemies(host, R"(
+    return {
+      { name = "seer", cost = 20, health = 6, speed = 10, radius = 5,
+        touch = 1, sight = 288, reach = 150, style = "ranged",
+        shots = { aim = "predictive", bullets = 1, interval = 1, speed = 50 } },
+    }
+  )", minimum_sight);
+
+  TTS_EXPECT_NOT(roster.valid());
+};
+
+TTS_CASE("A volley of ten thousand bullets is taken for a typo")
+{
+  arpg::script_host host;
+  const arpg::enemy_catalogue roster = arpg::load_enemies(host, R"(
+    return {
+      { name = "storm", cost = 20, health = 6, speed = 10, radius = 5,
+        touch = 1, sight = 288, reach = 150, style = "ranged",
+        shots = { bullets = 10000, arc = 360, interval = 1, speed = 50 } },
+    }
+  )", minimum_sight);
+
+  // A file that reloads while it is being edited must not put ten thousand
+  // entities in the room: the result would be a freeze rather than a
+  // readable mistake.
   TTS_EXPECT_NOT(roster.valid());
 };
 

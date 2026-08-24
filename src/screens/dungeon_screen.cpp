@@ -146,7 +146,7 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<damage>(foe, kind.touch);
 
     // Staggered, so a wave that spawns together does not fire in one volley.
-    m_world.emplace<weapon>(foe, m_generator.unit() * kind.fire_interval);
+    m_world.emplace<weapon>(foe, m_generator.unit() * kind.shots.interval);
     m_world.emplace<confined>(foe);
 
     // Dealt round-robin so the crowd is spread evenly over the thinking
@@ -296,7 +296,7 @@ void dungeon_screen::update(float dt)
   const vec2 player_at = m_world.get<transform>(m_player).position;
 
   advance_brains(m_world, dt, m_step, player_at);
-  fire_enemy_weapons(m_world, dt, player_at);
+  fire_enemy_weapons(m_world, dt, player_at, m_headings);
   ++m_step;
 
   integrate_motion(m_world, dt);

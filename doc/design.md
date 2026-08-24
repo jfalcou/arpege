@@ -160,12 +160,19 @@ every entity that uses it and must stay trivially copyable.
 
 ## Firing patterns
 
-A pattern is composed rather than coded, out of four parameterised pieces:
+A pattern is composed rather than coded. Aimed shot, fan, circle and spiral
+are not four kinds of volley: they are what falls out of **a count, an arc and
+a rotation per volley**, plus whether the volley points at the player or at a
+heading of its own. One bullet over no arc is an aimed shot; five over forty
+degrees is a fan; eight over a full turn is a circle; one with a rotation is a
+spiral. Naming the four would have meant four code paths that cannot be
+combined, and no way to write the fan that also turns.
 
-- an **emitter**: where it comes from, how often, how many per volley;
-- an **angular distribution**: aimed, fan, circle, spiral;
-- a **bullet behaviour**: speed, acceleration, curve, mid-life change, split;
-- a **temporal modulation**: phases and pauses.
+What remains to come is the rest of the vocabulary:
+
+- an **emitter** that is not the body itself: attached, offset, orbiting;
+- **bullet behaviour**: acceleration, curve, mid-life change, split;
+- **temporal modulation**: phases and pauses.
 
 Described as data and hot-reloaded, so a boss is tuned while it is running.
 Since that data is Lua, a pattern that outgrows a table of parameters becomes a

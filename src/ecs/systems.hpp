@@ -85,7 +85,7 @@ entt::entity spawn_projectile(entt::registry& world, const shot_recipe& recipe);
 ///
 /// @param target what they shoot at, usually the player.
 /// @return how many shots were fired.
-int fire_enemy_weapons(entt::registry& world, float dt, vec2 target);
+int fire_enemy_weapons(entt::registry& world, float dt, vec2 target, std::vector<vec2>& headings);
 
 /// Counts invulnerability down.
 void tick_invulnerability(entt::registry& world, float dt);

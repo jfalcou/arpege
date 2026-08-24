@@ -69,6 +69,9 @@ private:
   /// Reused by the collision pass so querying does not allocate every step.
   std::vector<entt::entity> m_scratch;
 
+  /// Same, for the headings a volley leaves along.
+  std::vector<vec2> m_headings;
+
   float m_fire_cooldown = 0.0f;
 
   /// Outlives every load, since the tables the scripts return borrow it.

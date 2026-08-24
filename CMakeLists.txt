@@ -47,6 +47,8 @@ include(documentation)
 # Everything here must stay free of raylib and of any other GUI call, so it can
 # be unit tested without a window, a GPU context or an audio device.
 add_library(arpg_core STATIC
+  src/ecs/spatial_hash.cpp
+  src/ecs/systems.cpp
   src/core/action_map.cpp
   src/core/action_state.cpp
   src/core/deadzone.cpp
@@ -65,6 +67,7 @@ add_library(arpg_app STATIC
   src/core/application.cpp
   src/core/pixel_canvas.cpp
   src/core/raylib_input.cpp
+  src/screens/dungeon_screen.cpp
   src/screens/main_menu_screen.cpp
 )
 

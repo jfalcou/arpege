@@ -48,6 +48,8 @@ arpg_add_test(bindings)
 arpg_add_test(deadzone)
 arpg_add_test(viewport)
 arpg_add_test(screen_stack)
+arpg_add_test(combat)
+arpg_add_test(spatial_hash)
 
 arpg_add_compile_test(screens)
 arpg_add_compile_test(application)

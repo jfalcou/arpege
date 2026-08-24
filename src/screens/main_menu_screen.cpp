@@ -3,7 +3,11 @@
 #include <screens/main_menu_screen.hpp>
 
 #include <core/pixel_canvas.hpp>
+#include <core/screen_manager.hpp>
+#include <screens/dungeon_screen.hpp>
+
 #include <core/raylib_input.hpp>
+#include <memory>
 
 #include <raylib.h>
 
@@ -31,6 +35,14 @@ void main_menu_screen::update(float dt)
   if (m_actions.consume(action::cancel))
   {
     ctx().request_quit();
+    return;
+  }
+
+  if (m_actions.consume(action::confirm))
+  {
+    // Pushed rather than replacing: the menu stays alive underneath, which is
+    // what leaving the dungeon returns to.
+    ctx().screens->push(std::make_unique<dungeon_screen>());
     return;
   }
 
@@ -71,7 +83,7 @@ void main_menu_screen::render(float alpha)
   DrawText(title, (canvas.width() - MeasureText(title, title_size)) / 2, 34, title_size, Color{226, 205, 154, 255});
 
   const bool on_pad = ctx().input->device == input_device::gamepad;
-  const char* hint = on_pad ? "F1 debug   -   B quit" : "F1 debug   -   ESC quit";
+  const char* hint = on_pad ? "A play   -   B quit" : "ENTER play   -   ESC quit";
   const int hint_size = 10;
   DrawText(hint, (canvas.width() - MeasureText(hint, hint_size)) / 2, 62, hint_size, Color{120, 110, 130, 255});
 

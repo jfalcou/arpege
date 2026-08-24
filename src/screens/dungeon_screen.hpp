@@ -1,0 +1,50 @@
+// SPDX-License-Identifier: BSL-1.0
+
+#pragma once
+
+#include <core/action_map.hpp>
+#include <core/action_state.hpp>
+#include <core/screen.hpp>
+#include <ecs/spatial_hash.hpp>
+
+#include <entt/entity/registry.hpp>
+
+#include <vector>
+
+namespace arpg
+{
+
+/// A room of the dungeon: the player, what shoots at them, and what they shoot.
+///
+/// Owns its world outright. A screen underneath, the strate map or a pause,
+/// keeps its own and is untouched by what happens here.
+class dungeon_screen : public screen
+{
+public:
+  void on_enter() override;
+  void update(float dt) override;
+  void render(float alpha) override;
+
+private:
+  void spawn_player();
+  void spawn_enemies();
+  void steer_player();
+  void fire(float dt);
+
+  entt::registry m_world;
+  entt::entity m_player = entt::null;
+
+  action_map m_bindings;
+  action_state m_actions;
+
+  /// Cells are as wide as the largest collider in play, which is what the grid
+  /// expects to be able to widen a query by a single cell.
+  spatial_hash m_hash{16.0f};
+
+  /// Reused by the collision pass so querying does not allocate every step.
+  std::vector<entt::entity> m_scratch;
+
+  float m_fire_cooldown = 0.0f;
+};
+
+} // namespace arpg

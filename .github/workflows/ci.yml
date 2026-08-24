@@ -89,8 +89,12 @@ jobs:
           retention-days: 14
 
   windows-ucrt64:
-    name: Windows (ucrt64)
+    name: Windows (ucrt64, ${{ matrix.config }})
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Release, Debug]
     defaults:
       run:
         shell: msys2 {0}
@@ -128,13 +132,13 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-ucrt64-${{ github.sha }}
-          restore-keys: ccache-ucrt64-
+          key: ccache-ucrt64-${{ matrix.config }}-${{ github.sha }}
+          restore-keys: ccache-ucrt64-${{ matrix.config }}-
 
       - name: Configure
         run: |
           ccache --zero-stats
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DARPG_BUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
       - name: Build
         run: cmake --build build --parallel
@@ -151,6 +155,8 @@ jobs:
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
 
@@ -181,6 +187,17 @@ jobs:
           name: documentation
           path: build/doc/html
           retention-days: 14
+
+      # Only from the default branch: a pull request builds the site to prove it
+      # still builds, it does not get to publish it. The action force-pushes an
+      # orphan gh-pages branch, so nothing generated ever lands in the history
+      # of the code.
+      - name: Deploy to gh-pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/doc/html
 
   memcheck:
     name: MemCheck
@@ -233,6 +250,12 @@ jobs:
             os: ubuntu-latest
             config: Release
             preset_args: -G Ninja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          # Debug turns the standard library assertions on, which Release never
+          # exercises.
+          - name: Linux (gcc, debug)
+            os: ubuntu-latest
+            config: Debug
+            preset_args: -G Ninja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           - name: Windows (msvc)
             os: windows-latest
             config: Release
@@ -262,7 +285,9 @@ jobs:
         if: runner.os == 'Linux'
         uses: hendrikmuhs/ccache-action@v1.2.23
         with:
-          key: ccache-${{ matrix.name }}
+          # Built from the matrix fields rather than from the job name, which
+          # holds a comma and cache keys may not.
+          key: ccache-${{ matrix.os }}-${{ matrix.config }}
 
       - name: System dependencies (Linux)
         if: runner.os == 'Linux'

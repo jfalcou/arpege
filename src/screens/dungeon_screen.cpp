@@ -25,9 +25,12 @@ constexpr float fire_interval = 0.12f;
 constexpr float bullet_life = 3.0f;
 
 /// Placeholder roster until archetypes come from data files.
-constexpr enemy_archetype parasite{5, 2, 46.0f, 3.0f, 110.0f, 16.0f};
-constexpr enemy_archetype cultist{10, 5, 32.0f, 6.0f, 100.0f, 22.0f};
-constexpr enemy_archetype brute{40, 20, 18.0f, 10.0f, 130.0f, 28.0f};
+constexpr enemy_archetype parasite{
+    .cost = 5, .health = 2, .speed = 46.0f, .radius = 3.0f, .touch = 1, .sight = 110.0f, .reach = 10.0f};
+constexpr enemy_archetype cultist{
+    .cost = 10, .health = 5, .speed = 32.0f, .radius = 6.0f, .touch = 1, .sight = 100.0f, .reach = 14.0f};
+constexpr enemy_archetype brute{
+    .cost = 40, .health = 20, .speed = 18.0f, .radius = 10.0f, .touch = 2, .sight = 130.0f, .reach = 16.0f};
 
 constexpr std::array<enemy_archetype, 3> roster{parasite, cultist, brute};
 
@@ -85,6 +88,7 @@ void dungeon_screen::spawn_player()
   m_world.emplace<collider>(m_player, player_hitbox);
   m_world.emplace<team>(m_player, faction::player);
   m_world.emplace<health>(m_player, 3, 3);
+  m_world.emplace<invulnerable>(m_player);
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
 
@@ -121,6 +125,7 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<team>(foe, faction::enemy);
     m_world.emplace<health>(foe, kind.health, kind.health);
     m_world.emplace<enemy_archetype>(foe, kind);
+    m_world.emplace<damage>(foe, kind.touch);
     m_world.emplace<confined>(foe);
 
     // Dealt round-robin so the crowd is spread evenly over the thinking
@@ -206,8 +211,10 @@ void dungeon_screen::update(float dt)
   m_camera.centre =
       follow_camera(m_camera.centre, m_world.get<transform>(m_player).position, bounds, view(), dt, camera_stiffness);
 
+  tick_invulnerability(m_world, dt);
   rebuild_spatial_hash(m_world, m_hash);
   resolve_projectile_hits(m_world, m_hash, m_scratch);
+  resolve_contact_damage(m_world, m_hash, m_scratch);
 }
 
 void dungeon_screen::render(float alpha)
@@ -231,7 +238,17 @@ void dungeon_screen::render(float alpha)
     // Drawn larger than the collider for everything but the player, whose
     // sprite would otherwise lie about how easy they are to hit.
     const float drawn = m_world.all_of<player_controlled>(entity) ? 4.0f : shape.radius;
-    DrawCircleV(to_raylib(interpolated(place, alpha) - origin), drawn, tint);
+
+    // Blinking while invulnerable: a hit that takes a third of the life bar
+    // must be visible, and the pause it grants has to read as one.
+    const auto* shield = m_world.try_get<invulnerable>(entity);
+    const bool blinking =
+        shield != nullptr && shield->remaining > 0.0f && static_cast<int>(shield->remaining * 20.0f) % 2 == 0;
+
+    if (!blinking)
+    {
+      DrawCircleV(to_raylib(interpolated(place, alpha) - origin), drawn, tint);
+    }
   }
 
   const auto& player_health = m_world.get<health>(m_player);

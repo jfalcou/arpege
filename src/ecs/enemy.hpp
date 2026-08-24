@@ -51,6 +51,9 @@ struct enemy_archetype
   float speed = 30.0f;
   float radius = 6.0f;
 
+  /// What running into the player costs them.
+  int touch = 1;
+
   /// Distance at which it notices the player.
   float sight = 90.0f;
 

@@ -10,9 +10,14 @@
 namespace
 {
 
-constexpr arpg::enemy_archetype parasite{5, 2, 40.0f, 3.0f, 90.0f, 20.0f};
-constexpr arpg::enemy_archetype cultist{10, 5, 30.0f, 6.0f, 90.0f, 24.0f};
-constexpr arpg::enemy_archetype brute{40, 20, 18.0f, 10.0f, 120.0f, 30.0f};
+// Named rather than positional: a field added to the archetype would otherwise
+// slide every value one place along, silently.
+constexpr arpg::enemy_archetype parasite{
+    .cost = 5, .health = 2, .speed = 40.0f, .radius = 3.0f, .touch = 1, .sight = 90.0f, .reach = 20.0f};
+constexpr arpg::enemy_archetype cultist{
+    .cost = 10, .health = 5, .speed = 30.0f, .radius = 6.0f, .touch = 1, .sight = 90.0f, .reach = 24.0f};
+constexpr arpg::enemy_archetype brute{
+    .cost = 40, .health = 20, .speed = 18.0f, .radius = 10.0f, .touch = 2, .sight = 120.0f, .reach = 30.0f};
 
 constexpr std::array<arpg::enemy_archetype, 3> catalogue{parasite, cultist, brute};
 
@@ -105,7 +110,7 @@ TTS_CASE("A free archetype does not compose an endless wave")
 {
   // A cost of zero would be affordable forever and fill the room until memory
   // ran out, so the whole catalogue is refused instead.
-  constexpr std::array<arpg::enemy_archetype, 1> broken{arpg::enemy_archetype{0, 1, 1.0f, 1.0f, 1.0f, 1.0f}};
+  constexpr std::array<arpg::enemy_archetype, 1> broken{arpg::enemy_archetype{.cost = 0}};
 
   arpg::rng generator(3);
   TTS_EQUAL(arpg::compose_wave(500, broken, generator).size(), 0U);

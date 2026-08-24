@@ -46,10 +46,23 @@ struct lifetime
   float remaining = 0.0f;
 };
 
-/// Damage dealt on contact.
+/// Damage dealt on contact, or on impact for a projectile.
 struct damage
 {
   int amount = 1;
+};
+
+/// How long before this can be hurt again, in seconds.
+///
+/// Contact is tested on every simulation step, so without a pause after a hit
+/// standing against an enemy would empty a life bar in a fraction of a second.
+/// The pause is also what makes a hit readable: something has to flash.
+struct invulnerable
+{
+  float remaining = 0.0f;
+
+  /// How long a hit grants. Zero means it can be hurt again immediately.
+  float duration = 0.8f;
 };
 
 /// Who an entity fights for.

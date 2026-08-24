@@ -119,6 +119,143 @@ TTS_CASE("A non projectile stays even when far outside")
   TTS_EXPECT(world.valid(walker));
 };
 
+namespace
+{
+
+/// A body that hurts on contact and survives doing so, unlike a projectile.
+entt::entity make_walker(entt::registry& world, arpg::faction side, arpg::vec2 position, int hurt = 1)
+{
+  const entt::entity walker = world.create();
+  world.emplace<arpg::transform>(walker, position, position);
+  world.emplace<arpg::collider>(walker, 6.0f);
+  world.emplace<arpg::team>(walker, side);
+  world.emplace<arpg::damage>(walker, hurt);
+  return walker;
+}
+
+int touch(entt::registry& world, arpg::spatial_hash& hash)
+{
+  std::vector<entt::entity> scratch;
+  arpg::rebuild_spatial_hash(world, hash);
+  return arpg::resolve_contact_damage(world, hash, scratch);
+}
+
+} // namespace
+
+TTS_CASE("Walking into the opposing side hurts it")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 1);
+  const entt::entity victim = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(victim, 0.0f, 0.8f);
+
+  TTS_EQUAL(touch(world, hash), 1);
+  TTS_EQUAL(world.get<arpg::health>(victim).current, 2);
+};
+
+TTS_CASE("What deals contact damage survives dealing it")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  // A projectile is spent on impact; a body walking into someone is not.
+  const entt::entity walker = make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f});
+  const entt::entity victim = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(victim);
+
+  touch(world, hash);
+
+  TTS_EXPECT(world.valid(walker));
+  TTS_EXPECT(world.valid(victim));
+};
+
+TTS_CASE("A second touch inside the pause is ignored")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 1);
+  const entt::entity victim = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(victim, 0.0f, 0.8f);
+
+  TTS_EQUAL(touch(world, hash), 1);
+
+  // Contact is tested every step: without the pause, standing against an enemy
+  // would empty the bar in a fraction of a second.
+  TTS_EQUAL(touch(world, hash), 0);
+  TTS_EQUAL(touch(world, hash), 0);
+  TTS_EQUAL(world.get<arpg::health>(victim).current, 2);
+};
+
+TTS_CASE("The pause runs out and the next touch lands")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 1);
+  const entt::entity victim = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(victim, 0.0f, 0.8f);
+
+  touch(world, hash);
+  arpg::tick_invulnerability(world, 1.0f);
+
+  TTS_EQUAL(touch(world, hash), 1);
+  TTS_EQUAL(world.get<arpg::health>(victim).current, 1);
+};
+
+TTS_CASE("Invulnerability never counts below zero")
+{
+  entt::registry world;
+  const entt::entity guarded = world.create();
+  world.emplace<arpg::invulnerable>(guarded, 0.2f, 0.8f);
+
+  arpg::tick_invulnerability(world, 5.0f);
+
+  TTS_EQUAL(world.get<arpg::invulnerable>(guarded).remaining, 0.0f);
+};
+
+TTS_CASE("Contact spares its own side")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f});
+  const entt::entity ally = make_target(world, arpg::faction::enemy, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(ally);
+
+  TTS_EQUAL(touch(world, hash), 0);
+  TTS_EQUAL(world.get<arpg::health>(ally).current, 3);
+};
+
+TTS_CASE("Contact kills what it empties")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 5);
+  const entt::entity victim = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(victim);
+
+  TTS_EQUAL(touch(world, hash), 1);
+  TTS_EXPECT_NOT(world.valid(victim));
+};
+
+TTS_CASE("Something without invulnerability is still only hurt once per step")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  // No pause at all: it must still take one hit per step rather than one per
+  // toucher standing on it.
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 1);
+  const entt::entity victim = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 10);
+
+  TTS_EQUAL(touch(world, hash), 1);
+  TTS_EQUAL(world.get<arpg::health>(victim).current, 9);
+};
+
 TTS_CASE("Whatever is confined is held inside the room")
 {
   entt::registry world;

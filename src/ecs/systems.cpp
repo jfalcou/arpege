@@ -160,6 +160,86 @@ void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash)
   }
 }
 
+void tick_invulnerability(entt::registry& world, float dt)
+{
+  for (auto [entity, shield] : world.view<invulnerable>().each())
+  {
+    shield.remaining = std::max(0.0f, shield.remaining - dt);
+  }
+}
+
+int resolve_contact_damage(entt::registry& world, const spatial_hash& hash, std::vector<entt::entity>& scratch)
+{
+  std::vector<entt::entity> slain;
+  int hits = 0;
+
+  // Whatever deals contact damage and is not a projectile: an enemy body,
+  // later a hazard on the floor. A projectile is spent on impact and is
+  // resolved elsewhere.
+  for (auto [toucher, place, shape, side, hurt] :
+       world.view<const transform, const collider, const team, const damage>(entt::exclude<projectile>).each())
+  {
+    hash.query(place.position, shape.radius + hash.cell_size(), scratch);
+
+    for (const entt::entity target : scratch)
+    {
+      if (target == toucher || !world.all_of<transform, collider, team, health>(target))
+      {
+        continue;
+      }
+
+      if (world.get<team>(target).side == side.side)
+      {
+        continue;
+      }
+
+      auto* shield = world.try_get<invulnerable>(target);
+
+      if (shield != nullptr && shield->remaining > 0.0f)
+      {
+        continue;
+      }
+
+      auto& hurt_target = world.get<health>(target);
+
+      if (hurt_target.current <= 0)
+      {
+        continue;
+      }
+
+      const float reach = shape.radius + world.get<collider>(target).radius;
+
+      if (length_squared(world.get<transform>(target).position - place.position) > reach * reach)
+      {
+        continue;
+      }
+
+      hurt_target.current -= hurt.amount;
+      ++hits;
+
+      if (shield != nullptr)
+      {
+        shield->remaining = shield->duration;
+      }
+
+      if (hurt_target.current <= 0)
+      {
+        slain.push_back(target);
+      }
+
+      // One body can only press against one target at a time, and stopping
+      // here keeps a crowd from being mown down by a single walker.
+      break;
+    }
+  }
+
+  std::sort(slain.begin(), slain.end());
+  slain.erase(std::unique(slain.begin(), slain.end()), slain.end());
+
+  world.destroy(slain.begin(), slain.end());
+  return hits;
+}
+
 int resolve_projectile_hits(entt::registry& world, const spatial_hash& hash, std::vector<entt::entity>& scratch)
 {
   std::vector<entt::entity> spent;

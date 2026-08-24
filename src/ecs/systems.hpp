@@ -52,6 +52,20 @@ void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash);
 /// @param target where the player is
 void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 target);
 
+/// Counts invulnerability down.
+void tick_invulnerability(entt::registry& world, float dt);
+
+/// Applies contact damage between opposing sides.
+///
+/// Unlike a projectile, whatever deals the damage survives it: an enemy walking
+/// into the player keeps walking. A target still inside its invulnerability is
+/// passed over, which is what stops contact from draining a life bar at sixty
+/// steps a second.
+///
+/// @param scratch reused between calls so querying does not allocate.
+/// @return how many hits landed.
+int resolve_contact_damage(entt::registry& world, const spatial_hash& hash, std::vector<entt::entity>& scratch);
+
 /// Applies projectile damage to the opposing side.
 ///
 /// Only opposing sides are tested, which is what keeps bullet against bullet

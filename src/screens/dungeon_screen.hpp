@@ -41,6 +41,9 @@ private:
   /// like any other, so everything reaching for it has to ask first.
   bool player_alive() const;
 
+  /// How many enemies are still standing.
+  std::size_t enemies_left() const;
+
   void steer_player();
   void fire(float dt);
 
@@ -58,6 +61,9 @@ private:
   std::vector<entt::entity> m_scratch;
 
   float m_fire_cooldown = 0.0f;
+
+  /// How many the room opened with, so what is left can be counted against it.
+  std::size_t m_enemies_at_start = 0;
 
   /// Counted per simulation step, so the enemies can take turns thinking.
   std::uint64_t m_step = 0;

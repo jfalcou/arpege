@@ -164,6 +164,15 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<enemy_brain>(foe, enemy_state::idle, 0.0f, slice);
     slice = static_cast<std::uint8_t>((slice + 1) % 4);
   }
+
+  m_enemies_at_start = composition.size();
+}
+
+std::size_t dungeon_screen::enemies_left() const
+{
+  // The archetype is what an enemy is: a corpse is destroyed outright, so
+  // counting the component counts the living.
+  return m_world.view<const enemy_archetype>().size();
 }
 
 bool dungeon_screen::player_alive() const
@@ -312,6 +321,13 @@ void dungeon_screen::render(float alpha)
     const auto& player_health = m_world.get<health>(m_player);
     DrawText(TextFormat("HP %d", player_health.current), 4, 4, 10, Color{226, 205, 154, 255});
   }
+
+  const char* tally = TextFormat("%zu / %zu", enemies_left(), m_enemies_at_start);
+  const int tally_size = 10;
+
+  // Right aligned, so the number moving does not shift the whole line.
+  DrawText(tally, ctx().canvas->width() - MeasureText(tally, tally_size) - 4, 4, tally_size,
+           (enemies_left() == 0) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
   DrawText("ESC leave", 4, 166, 10, Color{120, 110, 130, 255});
 }
 

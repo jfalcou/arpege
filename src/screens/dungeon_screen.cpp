@@ -10,6 +10,8 @@
 
 #include <raylib.h>
 
+#include <array>
+
 namespace arpg
 {
 
@@ -21,6 +23,13 @@ constexpr float focus_speed = 30.0f;
 constexpr float bullet_speed = 220.0f;
 constexpr float fire_interval = 0.12f;
 constexpr float bullet_life = 3.0f;
+
+/// Placeholder roster until archetypes come from data files.
+constexpr enemy_archetype parasite{5, 2, 46.0f, 3.0f, 110.0f, 16.0f};
+constexpr enemy_archetype cultist{10, 5, 32.0f, 6.0f, 100.0f, 22.0f};
+constexpr enemy_archetype brute{40, 20, 18.0f, 10.0f, 130.0f, 28.0f};
+
+constexpr std::array<enemy_archetype, 3> roster{parasite, cultist, brute};
 
 /// A few pixels, far smaller than the sprite: the player must be able to thread
 /// a wall of bullets that visually looks impassable.
@@ -42,7 +51,7 @@ void dungeon_screen::on_enter()
 {
   m_bindings = dungeon_bindings(raylib_input::codes());
   spawn_player();
-  spawn_enemies();
+  spawn_wave();
 }
 
 void dungeon_screen::spawn_player()
@@ -59,22 +68,39 @@ void dungeon_screen::spawn_player()
   m_world.emplace<player_controlled>(m_player);
 }
 
-void dungeon_screen::spawn_enemies()
+void dungeon_screen::spawn_wave()
 {
   const pixel_canvas& canvas = *ctx().canvas;
   const float width = static_cast<float>(canvas.width());
+  const float height = static_cast<float>(canvas.height());
 
-  // Placeholders until the wave budget exists: enough to shoot at and to see
-  // hits register.
-  for (int i = 0; i < 4; ++i)
+  // The room pays for its own enemies: what fits in the budget is what shows
+  // up, so a bigger room is dangerous in proportion rather than by luck.
+  const int budget = combat_budget(width * height, 1);
+  const auto composition = compose_wave(budget, roster, m_generator);
+
+  std::uint8_t slice = 0;
+
+  for (const std::size_t index : composition)
   {
-    const vec2 spot{width * (0.2f + 0.2f * static_cast<float>(i)), 40.0f};
+    const enemy_archetype& kind = roster[index];
+
+    // Spawned across the upper half, away from where the player starts.
+    const vec2 spot{m_generator.unit() * (width - 2.0f * kind.radius) + kind.radius,
+                    m_generator.unit() * height * 0.45f + kind.radius};
 
     const entt::entity foe = m_world.create();
     m_world.emplace<transform>(foe, spot, spot);
-    m_world.emplace<collider>(foe, 6.0f);
+    m_world.emplace<velocity>(foe);
+    m_world.emplace<collider>(foe, kind.radius);
     m_world.emplace<team>(foe, faction::enemy);
-    m_world.emplace<health>(foe, 5, 5);
+    m_world.emplace<health>(foe, kind.health, kind.health);
+    m_world.emplace<enemy_archetype>(foe, kind);
+
+    // Dealt round-robin so the crowd is spread evenly over the thinking
+    // rounds instead of everyone landing in the same one.
+    m_world.emplace<enemy_brain>(foe, enemy_state::idle, 0.0f, slice);
+    slice = static_cast<std::uint8_t>((slice + 1) % 4);
   }
 }
 
@@ -135,6 +161,9 @@ void dungeon_screen::update(float dt)
 
   steer_player();
   fire(dt);
+
+  advance_brains(m_world, dt, m_step, m_world.get<transform>(m_player).position);
+  ++m_step;
 
   integrate_motion(m_world, dt);
   expire_lifetimes(m_world, dt);

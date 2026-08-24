@@ -17,6 +17,79 @@ void integrate_motion(entt::registry& world, float dt)
   }
 }
 
+namespace
+{
+
+/// How many steps a full round of thinking is spread over.
+constexpr std::uint64_t thinking_slices = 4;
+
+} // namespace
+
+void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 target)
+{
+  for (auto [entity, brain, place, speed, kind] :
+       world.view<enemy_brain, const transform, velocity, const enemy_archetype>().each())
+  {
+    // Time passes for everyone, whether or not it is their turn to think.
+    brain.state_timer += dt;
+
+    if (step % thinking_slices != brain.slice % thinking_slices)
+    {
+      continue;
+    }
+
+    const vec2 towards = target - place.position;
+    const float distance_squared = length_squared(towards);
+    const float sight_squared = kind.sight * kind.sight;
+    const float reach_squared = kind.reach * kind.reach;
+
+    const enemy_state previous = brain.state;
+
+    // Deciding first and acting after, rather than both at once: an enemy that
+    // switches state here must move like its new state on this very step, not
+    // keep the velocity of the one it just left for a whole round of thinking.
+    switch (brain.state)
+    {
+    case enemy_state::idle:
+      if (distance_squared < sight_squared)
+      {
+        brain.state = enemy_state::chase;
+      }
+      break;
+
+    case enemy_state::chase:
+      if (distance_squared < reach_squared)
+      {
+        brain.state = enemy_state::attack;
+      }
+      else if (distance_squared > sight_squared)
+      {
+        brain.state = enemy_state::idle;
+      }
+      break;
+
+    case enemy_state::attack:
+      // Backing off only once the player is clearly away, rather than at the
+      // exact edge of reach, or it would swing between the two every round.
+      if (distance_squared > reach_squared * 4.0f)
+      {
+        brain.state = enemy_state::chase;
+      }
+      break;
+
+    case enemy_state::count:
+      break;
+    }
+
+    speed.value = (brain.state == enemy_state::chase) ? normalized(towards) * kind.speed : vec2{};
+
+    if (brain.state != previous)
+    {
+      brain.state_timer = 0.0f;
+    }
+  }
+}
+
 void expire_lifetimes(entt::registry& world, float dt)
 {
   std::vector<entt::entity> expired;

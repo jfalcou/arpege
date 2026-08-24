@@ -92,6 +92,26 @@ A pattern is composed rather than coded, out of four parameterised pieces:
 Described as data and hot-reloaded, so a boss is tuned while it is running.
 Scripting is deliberately left out until data proves insufficient.
 
+## Determinism
+
+A run carries a **seed**, and the same seed must give the same run: it is what
+makes daily runs possible, lets a player share a route, and turns a bug report
+into something reproducible.
+
+That rules out the distributions of the standard library. The engines there are
+specified, but `std::uniform_int_distribution` is not: identical seeds produce
+different numbers on different implementations, so a shared seed would name a
+different level depending on who built the game. The generator and its bounded
+draw are therefore written out, and a test pins the exact stream so a change to
+the algorithm cannot slip through unnoticed.
+
+Two sources of randomness, kept apart:
+
+- **content**, drawn from the seeded generator: layout, wave composition, spawn
+  positions, loot. It must replay.
+- **cosmetic**, free to use anything: particles, screen shake, pitch variation.
+  Nobody can tell whether two runs shook the screen the same way.
+
 ## Localisation
 
 The game is localised at the end, which is a decision about the code from the

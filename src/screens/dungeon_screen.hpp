@@ -4,7 +4,9 @@
 
 #include <core/action_map.hpp>
 #include <core/action_state.hpp>
+#include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
 
 #include <entt/entity/registry.hpp>
@@ -27,7 +29,7 @@ public:
 
 private:
   void spawn_player();
-  void spawn_enemies();
+  void spawn_wave();
   void steer_player();
   void fire(float dt);
 
@@ -45,6 +47,12 @@ private:
   std::vector<entt::entity> m_scratch;
 
   float m_fire_cooldown = 0.0f;
+
+  /// Counted per simulation step, so the enemies can take turns thinking.
+  std::uint64_t m_step = 0;
+
+  /// Seeded per room. Everything that must replay identically draws from here.
+  rng m_generator{1};
 };
 
 } // namespace arpg

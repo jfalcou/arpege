@@ -4,6 +4,7 @@
 
 #include <core/viewport.hpp>
 #include <ecs/components.hpp>
+#include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
 
 #include <entt/entity/registry.hpp>
@@ -33,6 +34,16 @@ void despawn_out_of_bounds(entt::registry& world, viewport_rect bounds, float ma
 /// Called once per step, before resolving hits, since positions have just
 /// moved and last step's cells no longer mean anything.
 void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash);
+
+/// Advances the enemies: notice the player, close in, hold at reach.
+///
+/// Only a quarter of them reconsider on any given step, chosen by their slice
+/// against @p step. The rest keep the velocity they were given, which is
+/// indistinguishable on screen and divides the cost by four.
+///
+/// @param step a counter increased once per simulation step
+/// @param target where the player is
+void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 target);
 
 /// Applies projectile damage to the opposing side.
 ///

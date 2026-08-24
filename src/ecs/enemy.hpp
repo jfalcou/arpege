@@ -41,6 +41,17 @@ struct enemy_brain
   std::uint8_t slice = 0;
 };
 
+/// How an archetype fights, which decides how close it wants to be.
+enum class attack_style : std::uint8_t
+{
+  /// Hurts by touching, so it closes all the way in.
+  melee,
+
+  /// Shoots from a distance and holds there. Closing in would put it in reach
+  /// of a weapon it does not have.
+  ranged
+};
+
 /// A kind of enemy, and what one costs to field.
 struct enemy_archetype
 {
@@ -57,8 +68,18 @@ struct enemy_archetype
   /// Distance at which it notices the player.
   float sight = 90.0f;
 
-  /// Distance at which it stops closing in.
+  /// Distance at which it stops closing in. Short for a body that hurts on
+  /// contact, long for something that shoots.
   float reach = 24.0f;
+
+  attack_style style = attack_style::melee;
+
+  /// Seconds between shots. Ignored by a melee archetype.
+  float fire_interval = 1.2f;
+
+  float shot_speed = 70.0f;
+  float shot_radius = 2.0f;
+  int shot_damage = 1;
 };
 
 /// Points a room is worth spending on enemies.

@@ -19,6 +19,19 @@ constexpr arpg::enemy_archetype cultist{
 constexpr arpg::enemy_archetype brute{
     .cost = 40, .health = 20, .speed = 18.0f, .radius = 10.0f, .touch = 2, .sight = 120.0f, .reach = 30.0f};
 
+constexpr arpg::enemy_archetype shooter{.cost = 10,
+                                        .health = 5,
+                                        .speed = 20.0f,
+                                        .radius = 6.0f,
+                                        .touch = 1,
+                                        .sight = 200.0f,
+                                        .reach = 100.0f,
+                                        .style = arpg::attack_style::ranged,
+                                        .fire_interval = 1.0f,
+                                        .shot_speed = 60.0f,
+                                        .shot_radius = 2.0f,
+                                        .shot_damage = 1};
+
 constexpr std::array<arpg::enemy_archetype, 3> catalogue{parasite, cultist, brute};
 
 /// Spawns an enemy that thinks on every step, so a test does not have to
@@ -34,6 +47,20 @@ entt::entity make_enemy(entt::registry& world, arpg::vec2 position, const arpg::
   world.emplace<arpg::enemy_archetype>(foe, kind);
   world.emplace<arpg::enemy_brain>(foe);
   return foe;
+}
+
+/// Spawns something that shoots and is already holding at range.
+entt::entity make_shooter(entt::registry& world, arpg::vec2 position, float cooldown = 0.0f)
+{
+  const entt::entity foe = make_enemy(world, position, shooter);
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::attack;
+  world.emplace<arpg::weapon>(foe, cooldown);
+  return foe;
+}
+
+std::size_t count_shots(const entt::registry& world)
+{
+  return world.view<const arpg::projectile>().size();
 }
 
 int total_cost(const std::vector<std::size_t>& picked)
@@ -122,6 +149,134 @@ TTS_CASE("The same seed composes the same wave")
   arpg::rng second(4242);
 
   TTS_EQUAL(arpg::compose_wave(150, catalogue, first), arpg::compose_wave(150, catalogue, second));
+};
+
+TTS_CASE("Something holding at range fires")
+{
+  entt::registry world;
+  const entt::entity foe = make_shooter(world, arpg::vec2{0.0f, 0.0f});
+
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f / 60.0f, arpg::vec2{80.0f, 0.0f}), 1);
+  TTS_EQUAL(count_shots(world), 1U);
+
+  // The shot belongs to whoever fired it, or it would hurt its own side.
+  const auto shots = world.view<const arpg::projectile, const arpg::team>();
+  for (const entt::entity shot : shots)
+  {
+    TTS_EQUAL(shots.get<const arpg::team>(shot).side, arpg::faction::enemy);
+  }
+
+  TTS_EXPECT(world.valid(foe));
+};
+
+TTS_CASE("A shot leaves along the line to its target")
+{
+  entt::registry world;
+  make_shooter(world, arpg::vec2{0.0f, 0.0f});
+
+  arpg::fire_enemy_weapons(world, 1.0f / 60.0f, arpg::vec2{100.0f, 0.0f});
+
+  const auto shots = world.view<const arpg::velocity, const arpg::projectile>();
+  for (const entt::entity shot : shots)
+  {
+    TTS_EXPECT(shots.get<const arpg::velocity>(shot).value.x > 0.0f);
+  }
+};
+
+TTS_CASE("A shot starts clear of the body that fired it")
+{
+  entt::registry world;
+  make_shooter(world, arpg::vec2{0.0f, 0.0f});
+
+  arpg::fire_enemy_weapons(world, 1.0f / 60.0f, arpg::vec2{100.0f, 0.0f});
+
+  // Spawned at the centre, a wide enemy would put the shot inside itself.
+  const auto shots = world.view<const arpg::transform, const arpg::projectile>();
+  for (const entt::entity shot : shots)
+  {
+    TTS_EXPECT(shots.get<const arpg::transform>(shot).position.x >= shooter.radius);
+  }
+};
+
+TTS_CASE("A melee archetype never fires")
+{
+  entt::registry world;
+  const entt::entity foe = make_enemy(world, arpg::vec2{0.0f, 0.0f}, brute);
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::attack;
+  world.emplace<arpg::weapon>(foe);
+
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f, arpg::vec2{20.0f, 0.0f}), 0);
+  TTS_EQUAL(count_shots(world), 0U);
+};
+
+TTS_CASE("Nothing fires while still closing in")
+{
+  entt::registry world;
+  const entt::entity foe = make_shooter(world, arpg::vec2{0.0f, 0.0f});
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::chase;
+
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f, arpg::vec2{80.0f, 0.0f}), 0);
+};
+
+TTS_CASE("Nothing fires while it has not noticed anyone")
+{
+  entt::registry world;
+  const entt::entity foe = make_shooter(world, arpg::vec2{0.0f, 0.0f});
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::idle;
+
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f, arpg::vec2{80.0f, 0.0f}), 0);
+};
+
+TTS_CASE("Firing waits out its interval")
+{
+  entt::registry world;
+  make_shooter(world, arpg::vec2{0.0f, 0.0f});
+  const arpg::vec2 target{80.0f, 0.0f};
+
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f / 60.0f, target), 1);
+
+  // Called sixty times a second: without the interval a shooter would empty a
+  // wall of bullets in one second.
+  for (int i = 0; i < 30; ++i)
+  {
+    TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f / 60.0f, target), 0);
+  }
+
+  TTS_EQUAL(count_shots(world), 1U);
+};
+
+TTS_CASE("The interval runs out and it fires again")
+{
+  entt::registry world;
+  make_shooter(world, arpg::vec2{0.0f, 0.0f});
+  const arpg::vec2 target{80.0f, 0.0f};
+
+  arpg::fire_enemy_weapons(world, 1.0f / 60.0f, target);
+  arpg::fire_enemy_weapons(world, 2.0f, target);
+
+  TTS_EQUAL(count_shots(world), 2U);
+};
+
+TTS_CASE("A staggered cooldown holds fire until it expires")
+{
+  entt::registry world;
+
+  // Spawning a wave together would have it fire in one volley, so each one
+  // starts somewhere inside its interval.
+  make_shooter(world, arpg::vec2{0.0f, 0.0f}, 0.5f);
+
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f / 60.0f, arpg::vec2{80.0f, 0.0f}), 0);
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f, arpg::vec2{80.0f, 0.0f}), 1);
+};
+
+TTS_CASE("Standing exactly on the target does not fire a shot going nowhere")
+{
+  entt::registry world;
+  make_shooter(world, arpg::vec2{40.0f, 40.0f});
+
+  // No direction to fire along; a shot with no heading would sit on the muzzle
+  // hurting whatever walked into it.
+  TTS_EQUAL(arpg::fire_enemy_weapons(world, 1.0f, arpg::vec2{40.0f, 40.0f}), 0);
 };
 
 TTS_CASE("An enemy ignores a player it cannot see")

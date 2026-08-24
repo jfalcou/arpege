@@ -25,12 +25,40 @@ constexpr float fire_interval = 0.12f;
 constexpr float bullet_life = 3.0f;
 
 /// Placeholder roster until archetypes come from data files.
-constexpr enemy_archetype parasite{
-    .cost = 5, .health = 2, .speed = 46.0f, .radius = 3.0f, .touch = 1, .sight = 110.0f, .reach = 10.0f};
-constexpr enemy_archetype cultist{
-    .cost = 10, .health = 5, .speed = 32.0f, .radius = 6.0f, .touch = 1, .sight = 100.0f, .reach = 14.0f};
-constexpr enemy_archetype brute{
-    .cost = 40, .health = 20, .speed = 18.0f, .radius = 10.0f, .touch = 2, .sight = 130.0f, .reach = 16.0f};
+/// Rushes and hurts by touching. Cheap enough to come in numbers.
+constexpr enemy_archetype parasite{.cost = 5,
+                                   .health = 2,
+                                   .speed = 46.0f,
+                                   .radius = 3.0f,
+                                   .touch = 1,
+                                   .sight = 110.0f,
+                                   .reach = 10.0f,
+                                   .style = attack_style::melee};
+
+/// Holds at a distance and shoots, which is what makes the room a bullet hell
+/// rather than a crowd to outrun.
+constexpr enemy_archetype cultist{.cost = 10,
+                                  .health = 5,
+                                  .speed = 26.0f,
+                                  .radius = 6.0f,
+                                  .touch = 1,
+                                  .sight = 150.0f,
+                                  .reach = 90.0f,
+                                  .style = attack_style::ranged,
+                                  .fire_interval = 1.4f,
+                                  .shot_speed = 62.0f,
+                                  .shot_radius = 2.0f,
+                                  .shot_damage = 1};
+
+/// Slow, heavy, and dangerous only up close.
+constexpr enemy_archetype brute{.cost = 40,
+                                .health = 20,
+                                .speed = 18.0f,
+                                .radius = 10.0f,
+                                .touch = 2,
+                                .sight = 130.0f,
+                                .reach = 16.0f,
+                                .style = attack_style::melee};
 
 constexpr std::array<enemy_archetype, 3> roster{parasite, cultist, brute};
 
@@ -126,6 +154,9 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<health>(foe, kind.health, kind.health);
     m_world.emplace<enemy_archetype>(foe, kind);
     m_world.emplace<damage>(foe, kind.touch);
+
+    // Staggered, so a wave that spawns together does not fire in one volley.
+    m_world.emplace<weapon>(foe, m_generator.unit() * kind.fire_interval);
     m_world.emplace<confined>(foe);
 
     // Dealt round-robin so the crowd is spread evenly over the thinking
@@ -200,7 +231,10 @@ void dungeon_screen::update(float dt)
   steer_player();
   fire(dt);
 
-  advance_brains(m_world, dt, m_step, m_world.get<transform>(m_player).position);
+  const vec2 player_at = m_world.get<transform>(m_player).position;
+
+  advance_brains(m_world, dt, m_step, player_at);
+  fire_enemy_weapons(m_world, dt, player_at);
   ++m_step;
 
   integrate_motion(m_world, dt);
@@ -246,8 +280,12 @@ void dungeon_screen::render(float alpha)
   for (auto [entity, place, shape, side] : m_world.view<const transform, const collider, const team>().each())
   {
     const bool is_shot = m_world.all_of<projectile>(entity);
-    const Color tint = (side.side == faction::player) ? (is_shot ? Color{226, 205, 154, 255} : Color{198, 88, 78, 255})
-                                                      : Color{92, 148, 138, 255};
+
+    // An incoming shot has to be told apart from the enemy that fired it at a
+    // glance, which is most of what makes a wall of bullets readable.
+    const Color tint = (side.side == faction::player)
+                           ? (is_shot ? Color{226, 205, 154, 255} : Color{198, 88, 78, 255})
+                           : (is_shot ? Color{214, 118, 168, 255} : Color{92, 148, 138, 255});
 
     // Drawn larger than the collider for everything but the player, whose
     // sprite would otherwise lie about how easy they are to hit.

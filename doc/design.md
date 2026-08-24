@@ -97,6 +97,12 @@ archetype costs points: a swarm parasite is cheap, an armoured brute is not. The
 budget composes the waves, so a procedurally generated room stays calibrated
 without a hand-written script.
 
+An archetype either **closes in and hurts by touching**, or **holds at a
+distance and shoots**. That single choice decides how close it wants to be, so a
+shooter that walked all the way in would end up in reach of a weapon it does not
+have, and a body that stopped short would never reach anyone. The shooters are
+what make a room a bullet hell rather than a crowd to outrun.
+
 Behaviour is a flat state machine over contiguous data, never a hierarchy of
 classes behind virtual calls. Heavy thinking is **spread across frames**: a
 quarter of the enemies reconsider on any given step, the rest keep their

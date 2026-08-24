@@ -52,6 +52,41 @@ void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash);
 /// @param target where the player is
 void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 target);
 
+/// Everything needed to put a shot into the world.
+///
+/// Shared by whoever fires, so the player and an enemy spawn projectiles the
+/// same way and a change to what a bullet is only has to be made once.
+struct shot_recipe
+{
+  vec2 from{};
+
+  /// Where it goes. Normalised by the caller, who knows what it is aiming at.
+  vec2 heading{};
+
+  float speed = 100.0f;
+  float radius = 2.0f;
+  int hurt = 1;
+
+  /// Seconds before it gives up, so a shot that hits nothing cannot outlive
+  /// the room.
+  float life = 3.0f;
+
+  faction side = faction::enemy;
+};
+
+/// Puts a shot into the world.
+entt::entity spawn_projectile(entt::registry& world, const shot_recipe& recipe);
+
+/// Fires the enemies that are holding at range.
+///
+/// Only those in their attack state and carrying a ranged archetype: a melee
+/// body has no weapon to speak of, and one still closing in is not yet in
+/// position.
+///
+/// @param target what they shoot at, usually the player.
+/// @return how many shots were fired.
+int fire_enemy_weapons(entt::registry& world, float dt, vec2 target);
+
 /// Counts invulnerability down.
 void tick_invulnerability(entt::registry& world, float dt);
 

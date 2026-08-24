@@ -160,6 +160,66 @@ void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash)
   }
 }
 
+entt::entity spawn_projectile(entt::registry& world, const shot_recipe& recipe)
+{
+  const entt::entity shot = world.create();
+
+  world.emplace<transform>(shot, recipe.from, recipe.from);
+  world.emplace<velocity>(shot, recipe.heading * recipe.speed);
+  world.emplace<collider>(shot, recipe.radius);
+  world.emplace<team>(shot, recipe.side);
+  world.emplace<damage>(shot, recipe.hurt);
+  world.emplace<lifetime>(shot, recipe.life);
+  world.emplace<projectile>(shot);
+
+  return shot;
+}
+
+int fire_enemy_weapons(entt::registry& world, float dt, vec2 target)
+{
+  int fired = 0;
+
+  for (auto [entity, gun, brain, kind, place, shape] :
+       world.view<weapon, const enemy_brain, const enemy_archetype, const transform, const collider>().each())
+  {
+    gun.cooldown -= dt;
+
+    if (kind.style != attack_style::ranged || brain.state != enemy_state::attack)
+    {
+      continue;
+    }
+
+    if (gun.cooldown > 0.0f || kind.fire_interval <= 0.0f)
+    {
+      continue;
+    }
+
+    const vec2 heading = normalized(target - place.position);
+
+    // Standing exactly on the target leaves no direction to fire along, and a
+    // shot with no heading would sit on the muzzle hurting whatever walks in.
+    if (length_squared(heading) <= 0.0f)
+    {
+      continue;
+    }
+
+    gun.cooldown = kind.fire_interval;
+
+    // Started at the edge of the body rather than its centre, or a wide enemy
+    // would spawn its own shot inside itself.
+    spawn_projectile(world, shot_recipe{.from = place.position + heading * (shape.radius + kind.shot_radius),
+                                        .heading = heading,
+                                        .speed = kind.shot_speed,
+                                        .radius = kind.shot_radius,
+                                        .hurt = kind.shot_damage,
+                                        .life = 4.0f,
+                                        .side = faction::enemy});
+    ++fired;
+  }
+
+  return fired;
+}
+
 void tick_invulnerability(entt::registry& world, float dt)
 {
   for (auto [entity, shield] : world.view<invulnerable>().each())

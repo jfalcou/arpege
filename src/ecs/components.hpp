@@ -91,6 +91,12 @@ struct projectile
 {
 };
 
+/// Time left before this can fire again, in seconds.
+struct weapon
+{
+  float cooldown = 0.0f;
+};
+
 /// Marks something the play area holds in.
 ///
 /// The arena of a bullet hell is the screen itself, so a fighter is kept inside

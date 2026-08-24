@@ -38,7 +38,7 @@ constexpr float awareness = player_range + 24.0f;
 /// Rushes and hurts by touching. Cheap enough to come in numbers.
 constexpr enemy_archetype parasite{.cost = 5,
                                    .health = 2,
-                                   .speed = 46.0f,
+                                   .speed = 58.0f,
                                    .radius = 3.0f,
                                    .touch = 1,
                                    .sight = awareness,
@@ -63,7 +63,7 @@ constexpr enemy_archetype cultist{.cost = 10,
 /// Slow, heavy, and dangerous only up close.
 constexpr enemy_archetype brute{.cost = 40,
                                 .health = 20,
-                                .speed = 18.0f,
+                                .speed = 32.0f,
                                 .radius = 10.0f,
                                 .touch = 2,
                                 .sight = awareness,

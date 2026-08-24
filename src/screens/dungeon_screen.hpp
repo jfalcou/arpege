@@ -42,6 +42,9 @@ private:
   /// like any other, so everything reaching for it has to ask first.
   bool player_alive() const;
 
+  /// Wipes the room from the debug key, sparing the wait to reach its end.
+  void purge_enemies();
+
   /// Opens the way out and announces the room, once the last enemy falls.
   void settle_room();
 

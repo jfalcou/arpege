@@ -179,6 +179,25 @@ void dungeon_screen::spawn_wave()
   m_fight.opened_with = composition.size();
 }
 
+void dungeon_screen::purge_enemies()
+{
+  m_scratch.clear();
+
+  // Their shots go with them, or a bullet fired by something already dead
+  // could still kill the player on the way to the rift.
+  for (auto [entity, side] : m_world.view<const team>().each())
+  {
+    if (side.side == faction::enemy)
+    {
+      m_scratch.push_back(entity);
+    }
+  }
+
+  // Gathered first: destroying entities while walking the view they come from
+  // pulls the ground from under the iteration.
+  m_world.destroy(m_scratch.begin(), m_scratch.end());
+}
+
 void dungeon_screen::settle_room()
 {
   if (!advance_encounter(m_fight, m_world))
@@ -252,6 +271,15 @@ void dungeon_screen::update(float dt)
   {
     ctx().screens->pop();
     return;
+  }
+
+  // Reaching the end of a room the honest way takes minutes, which is too slow
+  // a loop to tune what happens once it is cleared. Read straight from raylib
+  // rather than through the action layer: this is a tool, not a move the game
+  // knows about.
+  if (IsKeyPressed(KEY_F9))
+  {
+    purge_enemies();
   }
 
   steer_player();
@@ -361,7 +389,7 @@ void dungeon_screen::render(float alpha)
   // Right aligned, so the number moving does not shift the whole line.
   DrawText(tally, ctx().canvas->width() - MeasureText(tally, tally_size) - 4, 4, tally_size,
            (m_fight.state == encounter_state::cleared) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
-  DrawText("ESC leave", 4, 166, 10, Color{120, 110, 130, 255});
+  DrawText("ESC leave   -   F9 clear", 4, 166, 10, Color{120, 110, 130, 255});
 
   if (m_fight.state == encounter_state::cleared)
   {

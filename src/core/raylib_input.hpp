@@ -12,20 +12,25 @@ namespace arpg
 
 class pixel_canvas;
 
-// Reads raylib and fills a snapshot. This is the only place in the input path
-// that knows a backend exists; everything downstream works on the snapshot.
+/// Reads the backend and fills an input_snapshot.
+///
+/// The only place in the input path that knows a backend exists; everything
+/// downstream works on the snapshot alone.
 class raylib_input
 {
 public:
-  // Stick magnitude below which the pad is considered at rest.
+  /// Stick magnitude below which the pad counts as resting.
   static constexpr float stick_deadzone = 0.2f;
 
-  // raylib key and button constants, handed to the binding tables so they
-  // never include raylib themselves.
+  /// Backend key and button constants, handed to the binding tables so they
+  /// never have to include the backend themselves.
   static control_codes codes();
 
-  // Polls the given controls once, for the current rendered frame. The mouse
-  // position is reported in canvas pixels.
+  /// Polls @p watched once, for the current rendered frame.
+  ///
+  /// Only bound controls are polled, which avoids walking the hundreds of key
+  /// codes the backend knows about. The mouse position lands in @p out already
+  /// expressed in canvas pixels.
   void sample(const std::vector<binding>& watched, const pixel_canvas& canvas, input_snapshot& out) const;
 };
 

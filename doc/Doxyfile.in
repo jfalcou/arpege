@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: BSL-1.0
+#
+# Values coming from CMake are wrapped in @...@ and substituted at configure
+# time; everything else is a deliberate setting.
+
+PROJECT_NAME           = "Arpege"
+PROJECT_BRIEF          = "A top-down bullet hell RPG in a medieval fantasy setting"
+PROJECT_NUMBER         =
+OUTPUT_DIRECTORY       = @ARPG_DOC_OUTPUT@
+CREATE_SUBDIRS         = NO
+
+INPUT                  = @ARPG_DOC_INPUT@ @ARPG_DOC_MAINPAGE@
+USE_MDFILE_AS_MAINPAGE = @ARPG_DOC_MAINPAGE@
+FILE_PATTERNS          = *.hpp *.cpp *.md
+RECURSIVE              = YES
+STRIP_FROM_PATH        = @ARPG_DOC_INPUT@
+
+# The public shape of the engine is what is worth reading; private members and
+# implementation files would drown it.
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+
+# An undocumented public entity is a hole in the documentation, so say so
+# instead of silently skipping it.
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+# Left off on purpose: demanding a line for every parameter produces "@param
+# width the width" noise. A parameter is documented when it carries something
+# the signature does not say.
+WARN_NO_PARAMDOC       = NO
+QUIET                  = YES
+WARN_AS_ERROR          = NO
+
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = YES
+SORT_MEMBER_DOCS       = NO
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+HTML_COLORSTYLE        = LIGHT
+HTML_EXTRA_STYLESHEET  = @ARPG_DOC_AWESOME@/doxygen-awesome.css \
+                         @ARPG_DOC_AWESOME@/doxygen-awesome-sidebar-only.css
+
+HAVE_DOT               = @ARPG_DOC_HAVE_DOT@
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+COLLABORATION_GRAPH    = NO
+INCLUDE_GRAPH          = NO
+INCLUDED_BY_GRAPH      = NO
+CLASS_GRAPH            = YES

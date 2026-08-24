@@ -82,9 +82,9 @@ TTS_CASE("Every dungeon action is reachable")
   const auto codes = test_codes();
   const auto map = arpg::dungeon_bindings(codes);
 
-  for (const auto target : {arpg::action::move_up, arpg::action::move_down, arpg::action::move_left,
-                            arpg::action::move_right, arpg::action::shoot, arpg::action::dash, arpg::action::focus,
-                            arpg::action::pause})
+  for (const auto target :
+       {arpg::action::move_up, arpg::action::move_down, arpg::action::move_left, arpg::action::move_right,
+        arpg::action::shoot, arpg::action::dash, arpg::action::focus, arpg::action::pause})
   {
     TTS_EXPECT(map.controls_for(target).size() > 0U);
   }
@@ -96,9 +96,9 @@ TTS_CASE("Every dungeon action is reachable without a pad")
   const auto map = arpg::dungeon_bindings(codes);
 
   // A keyboard-only player must not find an action they cannot trigger.
-  for (const auto target : {arpg::action::move_up, arpg::action::move_down, arpg::action::move_left,
-                            arpg::action::move_right, arpg::action::shoot, arpg::action::dash, arpg::action::focus,
-                            arpg::action::pause})
+  for (const auto target :
+       {arpg::action::move_up, arpg::action::move_down, arpg::action::move_left, arpg::action::move_right,
+        arpg::action::shoot, arpg::action::dash, arpg::action::focus, arpg::action::pause})
   {
     bool without_pad = false;
     for (const auto control : map.controls_for(target))

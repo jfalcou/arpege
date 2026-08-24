@@ -68,12 +68,40 @@ Bullets are the enemy, not the enemies. What that implies:
   frame, buys nothing.
 - Bullets off screen, plus a margin, die immediately.
 
+## The camera
+
+A room is **larger than the screen** and the camera follows the player across
+it. Rooms are places to move through rather than single tableaux, which is what
+a run made of connected rooms and corridors asks for.
+
+That is a deliberate trade. A bullet hell in the strict sense keeps everything
+on one fixed screen, because a projectile arriving from outside the view cannot
+be dodged and punishes without warning. Following the player buys room to move
+and an exploration that a fixed screen cannot give, and it owes the player
+something in return:
+
+- **spawns happen on screen**, or announced, never silently behind the edge;
+- **off-screen threats are signalled** at the rim rather than left to be
+  discovered by taking the hit;
+- the denser the pattern, the closer the encounter should be framed.
+
+The view never shows past the walls: the centre is held half a view from each
+edge, and a room smaller than the view is centred instead. Following is eased
+through an exponential so it behaves identically whatever the step rate, where a
+plain lerp would trail differently on a machine that steps more often.
+
 ## Enemies
 
 A room receives a **combat budget** from its area and its depth, and each
 archetype costs points: a swarm parasite is cheap, an armoured brute is not. The
 budget composes the waves, so a procedurally generated room stays calibrated
 without a hand-written script.
+
+An archetype either **closes in and hurts by touching**, or **holds at a
+distance and shoots**. That single choice decides how close it wants to be, so a
+shooter that walked all the way in would end up in reach of a weapon it does not
+have, and a body that stopped short would never reach anyone. The shooters are
+what make a room a bullet hell rather than a crowd to outrun.
 
 Behaviour is a flat state machine over contiguous data, never a hierarchy of
 classes behind virtual calls. Heavy thinking is **spread across frames**: a
@@ -91,6 +119,26 @@ A pattern is composed rather than coded, out of four parameterised pieces:
 
 Described as data and hot-reloaded, so a boss is tuned while it is running.
 Scripting is deliberately left out until data proves insufficient.
+
+## Determinism
+
+A run carries a **seed**, and the same seed must give the same run: it is what
+makes daily runs possible, lets a player share a route, and turns a bug report
+into something reproducible.
+
+That rules out the distributions of the standard library. The engines there are
+specified, but `std::uniform_int_distribution` is not: identical seeds produce
+different numbers on different implementations, so a shared seed would name a
+different level depending on who built the game. The generator and its bounded
+draw are therefore written out, and a test pins the exact stream so a change to
+the algorithm cannot slip through unnoticed.
+
+Two sources of randomness, kept apart:
+
+- **content**, drawn from the seeded generator: layout, wave composition, spawn
+  positions, loot. It must replay.
+- **cosmetic**, free to use anything: particles, screen shake, pitch variation.
+  Nobody can tell whether two runs shook the screen the same way.
 
 ## Localisation
 
@@ -114,4 +162,5 @@ are three of them, and it is the first thing to fix before there are thirty.
 
 - The names and roster of the mercenaries beyond the handful already written.
 - Whether the strate map is a graph the player walks or a list of nodes.
+- How an off-screen threat is signalled, which the camera decision now owes.
 - The audio direction.

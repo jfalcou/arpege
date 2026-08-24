@@ -17,6 +17,78 @@ void integrate_motion(entt::registry& world, float dt)
   }
 }
 
+namespace
+{
+
+/// How many steps a full round of thinking is spread over.
+constexpr std::uint64_t thinking_slices = 4;
+
+} // namespace
+
+void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 target)
+{
+  for (auto [entity, brain, place, speed, kind] :
+       world.view<enemy_brain, const transform, velocity, const enemy_archetype>().each())
+  {
+    // Time passes for everyone, whether or not it is their turn to think.
+    brain.state_timer += dt;
+
+    if (step % thinking_slices != brain.slice % thinking_slices)
+    {
+      continue;
+    }
+
+    const vec2 towards = target - place.position;
+    const float distance_squared = length_squared(towards);
+    const float sight_squared = kind.sight * kind.sight;
+    const float reach_squared = kind.reach * kind.reach;
+
+    const enemy_state previous = brain.state;
+
+    // Deciding first and acting after, rather than both at once: an enemy that
+    // switches state here must move like its new state on this very step, not
+    // keep the velocity of the one it just left for a whole round of thinking.
+    switch (brain.state)
+    {
+    case enemy_state::idle:
+      if (distance_squared < sight_squared)
+      {
+        brain.state = enemy_state::chase;
+      }
+      break;
+
+    case enemy_state::chase:
+      // No way back to idle: a room is a fight, and an enemy that has noticed
+      // the player does not forget because the player stepped away.
+      if (distance_squared < reach_squared)
+      {
+        brain.state = enemy_state::attack;
+      }
+      break;
+
+    case enemy_state::attack:
+      // Backing off at half again the reach rather than at its exact edge, or
+      // the state would swing between the two every round. Any wider and a
+      // shooter would hold still firing shots that fall short.
+      if (distance_squared > reach_squared * 2.25f)
+      {
+        brain.state = enemy_state::chase;
+      }
+      break;
+
+    case enemy_state::count:
+      break;
+    }
+
+    speed.value = (brain.state == enemy_state::chase) ? normalized(towards) * kind.speed : vec2{};
+
+    if (brain.state != previous)
+    {
+      brain.state_timer = 0.0f;
+    }
+  }
+}
+
 void expire_lifetimes(entt::registry& world, float dt)
 {
   std::vector<entt::entity> expired;
@@ -56,6 +128,23 @@ void despawn_out_of_bounds(entt::registry& world, viewport_rect bounds, float ma
   world.destroy(gone.begin(), gone.end());
 }
 
+void confine_to_bounds(entt::registry& world, viewport_rect bounds)
+{
+  for (auto [entity, place, shape] : world.view<transform, const collider, const confined>().each())
+  {
+    const float left = bounds.x + shape.radius;
+    const float top = bounds.y + shape.radius;
+    const float right = bounds.x + bounds.width - shape.radius;
+    const float bottom = bounds.y + bounds.height - shape.radius;
+
+    // A room narrower than the entity would put the far edge before the near
+    // one; centring is the only sensible answer, and it keeps the clamp from
+    // depending on which axis is applied first.
+    place.position.x = (left <= right) ? std::clamp(place.position.x, left, right) : bounds.x + bounds.width * 0.5f;
+    place.position.y = (top <= bottom) ? std::clamp(place.position.y, top, bottom) : bounds.y + bounds.height * 0.5f;
+  }
+}
+
 void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash)
 {
   hash.clear();
@@ -70,6 +159,149 @@ void rebuild_spatial_hash(const entt::registry& world, spatial_hash& hash)
   }
 }
 
+entt::entity spawn_projectile(entt::registry& world, const shot_recipe& recipe)
+{
+  const entt::entity shot = world.create();
+
+  world.emplace<transform>(shot, recipe.from, recipe.from);
+  world.emplace<velocity>(shot, recipe.heading * recipe.speed);
+  world.emplace<collider>(shot, recipe.radius);
+  world.emplace<team>(shot, recipe.side);
+  world.emplace<damage>(shot, recipe.hurt);
+  world.emplace<lifetime>(shot, recipe.life);
+  world.emplace<projectile>(shot);
+
+  return shot;
+}
+
+int fire_enemy_weapons(entt::registry& world, float dt, vec2 target)
+{
+  int fired = 0;
+
+  for (auto [entity, gun, brain, kind, place, shape] :
+       world.view<weapon, const enemy_brain, const enemy_archetype, const transform, const collider>().each())
+  {
+    gun.cooldown -= dt;
+
+    if (kind.style != attack_style::ranged || brain.state != enemy_state::attack)
+    {
+      continue;
+    }
+
+    if (gun.cooldown > 0.0f || kind.fire_interval <= 0.0f)
+    {
+      continue;
+    }
+
+    const vec2 heading = normalized(target - place.position);
+
+    // Standing exactly on the target leaves no direction to fire along, and a
+    // shot with no heading would sit on the muzzle hurting whatever walks in.
+    if (length_squared(heading) <= 0.0f)
+    {
+      continue;
+    }
+
+    gun.cooldown = kind.fire_interval;
+
+    // Started at the edge of the body rather than its centre, or a wide enemy
+    // would spawn its own shot inside itself.
+    spawn_projectile(world, shot_recipe{.from = place.position + heading * (shape.radius + kind.shot_radius),
+                                        .heading = heading,
+                                        .speed = kind.shot_speed,
+                                        .radius = kind.shot_radius,
+                                        .hurt = kind.shot_damage,
+                                        .life = 4.0f,
+                                        .side = faction::enemy});
+    ++fired;
+  }
+
+  return fired;
+}
+
+void tick_invulnerability(entt::registry& world, float dt)
+{
+  for (auto [entity, shield] : world.view<invulnerable>().each())
+  {
+    shield.remaining = std::max(0.0f, shield.remaining - dt);
+  }
+}
+
+int resolve_contact_damage(entt::registry& world, const spatial_hash& hash, std::vector<entt::entity>& scratch)
+{
+  std::vector<entt::entity> slain;
+  int hits = 0;
+
+  // Whatever deals contact damage and is not a projectile: an enemy body,
+  // later a hazard on the floor. A projectile is spent on impact and is
+  // resolved elsewhere.
+  for (auto [toucher, place, shape, side, hurt] :
+       world.view<const transform, const collider, const team, const damage>(entt::exclude<projectile>).each())
+  {
+    hash.query(place.position, shape.radius + hash.cell_size(), scratch);
+
+    for (const entt::entity target : scratch)
+    {
+      // The grid is a snapshot, so an earlier pass of this step may have
+      // destroyed something still filed in it. Said outright rather than left
+      // to the registry answering false for a dead entity.
+      if (target == toucher || !world.valid(target) || !world.all_of<transform, collider, team, health>(target))
+      {
+        continue;
+      }
+
+      if (world.get<team>(target).side == side.side)
+      {
+        continue;
+      }
+
+      auto* shield = world.try_get<invulnerable>(target);
+
+      if (shield != nullptr && shield->remaining > 0.0f)
+      {
+        continue;
+      }
+
+      auto& hurt_target = world.get<health>(target);
+
+      if (hurt_target.current <= 0)
+      {
+        continue;
+      }
+
+      const float reach = shape.radius + world.get<collider>(target).radius;
+
+      if (length_squared(world.get<transform>(target).position - place.position) > reach * reach)
+      {
+        continue;
+      }
+
+      hurt_target.current -= hurt.amount;
+      ++hits;
+
+      if (shield != nullptr)
+      {
+        shield->remaining = shield->duration;
+      }
+
+      if (hurt_target.current <= 0)
+      {
+        slain.push_back(target);
+      }
+
+      // One body can only press against one target at a time, and stopping
+      // here keeps a crowd from being mown down by a single walker.
+      break;
+    }
+  }
+
+  std::sort(slain.begin(), slain.end());
+  slain.erase(std::unique(slain.begin(), slain.end()), slain.end());
+
+  world.destroy(slain.begin(), slain.end());
+  return hits;
+}
+
 int resolve_projectile_hits(entt::registry& world, const spatial_hash& hash, std::vector<entt::entity>& scratch)
 {
   std::vector<entt::entity> spent;
@@ -82,7 +314,10 @@ int resolve_projectile_hits(entt::registry& world, const spatial_hash& hash, std
 
     for (const entt::entity target : scratch)
     {
-      if (target == shot || !world.all_of<transform, collider, team, health>(target))
+      // The grid is a snapshot, so an earlier pass of this step may have
+      // destroyed something still filed in it. Said outright rather than left
+      // to the registry answering false for a dead entity.
+      if (target == shot || !world.valid(target) || !world.all_of<transform, collider, team, health>(target))
       {
         continue;
       }

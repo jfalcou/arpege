@@ -46,10 +46,23 @@ struct lifetime
   float remaining = 0.0f;
 };
 
-/// Damage dealt on contact.
+/// Damage dealt on contact, or on impact for a projectile.
 struct damage
 {
   int amount = 1;
+};
+
+/// How long before this can be hurt again, in seconds.
+///
+/// Contact is tested on every simulation step, so without a pause after a hit
+/// standing against an enemy would empty a life bar in a fraction of a second.
+/// The pause is also what makes a hit readable: something has to flash.
+struct invulnerable
+{
+  float remaining = 0.0f;
+
+  /// How long a hit grants. Zero means it can be hurt again immediately.
+  float duration = 0.8f;
 };
 
 /// Who an entity fights for.
@@ -75,6 +88,21 @@ struct player_controlled
 
 /// Marks a projectile, which dies on impact and when it leaves the play area.
 struct projectile
+{
+};
+
+/// Time left before this can fire again, in seconds.
+struct weapon
+{
+  float cooldown = 0.0f;
+};
+
+/// Marks something the play area holds in.
+///
+/// The arena of a bullet hell is the screen itself, so a fighter is kept inside
+/// it rather than allowed to wander off. Projectiles carry no such mark: they
+/// are meant to leave, and are dropped once they have.
+struct confined
 {
 };
 

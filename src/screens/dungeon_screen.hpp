@@ -4,7 +4,11 @@
 
 #include <core/action_map.hpp>
 #include <core/action_state.hpp>
+#include <core/camera.hpp>
+#include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <ecs/encounter.hpp>
+#include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
 
 #include <entt/entity/registry.hpp>
@@ -26,8 +30,24 @@ public:
   void render(float alpha) override;
 
 private:
+  /// The room, larger than the screen: the camera follows the player across it.
+  viewport_rect room() const;
+
+  /// What is on screen, in room coordinates.
+  vec2 view() const;
+
   void spawn_player();
-  void spawn_enemies();
+  void spawn_wave();
+  /// Whether the player is still standing. Their entity is destroyed on death
+  /// like any other, so everything reaching for it has to ask first.
+  bool player_alive() const;
+
+  /// Wipes the room from the debug key, sparing the wait to reach its end.
+  void purge_enemies();
+
+  /// Opens the way out and announces the room, once the last enemy falls.
+  void settle_room();
+
   void steer_player();
   void fire(float dt);
 
@@ -45,6 +65,17 @@ private:
   std::vector<entt::entity> m_scratch;
 
   float m_fire_cooldown = 0.0f;
+
+  encounter m_fight;
+  exit_portal m_exit;
+
+  /// Counted per simulation step, so the enemies can take turns thinking.
+  std::uint64_t m_step = 0;
+
+  /// Seeded per room. Everything that must replay identically draws from here.
+  rng m_generator{1};
+
+  camera_focus m_camera;
 };
 
 } // namespace arpg

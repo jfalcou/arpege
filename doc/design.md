@@ -108,6 +108,25 @@ classes behind virtual calls. Heavy thinking is **spread across frames**: a
 quarter of the enemies reconsider on any given step, the rest keep their
 velocity. Nothing of it is visible, and the cost drops fourfold.
 
+## Data files
+
+Content is described in **Lua**, read through sol2 and loaded by a single
+script host. Lua rather than JSON or TOML: the files that state figures today
+are the ones that will describe boss phases later, and a format that can only
+hold literals would have to be replaced at that point rather than extended. A
+roster already gains from it — a family of related enemies is written once and
+varied in a loop instead of copied three times.
+
+The host opens **base, math, string and table, and nothing else**. A data file
+has no business opening files, reading the clock or loading libraries of its
+own: an edit meant to tune a number must not be able to reach outside the game.
+
+Loading **validates and refuses**. An archetype that costs nothing would be
+bought forever by the wave budget; one that wakes closer than the player can
+strike would die without ever noticing. A file with one bad entry loads none of
+it, because half a roster fields a wave nobody designed, and that shows up as a
+strange fight rather than as a message.
+
 ## Firing patterns
 
 A pattern is composed rather than coded, out of four parameterised pieces:
@@ -118,7 +137,8 @@ A pattern is composed rather than coded, out of four parameterised pieces:
 - a **temporal modulation**: phases and pauses.
 
 Described as data and hot-reloaded, so a boss is tuned while it is running.
-Scripting is deliberately left out until data proves insufficient.
+Since that data is Lua, a pattern that outgrows a table of parameters becomes a
+function without anyone having to introduce a second format for it.
 
 ## Determinism
 

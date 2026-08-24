@@ -29,6 +29,11 @@ application::application(app_config config)
   }
   SetConfigFlags(flags);
 
+  // Assets are mirrored next to the executable and reached by relative path.
+  // Launched from a file manager the working directory is elsewhere, so the
+  // game would run and find nothing.
+  ChangeDirectory(GetApplicationDirectory());
+
   InitWindow(m_config.canvas_width * m_config.window_scale, m_config.canvas_height * m_config.window_scale,
              m_config.title.c_str());
   InitAudioDevice();

@@ -48,6 +48,8 @@ include(documentation)
 # be unit tested without a window, a GPU context or an audio device.
 add_library(arpg_core STATIC
   src/ecs/encounter.cpp
+  src/data/script_host.cpp
+  src/data/enemy_data.cpp
   src/ecs/enemy.cpp
   src/ecs/spatial_hash.cpp
   src/ecs/systems.cpp
@@ -62,7 +64,7 @@ add_library(arpg_core STATIC
 )
 
 target_include_directories(arpg_core PUBLIC src)
-target_link_libraries(arpg_core PUBLIC EnTT::EnTT arpg_coverage PRIVATE arpg_warnings)
+target_link_libraries(arpg_core PUBLIC EnTT::EnTT sol2 arpg_coverage PRIVATE arpg_warnings)
 
 # --- GUI layer --------------------------------------------------------------
 # Kept as a library rather than folded into the executable so the compile tests

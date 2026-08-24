@@ -52,6 +52,11 @@ arpg_add_test(camera)
 arpg_add_test(combat)
 arpg_add_test(enemies)
 arpg_add_test(encounter)
+arpg_add_test(enemy_data)
+
+# The shipped roster is data, and data breaks without the compiler noticing.
+# Pointing the test at the source tree makes a broken file a failing test.
+target_compile_definitions(enemy_data PRIVATE ARPG_ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../assets")
 arpg_add_test(rng)
 arpg_add_test(spatial_hash)
 

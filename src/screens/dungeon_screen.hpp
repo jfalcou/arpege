@@ -7,6 +7,7 @@
 #include <core/camera.hpp>
 #include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <data/enemy_data.hpp>
 #include <ecs/encounter.hpp>
 #include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
@@ -65,6 +66,13 @@ private:
   std::vector<entt::entity> m_scratch;
 
   float m_fire_cooldown = 0.0f;
+
+  /// Outlives every load, since the tables the scripts return borrow it.
+  script_host m_scripts;
+
+  /// Read from assets at every entry, so a change to the file shows up on the
+  /// next room rather than on the next build.
+  enemy_catalogue m_roster;
 
   encounter m_fight;
   exit_portal m_exit;

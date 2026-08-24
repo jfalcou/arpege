@@ -149,7 +149,10 @@ pre-commit install
 ```
 
 CI builds on Linux, MSVC and MSYS2 UCRT64, in Release and Debug, and runs the
-tests, the coverage and the formatting check on every pull request.
+tests, the coverage, the memory check, the documentation and the formatting
+check on every pull request. Compiled objects are cached between runs on the
+jobs built with Ninja, the Visual Studio generator ignoring compiler
+launchers.
 
 ## License
 

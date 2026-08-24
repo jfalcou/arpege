@@ -183,7 +183,10 @@ int resolve_contact_damage(entt::registry& world, const spatial_hash& hash, std:
 
     for (const entt::entity target : scratch)
     {
-      if (target == toucher || !world.all_of<transform, collider, team, health>(target))
+      // The grid is a snapshot, so an earlier pass of this step may have
+      // destroyed something still filed in it. Said outright rather than left
+      // to the registry answering false for a dead entity.
+      if (target == toucher || !world.valid(target) || !world.all_of<transform, collider, team, health>(target))
       {
         continue;
       }
@@ -252,7 +255,10 @@ int resolve_projectile_hits(entt::registry& world, const spatial_hash& hash, std
 
     for (const entt::entity target : scratch)
     {
-      if (target == shot || !world.all_of<transform, collider, team, health>(target))
+      // The grid is a snapshot, so an earlier pass of this step may have
+      // destroyed something still filed in it. Said outright rather than left
+      // to the registry answering false for a dead entity.
+      if (target == shot || !world.valid(target) || !world.all_of<transform, collider, team, health>(target))
       {
         continue;
       }

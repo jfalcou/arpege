@@ -135,6 +135,11 @@ void dungeon_screen::spawn_wave()
   }
 }
 
+bool dungeon_screen::player_alive() const
+{
+  return m_world.valid(m_player);
+}
+
 void dungeon_screen::steer_player()
 {
   const action_set held = m_bindings.resolve(*ctx().input);
@@ -186,7 +191,7 @@ void dungeon_screen::update(float dt)
 {
   m_actions.advance(m_bindings.resolve(*ctx().input));
 
-  if (m_actions.consume(action::pause))
+  if (m_actions.consume(action::pause) || !player_alive())
   {
     ctx().screens->pop();
     return;
@@ -215,6 +220,15 @@ void dungeon_screen::update(float dt)
   rebuild_spatial_hash(m_world, m_hash);
   resolve_projectile_hits(m_world, m_hash, m_scratch);
   resolve_contact_damage(m_world, m_hash, m_scratch);
+
+  if (!player_alive())
+  {
+    // Dying destroys the entity like any other, and everything above reads it.
+    // Leaving now beats simulating a room around a corpse; a defeat screen
+    // takes this place later.
+    ctx().screens->pop();
+    return;
+  }
 }
 
 void dungeon_screen::render(float alpha)
@@ -251,8 +265,11 @@ void dungeon_screen::render(float alpha)
     }
   }
 
-  const auto& player_health = m_world.get<health>(m_player);
-  DrawText(TextFormat("HP %d", player_health.current), 4, 4, 10, Color{226, 205, 154, 255});
+  if (player_alive())
+  {
+    const auto& player_health = m_world.get<health>(m_player);
+    DrawText(TextFormat("HP %d", player_health.current), 4, 4, 10, Color{226, 205, 154, 255});
+  }
   DrawText("ESC leave", 4, 166, 10, Color{120, 110, 130, 255});
 }
 

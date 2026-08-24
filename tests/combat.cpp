@@ -256,6 +256,51 @@ TTS_CASE("Something without invulnerability is still only hurt once per step")
   TTS_EQUAL(world.get<arpg::health>(victim).current, 9);
 };
 
+TTS_CASE("A pass survives the grid still listing what an earlier one killed")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+  std::vector<entt::entity> scratch;
+
+  // An enemy about to die to a shot, standing on the player. The grid is built
+  // once and both passes query it, which is what the game loop does: the
+  // second one is handed an entity the first one destroyed.
+  const entt::entity doomed = make_target(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 1);
+  world.emplace<arpg::damage>(doomed, 1);
+
+  make_shot(world, arpg::faction::player, arpg::vec2{50.0f, 50.0f}, 5);
+
+  const entt::entity player = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 3);
+  world.emplace<arpg::invulnerable>(player);
+
+  arpg::rebuild_spatial_hash(world, hash);
+
+  TTS_EQUAL(arpg::resolve_projectile_hits(world, hash, scratch), 1);
+  TTS_EXPECT_NOT(world.valid(doomed));
+
+  // Asking a destroyed entity for its components is not allowed, so this used
+  // to abort rather than simply pass it over.
+  TTS_EQUAL(arpg::resolve_contact_damage(world, hash, scratch), 0);
+  TTS_EQUAL(world.get<arpg::health>(player).current, 3);
+};
+
+TTS_CASE("Contact can kill the player, whose entity then goes like any other")
+{
+  entt::registry world;
+  arpg::spatial_hash hash(16.0f);
+
+  // Nothing marks the player as exempt: the entity is destroyed on death the
+  // same way an enemy is, so every screen reading it has to ask first.
+  make_walker(world, arpg::faction::enemy, arpg::vec2{50.0f, 50.0f}, 1);
+  const entt::entity player = make_target(world, arpg::faction::player, arpg::vec2{52.0f, 50.0f}, 1);
+  world.emplace<arpg::player_controlled>(player);
+  world.emplace<arpg::invulnerable>(player);
+
+  touch(world, hash);
+
+  TTS_EXPECT_NOT(world.valid(player));
+};
+
 TTS_CASE("Whatever is confined is held inside the room")
 {
   entt::registry world;

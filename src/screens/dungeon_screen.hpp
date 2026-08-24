@@ -37,6 +37,10 @@ private:
 
   void spawn_player();
   void spawn_wave();
+  /// Whether the player is still standing. Their entity is destroyed on death
+  /// like any other, so everything reaching for it has to ask first.
+  bool player_alive() const;
+
   void steer_player();
   void fire(float dt);
 

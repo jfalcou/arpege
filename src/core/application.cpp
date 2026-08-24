@@ -63,7 +63,7 @@ application::application(app_config config)
   }
 
   const char* chosen = std::getenv(asset_root_variable);
-  m_assets = asset_root(chosen != nullptr ? chosen : "", GetApplicationDirectory());
+  m_assets = asset_root(m_config.assets, chosen != nullptr ? chosen : "", GetApplicationDirectory());
 
   m_screens.set_context(app_context{.events = &m_events,
                                     .screens = &m_screens,

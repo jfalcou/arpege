@@ -135,9 +135,13 @@ re-read re-forms the room **from the same seed**, so a changed figure is judged
 against the room it was changed for.
 
 The build mirrors `assets/` next to the executable, and that copy is
-overwritten by the next build. Setting `ARPG_ASSETS` points the game at the
-working copy instead, so the file being tuned live is the one under version
-control.
+overwritten by the next build. `arpg --assets DIR`, or the `ARPG_ASSETS`
+variable when a shortcut is easier than a shell, points the game at the working
+copy instead, so the file being tuned live is the one under version control.
+What was typed for a run beats what a shell was left set to. An option that is
+not understood stops the game rather than being ignored, since a misspelt one
+would otherwise look like it worked and the game would quietly read the wrong
+directory.
 
 One roster file holds every archetype while there are a handful of them. Past
 a dozen it becomes one file per enemy under a scanned directory, which changes

@@ -56,6 +56,7 @@ add_library(arpg_core STATIC
   src/ecs/spatial_hash.cpp
   src/ecs/systems.cpp
   src/core/action_map.cpp
+  src/core/command_line.cpp
   src/core/camera.cpp
   src/core/action_state.cpp
   src/core/deadzone.cpp

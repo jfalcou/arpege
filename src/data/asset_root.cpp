@@ -5,16 +5,22 @@
 namespace arpg
 {
 
-std::filesystem::path asset_root(std::string_view chosen, const std::filesystem::path& beside_executable)
+std::filesystem::path asset_root(std::string_view from_command_line, std::string_view from_environment,
+                                 const std::filesystem::path& beside_executable)
 {
-  if (chosen.empty())
+  // Taken as given rather than appended to: either source names the directory
+  // itself, so it can point at a copy that is not called assets.
+  if (!from_command_line.empty())
   {
-    return beside_executable / "assets";
+    return std::filesystem::path{from_command_line};
   }
 
-  // Taken as given rather than appended to: the variable names the directory
-  // itself, so it can point at a copy that is not called assets.
-  return std::filesystem::path{chosen};
+  if (!from_environment.empty())
+  {
+    return std::filesystem::path{from_environment};
+  }
+
+  return beside_executable / "assets";
 }
 
 } // namespace arpg

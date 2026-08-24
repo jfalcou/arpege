@@ -31,6 +31,10 @@ struct app_config
   int window_scale = 4;       ///< Window size at startup, as a multiple of the canvas.
   bool vsync = true;          ///< Cap the render rate to the refresh rate.
   bool resizable = true;      ///< Let the window be resized; the canvas rescales to fit.
+
+  /// Where to read data from, empty to fall back on the environment and then
+  /// on the copy beside the executable.
+  std::string assets;
 };
 
 /// Window, game loop and shared services.

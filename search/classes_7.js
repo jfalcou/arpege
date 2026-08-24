@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['raylib_5finput_0',['raylib_input',['../classarpg_1_1raylib__input.html',1,'arpg']]]
+  ['main_5fmenu_5fscreen_0',['main_menu_screen',['../classarpg_1_1main__menu__screen.html',1,'arpg']]]
 ];

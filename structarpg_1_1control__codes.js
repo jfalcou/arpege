@@ -1,0 +1,25 @@
+var structarpg_1_1control__codes =
+[
+    [ "key_w", "structarpg_1_1control__codes.html#a03cf36cacb29acd7f2e277a1dda172c8", null ],
+    [ "key_a", "structarpg_1_1control__codes.html#ad704914ac18ad86df7a89a858f5bee8c", null ],
+    [ "key_s", "structarpg_1_1control__codes.html#ae49c5abba6b96cfab3ca39253385544e", null ],
+    [ "key_d", "structarpg_1_1control__codes.html#ac46f1df95dd6b875ea43f4f73459a716", null ],
+    [ "key_up", "structarpg_1_1control__codes.html#aa8c599ff77e9fbb528c9e7434d92d242", null ],
+    [ "key_down", "structarpg_1_1control__codes.html#a7f9711d7974b0f708ddce85afb7a5833", null ],
+    [ "key_left", "structarpg_1_1control__codes.html#ae26a88232405672d04a883b0738848c5", null ],
+    [ "key_right", "structarpg_1_1control__codes.html#a1225e4d7d27121cd581d5389435624da", null ],
+    [ "key_space", "structarpg_1_1control__codes.html#a52a95cc54a701ae5593ec81738d68396", null ],
+    [ "key_shift", "structarpg_1_1control__codes.html#a27e3d1a418373a0364cef598d4dc6638", null ],
+    [ "key_enter", "structarpg_1_1control__codes.html#a30a31173e46e083996a21c50049bd5d2", null ],
+    [ "key_escape", "structarpg_1_1control__codes.html#a54be5c7f096631663d807be6a291c78f", null ],
+    [ "mouse_left", "structarpg_1_1control__codes.html#a25d13cb238fcbe090474d3b5a2840982", null ],
+    [ "pad_up", "structarpg_1_1control__codes.html#a2aac8aa0ee5ec6d05d1872f244bb3db2", null ],
+    [ "pad_down", "structarpg_1_1control__codes.html#a13892f56fde7afa02bd78d1e13d91dad", null ],
+    [ "pad_left", "structarpg_1_1control__codes.html#a0cc51a7fd2ce82a76c18348bd5623209", null ],
+    [ "pad_right", "structarpg_1_1control__codes.html#a846b971eb91e8db1ec8d6603b924378d", null ],
+    [ "pad_south", "structarpg_1_1control__codes.html#a23e3cce6f743ba714d63257254108f25", null ],
+    [ "pad_east", "structarpg_1_1control__codes.html#a64efda8cbe5a34768895d0a666bab1ba", null ],
+    [ "pad_right_trigger", "structarpg_1_1control__codes.html#ac83093c999bab1ecb9d7a281ee383b45", null ],
+    [ "pad_left_shoulder", "structarpg_1_1control__codes.html#a04a6e5fb75d169288827dfdd149d5e83", null ],
+    [ "pad_start", "structarpg_1_1control__codes.html#a0f568f5a455705c5687c3cdbff0d3e12", null ]
+];

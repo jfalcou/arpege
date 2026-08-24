@@ -94,6 +94,12 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/.cache/ccache
+      # setup-msys2 reinstalls the toolchain on every run, so identifying the
+      # compiler by its binary never matches twice. Hashing its contents does.
+      CCACHE_COMPILERCHECK: content
+      CCACHE_MAXSIZE: 500M
     steps:
       - uses: actions/checkout@v7
 
@@ -106,6 +112,7 @@ jobs:
             mingw-w64-ucrt-x86_64-gcc
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-ccache
 
       - name: CPM source cache
         uses: actions/cache@v6
@@ -114,14 +121,29 @@ jobs:
           key: cpm-ucrt64-${{ hashFiles('cmake/dependencies.cmake') }}
           restore-keys: cpm-ucrt64-
 
-      # No compiler cache here. sccache identifies a compiler by its binary, and
-      # setup-msys2 reinstalls the toolchain on every run, so every hash changes
-      # and the hit rate is zero on anything but a re-run of the same commit.
+      # A key unique to the commit, restored from whatever the last run left:
+      # reusing a fixed key would restore the first cache forever and never
+      # save an updated one.
+      - name: Compiler cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-ucrt64-${{ github.sha }}
+          restore-keys: ccache-ucrt64-
+
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON
+        run: |
+          ccache --zero-stats
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DARPG_BUILD_TESTS=ON -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
       - name: Build
         run: cmake --build build --parallel
+
+      # Printed on purpose: a cache that restores but never hits looks exactly
+      # like a working one from the outside.
+      - name: Cache statistics
+        if: always()
+        run: ccache --show-stats
 
       - name: Test
         run: ctest --test-dir build --output-on-failure

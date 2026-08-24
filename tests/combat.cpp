@@ -185,6 +185,7 @@ TTS_CASE("A target dies when its health runs out")
 
   TTS_EQUAL(resolve(world, hash), 1);
   TTS_EXPECT_NOT(world.valid(target));
+  TTS_EXPECT_NOT(world.valid(shot));
 };
 
 TTS_CASE("Two shots finishing the same target do not destroy it twice")

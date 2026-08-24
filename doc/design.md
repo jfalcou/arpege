@@ -127,6 +127,21 @@ strike would die without ever noticing. A file with one bad entry loads none of
 it, because half a roster fields a wave nobody designed, and that shows up as a
 strange fight rather than as a message.
 
+One roster file holds every archetype while there are a handful of them. Past
+a dozen it becomes one file per enemy under a scanned directory, which changes
+neither the loading API nor its tests: the split is deferred because deferring
+it costs nothing, not because it is undecided.
+
+Scripted behaviour, when an enemy eventually needs its own, runs **at events
+and not at every step**: on spawn, on a phase change, on death. A script called
+once per enemy per simulation step would be fifteen trips into an interpreter
+sixty times a second, and would pull the hot loop out of the contiguous data
+the flat state machine exists to keep it in. Lua describes what a behaviour is
+composed of; the C++ systems unroll it. A boss with three phases costs three
+calls over a fight. Whatever carries such a behaviour reaches the ECS as a
+handle into a table held by the data layer, since an archetype is copied into
+every entity that uses it and must stay trivially copyable.
+
 ## Firing patterns
 
 A pattern is composed rather than coded, out of four parameterised pieces:

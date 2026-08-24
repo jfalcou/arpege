@@ -10,9 +10,13 @@ namespace arpg
 namespace
 {
 
-/// Points per pixel of floor. Tuned so a small room lands around thirty points
-/// and a large arena around a hundred and fifty.
-constexpr float points_per_area = 0.0026f;
+/// Points per pixel of floor.
+///
+/// Tuned against a room of two screens by two, which is what the camera makes
+/// of one: it should field a dozen enemies, a handful of them shooters. It was
+/// five times this at first, from back when a room was a single screen, and
+/// growing the room quietly quadrupled the budget with it.
+constexpr float points_per_area = 0.00052f;
 
 /// Added share per strate, so the same room is harsher further down.
 constexpr float depth_bonus = 0.25f;

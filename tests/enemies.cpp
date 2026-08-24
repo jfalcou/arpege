@@ -77,11 +77,18 @@ int total_cost(const std::vector<std::size_t>& picked)
 
 TTS_CASE("A bigger room is worth more points")
 {
-  const int corridor = arpg::combat_budget(60.0f * 30.0f, 1);
-  const int arena = arpg::combat_budget(200.0f * 150.0f, 1);
+  const int corridor = arpg::combat_budget(240.0f * 80.0f, 1);
+  const int arena = arpg::combat_budget(640.0f * 360.0f, 1);
 
   TTS_EXPECT(corridor > 0);
   TTS_EXPECT(arena > corridor);
+};
+
+TTS_CASE("A cramped passage is not worth an ambush")
+{
+  // Deliberate rather than a rounding accident: a short link between two rooms
+  // is somewhere to breathe, and stuffing it would leave nowhere to.
+  TTS_EQUAL(arpg::combat_budget(60.0f * 30.0f, 1), 0);
 };
 
 TTS_CASE("The same room is harsher deeper down")

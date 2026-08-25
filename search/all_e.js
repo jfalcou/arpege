@@ -12,10 +12,11 @@ var searchData=
   ['parse_5fcommand_5fline_9',['parse_command_line',['../namespacearpg.html#a5da7edec9df41d9cd406ea6555878688',1,'arpg']]],
   ['pixel_5fcanvas_10',['pixel_canvas',['../classarpg_1_1pixel__canvas.html#a9a3adea4b626be20079dc315079d92d3',1,'arpg::pixel_canvas::pixel_canvas()'],['../classarpg_1_1pixel__canvas.html',1,'arpg::pixel_canvas']]],
   ['player_5fcontrolled_11',['player_controlled',['../structarpg_1_1player__controlled.html',1,'arpg']]],
-  ['poll_12',['poll',['../classarpg_1_1file__watch.html#a5c2e18b1c44c26702214792476bfea00',1,'arpg::file_watch']]],
-  ['pop_13',['pop',['../classarpg_1_1screen__manager.html#ae5c117fd0cc46ac973b74fc1b2f6514f',1,'arpg::screen_manager']]],
-  ['present_14',['present',['../classarpg_1_1pixel__canvas.html#a6b1cf55d295629055ac851f42786a98f',1,'arpg::pixel_canvas']]],
-  ['pressed_15',['pressed',['../classarpg_1_1action__state.html#ae1d45b33b28c4688cc009d36e0b3b830',1,'arpg::action_state']]],
-  ['projectile_16',['projectile',['../structarpg_1_1projectile.html',1,'arpg']]],
-  ['push_17',['push',['../classarpg_1_1screen__manager.html#a1c340253203ec302a26f6f3eb63b5e64',1,'arpg::screen_manager']]]
+  ['player_5fprofile_12',['player_profile',['../structarpg_1_1player__profile.html',1,'arpg']]],
+  ['poll_13',['poll',['../classarpg_1_1file__watch.html#a5c2e18b1c44c26702214792476bfea00',1,'arpg::file_watch']]],
+  ['pop_14',['pop',['../classarpg_1_1screen__manager.html#ae5c117fd0cc46ac973b74fc1b2f6514f',1,'arpg::screen_manager']]],
+  ['present_15',['present',['../classarpg_1_1pixel__canvas.html#a6b1cf55d295629055ac851f42786a98f',1,'arpg::pixel_canvas']]],
+  ['pressed_16',['pressed',['../classarpg_1_1action__state.html#ae1d45b33b28c4688cc009d36e0b3b830',1,'arpg::action_state']]],
+  ['projectile_17',['projectile',['../structarpg_1_1projectile.html',1,'arpg']]],
+  ['push_18',['push',['../classarpg_1_1screen__manager.html#a1c340253203ec302a26f6f3eb63b5e64',1,'arpg::screen_manager']]]
 ];

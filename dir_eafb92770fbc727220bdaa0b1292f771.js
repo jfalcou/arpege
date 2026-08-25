@@ -1,6 +1,7 @@
 var dir_eafb92770fbc727220bdaa0b1292f771 =
 [
     [ "components.hpp", "components_8hpp_source.html", null ],
+    [ "dash.hpp", "dash_8hpp_source.html", null ],
     [ "encounter.hpp", "encounter_8hpp_source.html", null ],
     [ "enemy.hpp", "enemy_8hpp_source.html", null ],
     [ "firing_pattern.hpp", "firing__pattern_8hpp_source.html", null ],

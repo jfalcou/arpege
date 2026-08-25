@@ -7,7 +7,7 @@ var searchData=
   ['canvas_5fwidth_4',['canvas_width',['../structarpg_1_1app__config.html#abab1266db873bd1471aa08687731b218',1,'arpg::app_config']]],
   ['cell_5fsize_5',['cell_size',['../classarpg_1_1spatial__hash.html#a7a4a960eb79ba06435c431e9b1274b4e',1,'arpg::spatial_hash']]],
   ['chase_6',['chase',['../namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5acd8e7918010a87cc619849e00265c9a6',1,'arpg']]],
-  ['clear_7',['clear',['../classarpg_1_1action__map.html#a4d9473d7035298fb3d3c13f8a3837ab0',1,'arpg::action_map::clear()'],['../structarpg_1_1input__snapshot.html#a8c1f27d0e89b8f356df5b0cb6ab71de1',1,'arpg::input_snapshot::clear()'],['../classarpg_1_1screen__manager.html#af0d5bf6e00d0bbc4b5cee941ab4fcb06',1,'arpg::screen_manager::clear()'],['../classarpg_1_1spatial__hash.html#a4deb51baba97ae7d0b5ac9b9ae2e72a0',1,'arpg::spatial_hash::clear()']]],
+  ['clear_7',['clear',['../structarpg_1_1input__snapshot.html#a8c1f27d0e89b8f356df5b0cb6ab71de1',1,'arpg::input_snapshot::clear()'],['../classarpg_1_1spatial__hash.html#a4deb51baba97ae7d0b5ac9b9ae2e72a0',1,'arpg::spatial_hash::clear()'],['../classarpg_1_1screen__manager.html#af0d5bf6e00d0bbc4b5cee941ab4fcb06',1,'arpg::screen_manager::clear()'],['../classarpg_1_1action__map.html#a4d9473d7035298fb3d3c13f8a3837ab0',1,'arpg::action_map::clear()']]],
   ['code_8',['code',['../structarpg_1_1binding.html#accf2b0a05c2804d74ac4a056b2048187',1,'arpg::binding']]],
   ['codes_9',['codes',['../classarpg_1_1raylib__input.html#a820ce8d8381af6deeb415e6352afcf5a',1,'arpg::raylib_input']]],
   ['collider_10',['collider',['../structarpg_1_1collider.html',1,'arpg']]],
@@ -19,7 +19,8 @@ var searchData=
   ['control_5fcodes_16',['control_codes',['../structarpg_1_1control__codes.html',1,'arpg']]],
   ['controls_17',['controls',['../classarpg_1_1action__map.html#a8c96ff57420fc493bcf369257fefa57e',1,'arpg::action_map::controls()'],['../index.html#autotoc_md4',1,'Controls']]],
   ['controls_5ffor_18',['controls_for',['../classarpg_1_1action__map.html#a4b61d48a6a6366e5cece8c2e90289865',1,'arpg::action_map']]],
-  ['cost_19',['cost',['../structarpg_1_1enemy__archetype.html#af9f5e1fbe000cacd7e97417ecbd3fe6f',1,'arpg::enemy_archetype']]],
-  ['count_20',['count',['../namespacearpg.html#a1a4ef9f532e96bfbf51de19ec286357aae2942a04780e223b215eb8b663cf5353',1,'arpg::count'],['../namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5ae2942a04780e223b215eb8b663cf5353',1,'arpg::count']]],
-  ['ctx_21',['ctx',['../classarpg_1_1screen.html#acba70541ace2bf22452acd61fcd97b07',1,'arpg::screen']]]
+  ['cooldown_19',['cooldown',['../structarpg_1_1dash__state.html#af1f51acce0699fe716de86980327316c',1,'arpg::dash_state::cooldown'],['../structarpg_1_1dash__profile.html#addd90dc3a0de4a0a06f48c7732769be8',1,'arpg::dash_profile::cooldown']]],
+  ['cost_20',['cost',['../structarpg_1_1enemy__archetype.html#af9f5e1fbe000cacd7e97417ecbd3fe6f',1,'arpg::enemy_archetype']]],
+  ['count_21',['count',['../namespacearpg.html#a1a4ef9f532e96bfbf51de19ec286357aae2942a04780e223b215eb8b663cf5353',1,'arpg::count'],['../namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5ae2942a04780e223b215eb8b663cf5353',1,'arpg::count']]],
+  ['ctx_22',['ctx',['../classarpg_1_1screen.html#acba70541ace2bf22452acd61fcd97b07',1,'arpg::screen']]]
 ];

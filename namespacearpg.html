@@ -143,6 +143,12 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1damage.html">damage</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Damage dealt on contact, or on impact for a projectile.  <a href="structarpg_1_1damage.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1dash__profile.html">dash_profile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a dash is worth, in figures a data file states.  <a href="structarpg_1_1dash__profile.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1dash__state.html">dash_state</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where a dash currently stands.  <a href="structarpg_1_1dash__state.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1direction__actions.html">direction_actions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which four actions stand for the four directions.  <a href="structarpg_1_1direction__actions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,6 +193,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1lifetime.html">lifetime</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long an entity has left, in seconds.  <a href="structarpg_1_1lifetime.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1loaded__player.html">loaded_player</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A profile that was read, or the reason it was not.  <a href="structarpg_1_1loaded__player.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classarpg_1_1main__menu__screen.html">main_menu_screen</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Title screen, and the only screen there is for now.  <a href="classarpg_1_1main__menu__screen.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -195,6 +204,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1player__controlled.html">player_controlled</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks the entity the player steers. There is exactly one.  <a href="structarpg_1_1player__controlled.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1player__profile.html">player_profile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Everything the player is worth, in figures a data file states.  <a href="structarpg_1_1player__profile.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1projectile.html">projectile</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks a projectile, which dies on impact and when it leaves the play area.  <a href="structarpg_1_1projectile.html#details">More...</a><br /></td></tr>
@@ -387,6 +399,23 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>length</b> (<a class
 <tr class="memitem:a1a4f026019bdc71a7f50280cb3c421d9" id="r_a1a4f026019bdc71a7f50280cb3c421d9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structarpg_1_1file__stamp.html">file_stamp</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a1a4f026019bdc71a7f50280cb3c421d9">disk_stamp</a> (const std::filesystem::path &amp;path)</td></tr>
 <tr class="memdesc:a1a4f026019bdc71a7f50280cb3c421d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the stamp from the filesystem.  <br /></td></tr>
 <tr class="separator:a1a4f026019bdc71a7f50280cb3c421d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a012a4eff7e79a33ec633230673d25a63" id="r_a012a4eff7e79a33ec633230673d25a63"><td class="memItemLeft" align="right" valign="top"><a id="a012a4eff7e79a33ec633230673d25a63" name="a012a4eff7e79a33ec633230673d25a63"></a>
+<a class="el" href="structarpg_1_1loaded__player.html">loaded_player</a>&#160;</td><td class="memItemRight" valign="bottom"><b>load_player</b> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, std::string_view source)</td></tr>
+<tr class="separator:a012a4eff7e79a33ec633230673d25a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad346beaf6e4d81193cb7faa4ea9662c9" id="r_ad346beaf6e4d81193cb7faa4ea9662c9"><td class="memItemLeft" align="right" valign="top"><a id="ad346beaf6e4d81193cb7faa4ea9662c9" name="ad346beaf6e4d81193cb7faa4ea9662c9"></a>
+<a class="el" href="structarpg_1_1loaded__player.html">loaded_player</a>&#160;</td><td class="memItemRight" valign="bottom"><b>load_player_from</b> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, const std::filesystem::path &amp;path)</td></tr>
+<tr class="separator:ad346beaf6e4d81193cb7faa4ea9662c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4acf8149bd1ea56063c5078e72632b5f" id="r_a4acf8149bd1ea56063c5078e72632b5f"><td class="memItemLeft" align="right" valign="top"><a id="a4acf8149bd1ea56063c5078e72632b5f" name="a4acf8149bd1ea56063c5078e72632b5f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>dashing</b> (const <a class="el" href="structarpg_1_1dash__state.html">dash_state</a> &amp;dash)</td></tr>
+<tr class="memdesc:a4acf8149bd1ea56063c5078e72632b5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while the dash is carrying the player, so the caller knows to ignore the steering. <br /></td></tr>
+<tr class="separator:a4acf8149bd1ea56063c5078e72632b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56579e93bd4b92dd084def56782b5732" id="r_a56579e93bd4b92dd084def56782b5732"><td class="memItemLeft" align="right" valign="top"><a id="a56579e93bd4b92dd084def56782b5732" name="a56579e93bd4b92dd084def56782b5732"></a>
+<a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dash_velocity</b> (const <a class="el" href="structarpg_1_1dash__state.html">dash_state</a> &amp;dash, const <a class="el" href="structarpg_1_1dash__profile.html">dash_profile</a> &amp;profile)</td></tr>
+<tr class="memdesc:a56579e93bd4b92dd084def56782b5732"><td class="mdescLeft">&#160;</td><td class="mdescRight">The velocity a dash imposes. Zero when none is running. <br /></td></tr>
+<tr class="separator:a56579e93bd4b92dd084def56782b5732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a260a7d50e97c6a18b4dc7322c1d65a4a" id="r_a260a7d50e97c6a18b4dc7322c1d65a4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a260a7d50e97c6a18b4dc7322c1d65a4a">advance_dash</a> (<a class="el" href="structarpg_1_1dash__state.html">dash_state</a> &amp;dash, const <a class="el" href="structarpg_1_1dash__profile.html">dash_profile</a> &amp;profile, bool wants, <a class="el" href="structarpg_1_1vec2.html">vec2</a> steering, float dt)</td></tr>
+<tr class="memdesc:a260a7d50e97c6a18b4dc7322c1d65a4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances <code>dash</code> by <code>dt</code>.  <br /></td></tr>
+<tr class="separator:a260a7d50e97c6a18b4dc7322c1d65a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d8e93cc6c96d0d4f499b31267072dba" id="r_a3d8e93cc6c96d0d4f499b31267072dba"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a3d8e93cc6c96d0d4f499b31267072dba">enemies_alive</a> (const entt::registry &amp;world)</td></tr>
 <tr class="memdesc:a3d8e93cc6c96d0d4f499b31267072dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many enemies are still standing.  <br /></td></tr>
 <tr class="separator:a3d8e93cc6c96d0d4f499b31267072dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1160,6 +1189,56 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 <p>Reads the stamp from the filesystem. </p>
 <p>Errors are reported as absence rather than as exceptions, since a file being written to is briefly unreachable. </p>
+
+</div>
+</div>
+<a id="a260a7d50e97c6a18b4dc7322c1d65a4a" name="a260a7d50e97c6a18b4dc7322c1d65a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a260a7d50e97c6a18b4dc7322c1d65a4a">&#9670;&#160;</a></span>advance_dash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool arpg::advance_dash </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structarpg_1_1dash__state.html">dash_state</a> &amp;&#160;</td>
+          <td class="paramname"><em>dash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structarpg_1_1dash__profile.html">dash_profile</a> &amp;&#160;</td>
+          <td class="paramname"><em>profile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>wants</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td>
+          <td class="paramname"><em>steering</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances <code>dash</code> by <code>dt</code>. </p>
+<p><code>wants</code> is whether the action was asked for on this step, and <code>steering</code> the direction the player is holding, which may be zero.</p>
+<p>Returns true on the step a dash starts, which is when the caller grants the invulnerability: doing it here would mean this knowing about the world. </p>
 
 </div>
 </div>

@@ -17,9 +17,10 @@ var searchData=
   ['slice_14',['slice',['../structarpg_1_1enemy__brain.html#aef6ad41b1965792867b261cf2b4212ec',1,'arpg::enemy_brain']]],
   ['spatial_5fhash_15',['spatial_hash',['../classarpg_1_1spatial__hash.html',1,'arpg::spatial_hash'],['../classarpg_1_1spatial__hash.html#ae4b0b5b8664b0d8bbdfffeed7ade8c4a',1,'arpg::spatial_hash::spatial_hash()']]],
   ['spawn_5fprojectile_16',['spawn_projectile',['../namespacearpg.html#a069eb89b5fe92f489baf77a46c9781e9',1,'arpg']]],
-  ['spin_17',['spin',['../structarpg_1_1firing__pattern.html#aed0434b3dccf587d86d904a2f6b398a2',1,'arpg::firing_pattern']]],
-  ['stamp_5freader_18',['stamp_reader',['../namespacearpg.html#aed60f4171e7c460081167cc688ced0c8',1,'arpg']]],
-  ['state_5ftimer_19',['state_timer',['../structarpg_1_1enemy__brain.html#a048846c6822785dd2e07e6f736e78d67',1,'arpg::enemy_brain']]],
-  ['status_20',['Status',['../index.html#autotoc_md1',1,'']]],
-  ['stick_5fdeadzone_21',['stick_deadzone',['../classarpg_1_1raylib__input.html#a0c775870b6f6369e9bee7a0c9c3ce79a',1,'arpg::raylib_input']]]
+  ['speed_17',['speed',['../structarpg_1_1dash__profile.html#aa0a86d60172fb395df566ccd3b1f8348',1,'arpg::dash_profile']]],
+  ['spin_18',['spin',['../structarpg_1_1firing__pattern.html#aed0434b3dccf587d86d904a2f6b398a2',1,'arpg::firing_pattern']]],
+  ['stamp_5freader_19',['stamp_reader',['../namespacearpg.html#aed60f4171e7c460081167cc688ced0c8',1,'arpg']]],
+  ['state_5ftimer_20',['state_timer',['../structarpg_1_1enemy__brain.html#a048846c6822785dd2e07e6f736e78d67',1,'arpg::enemy_brain']]],
+  ['status_21',['Status',['../index.html#autotoc_md1',1,'']]],
+  ['stick_5fdeadzone_22',['stick_deadzone',['../classarpg_1_1raylib__input.html#a0c775870b6f6369e9bee7a0c9c3ce79a',1,'arpg::raylib_input']]]
 ];

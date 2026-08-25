@@ -226,7 +226,7 @@ std::vector<int> distances_from(const level_layout& layout, std::size_t from)
   return steps;
 }
 
-void assign_roles(level_layout& layout, rng& generator)
+void assign_roles(level_layout& layout, rng& generator, float scale, vec2 smallest)
 {
   if (layout.rooms.empty())
   {
@@ -281,10 +281,28 @@ void assign_roles(level_layout& layout, rng& generator)
     }
   }
 
-  if (!dead_ends.empty())
+  if (dead_ends.empty())
   {
-    layout.rooms[dead_ends[generator.below(static_cast<std::uint32_t>(dead_ends.size()))]].role = room_role::station;
+    return;
   }
+
+  const std::size_t desk = dead_ends[generator.below(static_cast<std::uint32_t>(dead_ends.size()))];
+  layout.rooms[desk].role = room_role::station;
+
+  // Shrunk inside the footprint it was placed on rather than placed smaller in
+  // the first place, since the role is only known once the graph is walked.
+  // Taking it in about its own centre cannot bring it onto a neighbour.
+  // Sized against the smallest ordinary room rather than against its own
+  // plot: a fraction of a large plot is still a hall, and what goes in here is
+  // a desk.
+  viewport_rect& bounds = layout.rooms[desk].bounds;
+  const float width = std::min(bounds.width, smallest.x * scale);
+  const float height = std::min(bounds.height, smallest.y * scale);
+
+  bounds.x += (bounds.width - width) * 0.5f;
+  bounds.y += (bounds.height - height) * 0.5f;
+  bounds.width = width;
+  bounds.height = height;
 }
 
 } // namespace
@@ -331,7 +349,7 @@ level_layout generate_level(const level_recipe& recipe, rng& generator)
   level_layout out =
       (recipe.shape == level_shape::organic) ? lay_out_organic(recipe, generator) : lay_out_rigid(recipe, generator);
 
-  assign_roles(out, generator);
+  assign_roles(out, generator, std::clamp(recipe.service_scale, 0.2f, 1.0f), recipe.room_min);
 
   return out;
 }

@@ -23,6 +23,32 @@ constexpr float depth_bonus = 0.25f;
 
 } // namespace
 
+vec2 pick_spawn(rng& generator, viewport_rect room, float radius, std::span<const vec2> keep_clear, float clearance)
+{
+  // How many spots are offered before one is taken anyway.
+  constexpr int attempts = 20;
+
+  const float span_x = std::max(0.0f, room.width - 2.0f * radius);
+  const float span_y = std::max(0.0f, room.height - 2.0f * radius);
+
+  vec2 spot{};
+
+  for (int attempt = 0; attempt < attempts; ++attempt)
+  {
+    spot = vec2{room.x + radius + generator.unit() * span_x, room.y + radius + generator.unit() * span_y};
+
+    const bool crowded = std::any_of(keep_clear.begin(), keep_clear.end(),
+                                     [&](vec2 avoid) { return length_squared(spot - avoid) < clearance * clearance; });
+
+    if (!crowded)
+    {
+      break;
+    }
+  }
+
+  return spot;
+}
+
 int combat_budget(float area, int depth)
 {
   if (area <= 0.0f || depth <= 0)

@@ -86,6 +86,11 @@ struct level_recipe
 
   /// What is left between two rooms, which is where a corridor goes.
   float spacing = 48.0f;
+
+  /// How much of an ordinary room a room holding no fight takes. A station is
+  /// a desk and the clerk behind it, not an arena, and giving it the size of
+  /// one would promise a fight that never comes.
+  float service_scale = 0.5f;
 };
 
 /// Lays a level out, drawing every choice from @p generator.

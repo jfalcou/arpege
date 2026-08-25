@@ -111,6 +111,10 @@ private:
 
   level_run m_level;
 
+  /// Which room was left to get here, so the player is set down at the door
+  /// they came through. Out of range while nowhere has been left yet.
+  std::size_t m_came_from = static_cast<std::size_t>(-1);
+
   /// Carried from room to room, since the player entity is rebuilt with the
   /// world every time one is entered.
   int m_carried_health = 0;

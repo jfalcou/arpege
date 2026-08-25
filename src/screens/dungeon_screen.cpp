@@ -28,8 +28,8 @@ constexpr const char* roster_file = "data/enemies.lua";
 /// How much larger than the screen a room is. The generator draws its sizes
 /// between these, so a room is always at least a screenful and never so wide
 /// that its far side is out of reach.
-constexpr float room_scale_min = 0.9f;
-constexpr float room_scale_max = 1.7f;
+constexpr float room_scale_min = 0.75f;
+constexpr float room_scale_max = 1.25f;
 
 /// How many rooms a level is laid out with.
 constexpr int rooms_per_level = 9;
@@ -40,6 +40,10 @@ constexpr float door_radius = 22.0f;
 /// What the boss room is worth against an ordinary one, as a depth for the
 /// combat budget.
 constexpr int boss_depth = 4;
+
+/// How much ground is left clear around where the player sets foot and around
+/// every doorway, since either is somewhere they may appear.
+constexpr float spawn_clearance = 72.0f;
 
 /// How eagerly the view catches up, in units per second. Tight enough to feel
 /// attached, loose enough not to judder on a fixed step.
@@ -111,7 +115,20 @@ void dungeon_screen::enter_current_room()
   m_exit = exit_portal{};
 
   const viewport_rect bounds = room();
-  spawn_player(vec2{bounds.x + bounds.width * 0.5f, bounds.y + bounds.height * 0.5f});
+
+  // Set down just inside the door led back to, rather than in the middle of
+  // the room: without a corridor to walk, this is what keeps crossing a
+  // threshold from reading as being teleported.
+  vec2 landing{bounds.x + bounds.width * 0.5f, bounds.y + bounds.height * 0.5f};
+
+  if (m_came_from < m_level.layout.rooms.size() && m_came_from != m_level.here)
+  {
+    const vec2 back = door_position(bounds, m_level.layout.rooms[m_came_from].bounds);
+    const vec2 inward = normalized(landing - back);
+    landing = back + inward * (door_radius + 12.0f);
+  }
+
+  spawn_player(landing);
 
   // A landing and a service room hold nothing: arriving in a fight one has not
   // seen coming reads as an ambush rather than as a level.
@@ -144,8 +161,11 @@ void dungeon_screen::take_doors()
       continue;
     }
 
+    const std::size_t leaving = m_level.here;
+
     if (enter_room(m_level, neighbour))
     {
+      m_came_from = leaving;
       enter_current_room();
       return;
     }
@@ -190,15 +210,24 @@ void dungeon_screen::spawn_wave()
   const int budget = combat_budget(width * height, depth);
   const auto composition = compose_wave(budget, m_roster.kinds, m_generator);
 
+  // Every doorway of this room, since the player may come back through any of
+  // them and must not walk into a body on the threshold.
+  std::vector<vec2> doorways;
+
+  for (const std::size_t neighbour : neighbours_of(m_level.layout, m_level.here))
+  {
+    doorways.push_back(door_position(bounds, m_level.layout.rooms[neighbour].bounds));
+  }
+
+  doorways.push_back(m_world.get<transform>(m_player).position);
+
   std::uint8_t slice = 0;
 
   for (const std::size_t index : composition)
   {
     const enemy_archetype& kind = m_roster.kinds[index];
 
-    // Spawned across the upper half, away from where the player starts.
-    const vec2 spot{bounds.x + m_generator.unit() * (width - 2.0f * kind.radius) + kind.radius,
-                    bounds.y + m_generator.unit() * height * 0.45f + kind.radius};
+    const vec2 spot = pick_spawn(m_generator, bounds, kind.radius, doorways, spawn_clearance);
 
     const entt::entity foe = m_world.create();
     m_world.emplace<transform>(foe, spot, spot);
@@ -256,6 +285,19 @@ void dungeon_screen::draw_minimap()
 
   DrawRectangle(static_cast<int>(left) - 2, static_cast<int>(top) - 2, static_cast<int>(plan_width) + 4,
                 static_cast<int>(plan_height) + 4, Color{12, 10, 16, 200});
+
+  // The links first, under the rooms. Nothing joins two rooms in the world —
+  // a door is a threshold, not a corridor — so the plan is the only place the
+  // shape of a level can be read at all.
+  for (const level_link& link : m_level.layout.links)
+  {
+    const viewport_rect& a = m_level.layout.rooms[link.from].bounds;
+    const viewport_rect& b = m_level.layout.rooms[link.to].bounds;
+
+    DrawLineV(Vector2{left + (a.x + a.width * 0.5f - min_x) * scale, top + (a.y + a.height * 0.5f - min_y) * scale},
+              Vector2{left + (b.x + b.width * 0.5f - min_x) * scale, top + (b.y + b.height * 0.5f - min_y) * scale},
+              Color{120, 110, 130, 255});
+  }
 
   for (std::size_t index = 0; index < m_level.layout.rooms.size(); ++index)
   {

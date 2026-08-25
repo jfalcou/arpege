@@ -73,9 +73,12 @@ void action_state::advance(const action_set& held)
 
   m_held = held;
 
-  // The first step has no previous frame: treat what is already down as newly
-  // pressed rather than as having always been held.
-  m_pressed = m_started ? (held & ~previous) : held;
+  // Nothing is a press on the first step. What is already down was pressed
+  // before this state existed, and a screen opened by a key would otherwise
+  // read that same key as its own first press and act on it at once: the
+  // Bureau would flash by and the dungeon would open on the keystroke meant
+  // to reach the Bureau.
+  m_pressed = m_started ? (held & ~previous) : action_set{};
   m_released = m_started ? (previous & ~held) : action_set{};
   m_started = true;
 

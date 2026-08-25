@@ -7,8 +7,9 @@ var searchData=
   ['development_4',['Development',['../index.html#autotoc_md6',1,'']]],
   ['device_5',['device',['../structarpg_1_1binding.html#a407c486b22d1fb4e34adbaecf288cfd1',1,'arpg::binding::device'],['../structarpg_1_1input__snapshot.html#a034e29c040de3892790a8745bad083eb',1,'arpg::input_snapshot::device']]],
   ['direction_5factions_6',['direction_actions',['../structarpg_1_1direction__actions.html',1,'arpg']]],
-  ['down_7',['down',['../structarpg_1_1direction__actions.html#aef79deeac281bd0589fdd1f804f42df8',1,'arpg::direction_actions::down'],['../structarpg_1_1input__snapshot.html#a578e535d92534b88a6c6626f25fd0204',1,'arpg::input_snapshot::down']]],
-  ['dungeon_5fbindings_8',['dungeon_bindings',['../namespacearpg.html#a49c1590ab4f811b34ad7d46d6b737c9d',1,'arpg']]],
-  ['dungeon_5fscreen_9',['dungeon_screen',['../classarpg_1_1dungeon__screen.html',1,'arpg']]],
-  ['duration_10',['duration',['../structarpg_1_1invulnerable.html#a205916a2523b9f9ae535c219b3005def',1,'arpg::invulnerable']]]
+  ['disk_5fstamp_7',['disk_stamp',['../namespacearpg.html#a1a4f026019bdc71a7f50280cb3c421d9',1,'arpg']]],
+  ['down_8',['down',['../structarpg_1_1direction__actions.html#aef79deeac281bd0589fdd1f804f42df8',1,'arpg::direction_actions::down'],['../structarpg_1_1input__snapshot.html#a578e535d92534b88a6c6626f25fd0204',1,'arpg::input_snapshot::down']]],
+  ['dungeon_5fbindings_9',['dungeon_bindings',['../namespacearpg.html#a49c1590ab4f811b34ad7d46d6b737c9d',1,'arpg']]],
+  ['dungeon_5fscreen_10',['dungeon_screen',['../classarpg_1_1dungeon__screen.html',1,'arpg']]],
+  ['duration_11',['duration',['../structarpg_1_1invulnerable.html#a205916a2523b9f9ae535c219b3005def',1,'arpg::invulnerable']]]
 ];

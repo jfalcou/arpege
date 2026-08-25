@@ -8,5 +8,6 @@ var searchData=
   ['insert_5',['insert',['../classarpg_1_1spatial__hash.html#abcf7e97280a255231fad8a7183142192',1,'arpg::spatial_hash']]],
   ['integer_5fscale_6',['integer_scale',['../namespacearpg.html#a8aea5d3021d1aaef982ae300657d9eba',1,'arpg']]],
   ['integrate_5fmotion_7',['integrate_motion',['../namespacearpg.html#ac2792ee06d96e9738f8606063a692fc7',1,'arpg']]],
-  ['invulnerable_8',['invulnerable',['../structarpg_1_1invulnerable.html',1,'arpg']]]
+  ['interval_8',['interval',['../structarpg_1_1firing__pattern.html#ac8c73d0f15bc69e14ac029c2dce60d1e',1,'arpg::firing_pattern']]],
+  ['invulnerable_9',['invulnerable',['../structarpg_1_1invulnerable.html',1,'arpg']]]
 ];

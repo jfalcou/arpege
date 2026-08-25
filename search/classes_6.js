@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['input_5fsnapshot_0',['input_snapshot',['../structarpg_1_1input__snapshot.html',1,'arpg']]],
-  ['invulnerable_1',['invulnerable',['../structarpg_1_1invulnerable.html',1,'arpg']]]
+  ['health_0',['health',['../structarpg_1_1health.html',1,'arpg']]]
 ];

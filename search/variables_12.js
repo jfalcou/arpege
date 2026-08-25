@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['value_0',['value',['../structarpg_1_1aim__input.html#a9060a7d869ceb02e1643dfbeda32ea5b',1,'arpg::aim_input']]],
-  ['vsync_1',['vsync',['../structarpg_1_1app__config.html#ad93cc3ef1f4ae19b5209cb2fe5cc9de9',1,'arpg::app_config']]]
+  ['up_0',['up',['../structarpg_1_1direction__actions.html#a4b1a631708759fa27a6203246c530056',1,'arpg::direction_actions']]]
 ];

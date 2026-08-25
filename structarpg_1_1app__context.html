@@ -130,6 +130,9 @@ const <a class="el" href="classarpg_1_1pixel__canvas.html">pixel_canvas</a> *&#1
 bool *&#160;</td><td class="memItemRight" valign="bottom"><b>quit_flag</b> = nullptr</td></tr>
 <tr class="memdesc:a8abf9d1d62a6ce9a595c2f426cc0a73d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised by <a class="el" href="structarpg_1_1app__context.html#a9b52e85796211b6e4a560e78fc0fd2cc" title="Asks the application to leave the game loop at the end of the frame.">request_quit()</a>. <br /></td></tr>
 <tr class="separator:a8abf9d1d62a6ce9a595c2f426cc0a73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac238aa8e24bc4d6bff7c9ae927e16a1d" id="r_ac238aa8e24bc4d6bff7c9ae927e16a1d"><td class="memItemLeft" align="right" valign="top">const std::filesystem::path *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1app__context.html#ac238aa8e24bc4d6bff7c9ae927e16a1d">assets</a> = nullptr</td></tr>
+<tr class="memdesc:ac238aa8e24bc4d6bff7c9ae927e16a1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where data files are read from, resolved once at start-up.  <br /></td></tr>
+<tr class="separator:ac238aa8e24bc4d6bff7c9ae927e16a1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2224e8e1285297eed2f8872d80a55ad7" id="r_a2224e8e1285297eed2f8872d80a55ad7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structarpg_1_1input__snapshot.html">input_snapshot</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1app__context.html#a2224e8e1285297eed2f8872d80a55ad7">input</a> = nullptr</td></tr>
 <tr class="memdesc:a2224e8e1285297eed2f8872d80a55ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampled once per rendered frame; every simulation step of that frame reads the same one.  <br /></td></tr>
 <tr class="separator:a2224e8e1285297eed2f8872d80a55ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,6 +141,23 @@ bool *&#160;</td><td class="memItemRight" valign="bottom"><b>quit_flag</b> = nul
 <div class="textblock"><p>Services a screen may reach outside of its own world. </p>
 <p>Screens hold no pointer to each other and talk through the dispatcher, so none of them has to know which others exist. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="ac238aa8e24bc4d6bff7c9ae927e16a1d" name="ac238aa8e24bc4d6bff7c9ae927e16a1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac238aa8e24bc4d6bff7c9ae927e16a1d">&#9670;&#160;</a></span>assets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::filesystem::path* arpg::app_context::assets = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Where data files are read from, resolved once at start-up. </p>
+<p>Held by the application, since this context is copied to every screen and stays a handful of pointers. </p>
+
+</div>
+</div>
 <a id="a2224e8e1285297eed2f8872d80a55ad7" name="a2224e8e1285297eed2f8872d80a55ad7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2224e8e1285297eed2f8872d80a55ad7">&#9670;&#160;</a></span>input</h2>
 

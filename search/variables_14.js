@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['x_0',['x',['../structarpg_1_1vec2.html#a768074ce8f823a2ec21368500ad32032',1,'arpg::vec2::x'],['../structarpg_1_1viewport__rect.html#ac6a02e76e9cc86e5066af012e052574d',1,'arpg::viewport_rect::x']]]
+  ['width_0',['width',['../structarpg_1_1viewport__rect.html#a1ea855f5be790aaab567dd5dd99d6842',1,'arpg::viewport_rect']]],
+  ['window_5fscale_1',['window_scale',['../structarpg_1_1app__config.html#a975b0f2c6cc54b3e94cadf9af269d4ba',1,'arpg::app_config']]]
 ];

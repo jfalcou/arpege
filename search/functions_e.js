@@ -10,5 +10,6 @@ var searchData=
   ['resolve_5fcontact_5fdamage_7',['resolve_contact_damage',['../namespacearpg.html#aef47d4cba6bb27915229e0303de1d49f',1,'arpg']]],
   ['resolve_5fprojectile_5fhits_8',['resolve_projectile_hits',['../namespacearpg.html#abb1a9f9358fdc61b4edd3630c63c5319',1,'arpg']]],
   ['rng_9',['rng',['../classarpg_1_1rng.html#ad450ccad0846691d1e0fa0866cd42ba1',1,'arpg::rng']]],
-  ['run_10',['run',['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application']]]
+  ['run_10',['run',['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application::run()'],['../classarpg_1_1script__host.html#a37c9c218f0c70913292d0c7e95d46598',1,'arpg::script_host::run(std::string_view source, std::string_view name)']]],
+  ['run_5ffile_11',['run_file',['../classarpg_1_1script__host.html#a1be7d03f6e0f6a62e5876bca6e4cb9da',1,'arpg::script_host']]]
 ];

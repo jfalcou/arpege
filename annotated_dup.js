@@ -18,10 +18,15 @@ var annotated_dup =
       [ "encounter", "structarpg_1_1encounter.html", "structarpg_1_1encounter" ],
       [ "enemy_archetype", "structarpg_1_1enemy__archetype.html", "structarpg_1_1enemy__archetype" ],
       [ "enemy_brain", "structarpg_1_1enemy__brain.html", "structarpg_1_1enemy__brain" ],
+      [ "enemy_catalogue", "structarpg_1_1enemy__catalogue.html", "structarpg_1_1enemy__catalogue" ],
       [ "exit_portal", "structarpg_1_1exit__portal.html", "structarpg_1_1exit__portal" ],
+      [ "file_stamp", "structarpg_1_1file__stamp.html", null ],
+      [ "file_watch", "classarpg_1_1file__watch.html", "classarpg_1_1file__watch" ],
+      [ "firing_pattern", "structarpg_1_1firing__pattern.html", "structarpg_1_1firing__pattern" ],
       [ "health", "structarpg_1_1health.html", null ],
       [ "input_snapshot", "structarpg_1_1input__snapshot.html", "structarpg_1_1input__snapshot" ],
       [ "invulnerable", "structarpg_1_1invulnerable.html", "structarpg_1_1invulnerable" ],
+      [ "launch_options", "structarpg_1_1launch__options.html", "structarpg_1_1launch__options" ],
       [ "lifetime", "structarpg_1_1lifetime.html", null ],
       [ "main_menu_screen", "classarpg_1_1main__menu__screen.html", "classarpg_1_1main__menu__screen" ],
       [ "pixel_canvas", "classarpg_1_1pixel__canvas.html", "classarpg_1_1pixel__canvas" ],
@@ -32,6 +37,8 @@ var annotated_dup =
       [ "room_cleared", "structarpg_1_1room__cleared.html", null ],
       [ "screen", "classarpg_1_1screen.html", "classarpg_1_1screen" ],
       [ "screen_manager", "classarpg_1_1screen__manager.html", "classarpg_1_1screen__manager" ],
+      [ "script_host", "classarpg_1_1script__host.html", "classarpg_1_1script__host" ],
+      [ "script_result", "structarpg_1_1script__result.html", null ],
       [ "shot_recipe", "structarpg_1_1shot__recipe.html", "structarpg_1_1shot__recipe" ],
       [ "spatial_hash", "classarpg_1_1spatial__hash.html", "classarpg_1_1spatial__hash" ],
       [ "team", "structarpg_1_1team.html", null ],
@@ -39,6 +46,6 @@ var annotated_dup =
       [ "vec2", "structarpg_1_1vec2.html", "structarpg_1_1vec2" ],
       [ "velocity", "structarpg_1_1velocity.html", null ],
       [ "viewport_rect", "structarpg_1_1viewport__rect.html", "structarpg_1_1viewport__rect" ],
-      [ "weapon", "structarpg_1_1weapon.html", null ]
+      [ "weapon", "structarpg_1_1weapon.html", "structarpg_1_1weapon" ]
     ] ]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ranged_0',['ranged',['../namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26adc18a2eaca63070ab8c88c511ae4e4cd',1,'arpg']]]
+  ['melee_0',['melee',['../namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26ae686710e1512ff998541ddd98ee4b7e8',1,'arpg']]]
 ];

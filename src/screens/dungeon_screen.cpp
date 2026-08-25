@@ -99,6 +99,24 @@ vec2 dungeon_screen::view() const
 
 void dungeon_screen::enter_current_room()
 {
+  // A level with no room in it means the data was refused. Reading a role out
+  // of an empty layout would be the first thing to go wrong, and the least
+  // legible.
+  if (m_level.here >= m_level.layout.rooms.size())
+  {
+    m_world.clear();
+    m_player = entt::null;
+    return;
+  }
+
+  // Taken before the world goes, since the entity holding it goes with it.
+  // Without this a room change would hand the player a full life bar, which
+  // is a stranger bug than a crash for being invisible.
+  if (m_world.valid(m_player) && m_world.all_of<health>(m_player))
+  {
+    m_carried_health = m_world.get<health>(m_player).current;
+  }
+
   m_world.clear();
   m_dash = dash_state{};
   m_fire_cooldown = 0.0f;
@@ -115,8 +133,16 @@ void dungeon_screen::enter_current_room()
   if (m_came_from < m_level.layout.rooms.size() && m_came_from != m_level.here)
   {
     const vec2 back = door_position(bounds, m_level.layout.rooms[m_came_from].bounds);
-    const vec2 inward = normalized(landing - back);
-    landing = back + inward * (door_radius + 12.0f);
+    const vec2 towards_middle = landing - back;
+
+    // A doorway falling exactly on the middle of the room leaves no direction
+    // to step inward along, and normalising nothing gives a position that is
+    // not a number: every comparison against it then answers false, which
+    // reads as the room having no walls and no doors.
+    if (length_squared(towards_middle) > 0.0f)
+    {
+      landing = back + normalized(towards_middle) * (door_radius + 12.0f);
+    }
   }
 
   spawn_player(landing);
@@ -535,6 +561,12 @@ void dungeon_screen::fire(float dt)
 void dungeon_screen::update(float dt)
 {
   m_actions.advance(m_bindings.resolve(*ctx().input));
+
+  // A step that finds no world to play is one whose room could not be built.
+  if (m_level.layout.rooms.empty())
+  {
+    return;
+  }
 
   if (m_actions.consume(action::pause) || !player_alive())
   {

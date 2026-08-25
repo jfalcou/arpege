@@ -5,8 +5,11 @@
 #include <data/schema.hpp>
 
 #include <algorithm>
-#include <iomanip>
+#include <array>
+#include <charconv>
 #include <sstream>
+#include <string_view>
+#include <system_error>
 
 namespace arpg
 {
@@ -14,12 +17,24 @@ namespace arpg
 namespace
 {
 
-/// Enough digits that a float written out and read back is the same float.
-constexpr int float_digits = 9;
-
+/// Writes the shortest run of digits that reads back as this very float.
+///
+/// Nine digits everywhere would also come back exact, and would put 0.100000001
+/// in a file meant to be edited by hand. Shortest-round-trip gives 0.1, and
+/// gives it back unchanged.
 void put(std::ostringstream& out, float value)
 {
-  out << std::setprecision(float_digits) << value;
+  std::array<char, 32> digits{};
+
+  const std::to_chars_result written = std::to_chars(digits.data(), digits.data() + digits.size(), value);
+
+  if (written.ec != std::errc{})
+  {
+    out << value;
+    return;
+  }
+
+  out << std::string_view{digits.data(), static_cast<std::size_t>(written.ptr - digits.data())};
 }
 
 bool reads_back(const sprite_atlas& atlas, std::string& error)

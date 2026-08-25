@@ -282,3 +282,28 @@ TTS_CASE("A cut nobody could make yields nothing")
   TTS_EXPECT(arpg::slice_grid(32, 32, arpg::grid_slice{.cell_height = -4}).empty());
   TTS_EXPECT(arpg::slice_grid(4, 4, arpg::grid_slice{.cell_width = 8, .cell_height = 8}).empty());
 };
+
+TTS_CASE("A duration is written as short as it can be and still read back")
+{
+  arpg::sprite_atlas atlas;
+  atlas.image = "a.png";
+  atlas.frames.push_back(arpg::sprite_frame{"f", 0, 0, 8, 8, arpg::vec2{4.0f, 8.0f}});
+
+  arpg::sprite_animation clip;
+  clip.name = "walk";
+  clip.frames.push_back(arpg::animation_frame{"f", 0.1f});
+  atlas.animations.push_back(clip);
+
+  const std::string written = arpg::write_atlas(atlas);
+
+  // Nine digits everywhere also comes back exact, and puts 0.100000001 in a
+  // file meant to be read and edited by a person.
+  TTS_EXPECT(written.find("0.1 ") != std::string::npos) << written;
+  TTS_EXPECT(written.find("0.100000") == std::string::npos);
+
+  arpg::script_host host;
+  const arpg::loaded_atlas back = arpg::load_atlas(host, written, "x");
+
+  TTS_EXPECT(back.valid()) << back.error;
+  TTS_EQUAL(back.value.animations[0].frames[0].seconds, 0.1f);
+};

@@ -8,7 +8,7 @@ var searchData=
   ['recipe_5ffor_5',['recipe_for',['../namespacearpg.html#ac20c0acbed15b31014374fbdd720a2bf',1,'arpg']]],
   ['released_6',['released',['../classarpg_1_1action__state.html#a4880b36a1f6d096e6a6ecf40a09ca14f',1,'arpg::action_state']]],
   ['remaining_7',['remaining',['../structarpg_1_1dash__state.html#aa69eb4f0e7bb60b913091914ccfb0cb5',1,'arpg::dash_state']]],
-  ['render_8',['render',['../classarpg_1_1screen.html#aa48a3c670a167336a3b659a8c6784888',1,'arpg::screen::render()'],['../classarpg_1_1screen__manager.html#af6cfb4da653ce5c899e7a441a7b22575',1,'arpg::screen_manager::render()'],['../classarpg_1_1dungeon__screen.html#a6f94a699edf5c5be50268115b828ba03',1,'arpg::dungeon_screen::render()'],['../classarpg_1_1main__menu__screen.html#a800cb9fa0af52a88958cd75d489fe50e',1,'arpg::main_menu_screen::render()']]],
+  ['render_8',['render',['../classarpg_1_1screen.html#aa48a3c670a167336a3b659a8c6784888',1,'arpg::screen::render()'],['../classarpg_1_1screen__manager.html#af6cfb4da653ce5c899e7a441a7b22575',1,'arpg::screen_manager::render()'],['../classarpg_1_1bureau__screen.html#a89824230fe05cb9197463bfc946f94a1',1,'arpg::bureau_screen::render()'],['../classarpg_1_1dungeon__screen.html#a6f94a699edf5c5be50268115b828ba03',1,'arpg::dungeon_screen::render()'],['../classarpg_1_1main__menu__screen.html#a800cb9fa0af52a88958cd75d489fe50e',1,'arpg::main_menu_screen::render()']]],
   ['replace_9',['replace',['../classarpg_1_1screen__manager.html#a9fa50fdd27c441e304e56a2b4526fe5c',1,'arpg::screen_manager']]],
   ['request_5fquit_10',['request_quit',['../structarpg_1_1app__context.html#a9b52e85796211b6e4a560e78fc0fd2cc',1,'arpg::app_context']]],
   ['resizable_11',['resizable',['../structarpg_1_1app__config.html#ab967353be436a3283acc89bb37b455c0',1,'arpg::app_config']]],
@@ -26,5 +26,6 @@ var searchData=
   ['room_5frole_23',['room_role',['../namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96',1,'arpg']]],
   ['rooms_5fmin_24',['rooms_min',['../structarpg_1_1level__recipe.html#a5a0a1e1a47e98cdd1a5d0d640e5a5459',1,'arpg::level_recipe']]],
   ['run_25',['run',['../classarpg_1_1script__host.html#a37c9c218f0c70913292d0c7e95d46598',1,'arpg::script_host::run()'],['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application::run()']]],
-  ['run_5ffile_26',['run_file',['../classarpg_1_1script__host.html#a1be7d03f6e0f6a62e5876bca6e4cb9da',1,'arpg::script_host']]]
+  ['run_5ffile_26',['run_file',['../classarpg_1_1script__host.html#a1be7d03f6e0f6a62e5876bca6e4cb9da',1,'arpg::script_host']]],
+  ['run_5fstate_27',['run_state',['../structarpg_1_1run__state.html',1,'arpg']]]
 ];

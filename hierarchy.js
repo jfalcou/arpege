@@ -45,7 +45,9 @@ var hierarchy =
     [ "arpg::raylib_input", "classarpg_1_1raylib__input.html", null ],
     [ "arpg::rng", "classarpg_1_1rng.html", null ],
     [ "arpg::room_cleared", "structarpg_1_1room__cleared.html", null ],
+    [ "arpg::run_state", "structarpg_1_1run__state.html", null ],
     [ "arpg::screen", "classarpg_1_1screen.html", [
+      [ "arpg::bureau_screen", "classarpg_1_1bureau__screen.html", null ],
       [ "arpg::dungeon_screen", "classarpg_1_1dungeon__screen.html", null ],
       [ "arpg::main_menu_screen", "classarpg_1_1main__menu__screen.html", null ]
     ] ],

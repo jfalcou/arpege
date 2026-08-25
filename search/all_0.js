@@ -26,7 +26,8 @@ var searchData=
   ['asset_5froot_23',['asset_root',['../namespacearpg.html#ade1f5d689a60f1fb253e3e7b0e4be75d',1,'arpg']]],
   ['asset_5froot_5fvariable_24',['asset_root_variable',['../namespacearpg.html#ad0ec3a9d9be33aa7e1b15306b03a9cc6',1,'arpg']]],
   ['assets_25',['assets',['../structarpg_1_1launch__options.html#a2b00aeae16810c9e593ea1c9ffb0d938',1,'arpg::launch_options::assets'],['../structarpg_1_1app__config.html#acfef39b7e823e40de8f48659be972d5b',1,'arpg::app_config::assets'],['../structarpg_1_1app__context.html#ac238aa8e24bc4d6bff7c9ae927e16a1d',1,'arpg::app_context::assets']]],
-  ['attach_26',['attach',['../classarpg_1_1screen.html#a4f7988b0a557ecac0195b8d58b9a4f57',1,'arpg::screen']]],
-  ['attack_27',['attack',['../namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5afc7e987f23de5bd6562b7c0063cad659',1,'arpg']]],
-  ['attack_5fstyle_28',['attack_style',['../namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26',1,'arpg']]]
+  ['assign_5femployee_26',['assign_employee',['../namespacearpg.html#af913791d93fa282ef9b59c86d75b141a',1,'arpg']]],
+  ['attach_27',['attach',['../classarpg_1_1screen.html#a4f7988b0a557ecac0195b8d58b9a4f57',1,'arpg::screen']]],
+  ['attack_28',['attack',['../namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5afc7e987f23de5bd6562b7c0063cad659',1,'arpg']]],
+  ['attack_5fstyle_29',['attack_style',['../namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26',1,'arpg']]]
 ];

@@ -18,6 +18,7 @@ namespace arpg
 inline constexpr int enemies_schema = 1;
 inline constexpr int player_schema = 1;
 inline constexpr int biome_schema = 1;
+inline constexpr int atlas_schema = 1;
 
 /// Empty when @p described is written for a version this build reads.
 ///

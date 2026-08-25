@@ -49,6 +49,7 @@ include(documentation)
 add_library(arpg_core STATIC
   src/ecs/encounter.cpp
   src/data/asset_root.cpp
+  src/data/atlas_data.cpp
   src/data/biome_data.cpp
   src/data/hot_reload.cpp
   src/data/player_data.cpp
@@ -69,6 +70,7 @@ add_library(arpg_core STATIC
   src/core/default_bindings.cpp
   src/core/screen_manager.cpp
   src/core/viewport.cpp
+  src/render/sprite_atlas.cpp
   src/world/level_layout.cpp
   src/world/level_run.cpp
   src/world/run_state.cpp

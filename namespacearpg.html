@@ -128,6 +128,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1binding.html">binding</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A physical control: a key, a mouse button or a gamepad button.  <a href="structarpg_1_1binding.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1biome.html">biome</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a place is made of.  <a href="structarpg_1_1biome.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1camera__focus.html">camera_focus</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the view is centred, in room coordinates.  <a href="structarpg_1_1camera__focus.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,6 +154,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1direction__actions.html">direction_actions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which four actions stand for the four directions.  <a href="structarpg_1_1direction__actions.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classarpg_1_1directory__watch.html">directory_watch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Watches a directory of data files rather than one file.  <a href="classarpg_1_1directory__watch.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classarpg_1_1dungeon__screen.html">dungeon_screen</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A room of the dungeon: the player, what shoots at them, and what they shoot.  <a href="classarpg_1_1dungeon__screen.html#details">More...</a><br /></td></tr>
@@ -200,8 +206,14 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__room.html">level_room</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__run.html">level_run</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">How far a level has been taken.  <a href="structarpg_1_1level__run.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1lifetime.html">lifetime</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long an entity has left, in seconds.  <a href="structarpg_1_1lifetime.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1loaded__biomes.html">loaded_biomes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The biomes that were read, or the reason they were not.  <a href="structarpg_1_1loaded__biomes.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1loaded__player.html">loaded_player</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A profile that was read, or the reason it was not.  <a href="structarpg_1_1loaded__player.html#details">More...</a><br /></td></tr>
@@ -277,6 +289,14 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>action_set</b> = std
 using&#160;</td><td class="memItemRight" valign="bottom"><b>stamp_reader</b> = std::function&lt; std::optional&lt; <a class="el" href="structarpg_1_1file__stamp.html">file_stamp</a> &gt;(const std::filesystem::path &amp;)&gt;</td></tr>
 <tr class="memdesc:aed60f4171e7c460081167cc688ced0c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads what identifies a file, or nothing when it cannot be reached. <br /></td></tr>
 <tr class="separator:aed60f4171e7c460081167cc688ced0c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8d9e4ea7a07796e36127c63275d9cf1" id="r_af8d9e4ea7a07796e36127c63275d9cf1"><td class="memItemLeft" align="right" valign="top"><a id="af8d9e4ea7a07796e36127c63275d9cf1" name="af8d9e4ea7a07796e36127c63275d9cf1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>directory_listing</b> = std::vector&lt; std::pair&lt; std::string, <a class="el" href="structarpg_1_1file__stamp.html">file_stamp</a> &gt; &gt;</td></tr>
+<tr class="memdesc:af8d9e4ea7a07796e36127c63275d9cf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a directory holds, by name and by stamp. <br /></td></tr>
+<tr class="separator:af8d9e4ea7a07796e36127c63275d9cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3725f6aacfe2d1fea3a6135dacb3b4" id="r_a5c3725f6aacfe2d1fea3a6135dacb3b4"><td class="memItemLeft" align="right" valign="top"><a id="a5c3725f6aacfe2d1fea3a6135dacb3b4" name="a5c3725f6aacfe2d1fea3a6135dacb3b4"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>directory_reader</b> = std::function&lt; <a class="el" href="namespacearpg.html#af8d9e4ea7a07796e36127c63275d9cf1">directory_listing</a>(const std::filesystem::path &amp;)&gt;</td></tr>
+<tr class="memdesc:a5c3725f6aacfe2d1fea3a6135dacb3b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads what a directory holds, or nothing when it cannot be reached. <br /></td></tr>
+<tr class="separator:a5c3725f6aacfe2d1fea3a6135dacb3b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -412,6 +432,17 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>length</b> (<a class
 <tr class="memitem:ade1f5d689a60f1fb253e3e7b0e4be75d" id="r_ade1f5d689a60f1fb253e3e7b0e4be75d"><td class="memItemLeft" align="right" valign="top">std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#ade1f5d689a60f1fb253e3e7b0e4be75d">asset_root</a> (std::string_view from_command_line, std::string_view from_environment, const std::filesystem::path &amp;beside_executable)</td></tr>
 <tr class="memdesc:ade1f5d689a60f1fb253e3e7b0e4be75d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the game reads its data from.  <br /></td></tr>
 <tr class="separator:ade1f5d689a60f1fb253e3e7b0e4be75d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a738928cc82b1c0e94063abf77b6c1432" id="r_a738928cc82b1c0e94063abf77b6c1432"><td class="memItemLeft" align="right" valign="top"><a id="a738928cc82b1c0e94063abf77b6c1432" name="a738928cc82b1c0e94063abf77b6c1432"></a>
+<a class="el" href="structarpg_1_1loaded__biomes.html">loaded_biomes</a>&#160;</td><td class="memItemRight" valign="bottom"><b>load_biome</b> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, std::string_view source, std::string_view key)</td></tr>
+<tr class="memdesc:a738928cc82b1c0e94063abf77b6c1432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads one biome from Lua source, named <code>key</code>. <br /></td></tr>
+<tr class="separator:a738928cc82b1c0e94063abf77b6c1432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaae97779feb8cfb26bce4118b11ef5d6" id="r_aaae97779feb8cfb26bce4118b11ef5d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structarpg_1_1loaded__biomes.html">loaded_biomes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#aaae97779feb8cfb26bce4118b11ef5d6">load_biomes_from</a> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, const std::filesystem::path &amp;directory)</td></tr>
+<tr class="memdesc:aaae97779feb8cfb26bce4118b11ef5d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads every <code>.lua</code> file in <code>directory</code>, in the order of their names.  <br /></td></tr>
+<tr class="separator:aaae97779feb8cfb26bce4118b11ef5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac20c0acbed15b31014374fbdd720a2bf" id="r_ac20c0acbed15b31014374fbdd720a2bf"><td class="memItemLeft" align="right" valign="top"><a id="ac20c0acbed15b31014374fbdd720a2bf" name="ac20c0acbed15b31014374fbdd720a2bf"></a>
+<a class="el" href="structarpg_1_1level__recipe.html">level_recipe</a>&#160;</td><td class="memItemRight" valign="bottom"><b>recipe_for</b> (const <a class="el" href="structarpg_1_1biome.html">biome</a> &amp;place, <a class="el" href="structarpg_1_1vec2.html">vec2</a> <a class="el" href="classarpg_1_1screen.html">screen</a>)</td></tr>
+<tr class="memdesc:ac20c0acbed15b31014374fbdd720a2bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turns a biome into what the generator takes, against a view of <code>screen</code>. <br /></td></tr>
+<tr class="separator:ac20c0acbed15b31014374fbdd720a2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5182c48c4a43b77d06dba69867d01a8e" id="r_a5182c48c4a43b77d06dba69867d01a8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structarpg_1_1enemy__catalogue.html">enemy_catalogue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a5182c48c4a43b77d06dba69867d01a8e">load_enemies</a> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, std::string_view source, float minimum_sight)</td></tr>
 <tr class="memdesc:a5182c48c4a43b77d06dba69867d01a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a catalogue from Lua source.  <br /></td></tr>
 <tr class="separator:a5182c48c4a43b77d06dba69867d01a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -421,12 +452,18 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>length</b> (<a class
 <tr class="memitem:a1a4f026019bdc71a7f50280cb3c421d9" id="r_a1a4f026019bdc71a7f50280cb3c421d9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structarpg_1_1file__stamp.html">file_stamp</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a1a4f026019bdc71a7f50280cb3c421d9">disk_stamp</a> (const std::filesystem::path &amp;path)</td></tr>
 <tr class="memdesc:a1a4f026019bdc71a7f50280cb3c421d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the stamp from the filesystem.  <br /></td></tr>
 <tr class="separator:a1a4f026019bdc71a7f50280cb3c421d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15e03e657b533dc2c08c2536203c5790" id="r_a15e03e657b533dc2c08c2536203c5790"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacearpg.html#af8d9e4ea7a07796e36127c63275d9cf1">directory_listing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a15e03e657b533dc2c08c2536203c5790">disk_listing</a> (const std::filesystem::path &amp;directory)</td></tr>
+<tr class="memdesc:a15e03e657b533dc2c08c2536203c5790"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists the <code>.lua</code> files of a directory, sorted by name.  <br /></td></tr>
+<tr class="separator:a15e03e657b533dc2c08c2536203c5790"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a012a4eff7e79a33ec633230673d25a63" id="r_a012a4eff7e79a33ec633230673d25a63"><td class="memItemLeft" align="right" valign="top"><a id="a012a4eff7e79a33ec633230673d25a63" name="a012a4eff7e79a33ec633230673d25a63"></a>
 <a class="el" href="structarpg_1_1loaded__player.html">loaded_player</a>&#160;</td><td class="memItemRight" valign="bottom"><b>load_player</b> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, std::string_view source)</td></tr>
 <tr class="separator:a012a4eff7e79a33ec633230673d25a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad346beaf6e4d81193cb7faa4ea9662c9" id="r_ad346beaf6e4d81193cb7faa4ea9662c9"><td class="memItemLeft" align="right" valign="top"><a id="ad346beaf6e4d81193cb7faa4ea9662c9" name="ad346beaf6e4d81193cb7faa4ea9662c9"></a>
 <a class="el" href="structarpg_1_1loaded__player.html">loaded_player</a>&#160;</td><td class="memItemRight" valign="bottom"><b>load_player_from</b> (<a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;host, const std::filesystem::path &amp;path)</td></tr>
 <tr class="separator:ad346beaf6e4d81193cb7faa4ea9662c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35adeefbe527f41820dba7a7de045ac1" id="r_a35adeefbe527f41820dba7a7de045ac1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a35adeefbe527f41820dba7a7de045ac1">schema_error</a> (const sol::table &amp;described, std::string_view what, int understood)</td></tr>
+<tr class="memdesc:a35adeefbe527f41820dba7a7de045ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty when <code>described</code> is written for a version this build reads.  <br /></td></tr>
+<tr class="separator:a35adeefbe527f41820dba7a7de045ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4acf8149bd1ea56063c5078e72632b5f" id="r_a4acf8149bd1ea56063c5078e72632b5f"><td class="memItemLeft" align="right" valign="top"><a id="a4acf8149bd1ea56063c5078e72632b5f" name="a4acf8149bd1ea56063c5078e72632b5f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>dashing</b> (const <a class="el" href="structarpg_1_1dash__state.html">dash_state</a> &amp;dash)</td></tr>
 <tr class="memdesc:a4acf8149bd1ea56063c5078e72632b5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while the dash is carrying the player, so the caller knows to ignore the steering. <br /></td></tr>
@@ -448,12 +485,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>dashing</b> (const <a
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>enter_portal</b> (<a class="el" href="structarpg_1_1exit__portal.html">exit_portal</a> &amp;way, <a class="el" href="structarpg_1_1vec2.html">vec2</a> player)</td></tr>
 <tr class="memdesc:afa5fde0633d3f074187e958c8a7ee7f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">True on the step the player enters <code>way</code>, false while they stay in it. <br /></td></tr>
 <tr class="separator:afa5fde0633d3f074187e958c8a7ee7f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81af0920c5a372ce6f9cc4078617701" id="r_ab81af0920c5a372ce6f9cc4078617701"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#ab81af0920c5a372ce6f9cc4078617701">pick_spawn</a> (<a class="el" href="classarpg_1_1rng.html">rng</a> &amp;generator, <a class="el" href="structarpg_1_1viewport__rect.html">viewport_rect</a> room, float radius, std::span&lt; const <a class="el" href="structarpg_1_1vec2.html">vec2</a> &gt; keep_clear, float clearance)</td></tr>
+<tr class="memdesc:ab81af0920c5a372ce6f9cc4078617701"><td class="mdescLeft">&#160;</td><td class="mdescRight">Picks somewhere inside <code>room</code> to put a body of radius <code>radius</code>.  <br /></td></tr>
+<tr class="separator:ab81af0920c5a372ce6f9cc4078617701"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a689a992c28f710137e114a8c2543cf5e" id="r_a689a992c28f710137e114a8c2543cf5e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a689a992c28f710137e114a8c2543cf5e">combat_budget</a> (float area, int depth)</td></tr>
 <tr class="memdesc:a689a992c28f710137e114a8c2543cf5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Points a room is worth spending on enemies.  <br /></td></tr>
 <tr class="separator:a689a992c28f710137e114a8c2543cf5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2af0bed93ff9d26fb35d9cd67d6773a8" id="r_a2af0bed93ff9d26fb35d9cd67d6773a8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a2af0bed93ff9d26fb35d9cd67d6773a8">compose_wave</a> (int budget, std::span&lt; const <a class="el" href="structarpg_1_1enemy__archetype.html">enemy_archetype</a> &gt; catalogue, <a class="el" href="classarpg_1_1rng.html">rng</a> &amp;generator)</td></tr>
-<tr class="memdesc:a2af0bed93ff9d26fb35d9cd67d6773a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Picks which archetypes to field for <code>budget</code>.  <br /></td></tr>
+<tr class="memitem:a2af0bed93ff9d26fb35d9cd67d6773a8" id="r_a2af0bed93ff9d26fb35d9cd67d6773a8"><td class="memItemLeft" align="right" valign="top"><a id="a2af0bed93ff9d26fb35d9cd67d6773a8" name="a2af0bed93ff9d26fb35d9cd67d6773a8"></a>
+std::vector&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>compose_wave</b> (int budget, std::span&lt; const <a class="el" href="structarpg_1_1enemy__archetype.html">enemy_archetype</a> &gt; catalogue, <a class="el" href="classarpg_1_1rng.html">rng</a> &amp;generator)</td></tr>
+<tr class="memdesc:a2af0bed93ff9d26fb35d9cd67d6773a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same, offering every kind evenly. <br /></td></tr>
 <tr class="separator:a2af0bed93ff9d26fb35d9cd67d6773a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431c46b50b0b50ccf3a7d148af14e9af" id="r_a431c46b50b0b50ccf3a7d148af14e9af"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a431c46b50b0b50ccf3a7d148af14e9af">compose_wave</a> (int budget, std::span&lt; const <a class="el" href="structarpg_1_1enemy__archetype.html">enemy_archetype</a> &gt; catalogue, std::span&lt; const int &gt; weights, <a class="el" href="classarpg_1_1rng.html">rng</a> &amp;generator)</td></tr>
+<tr class="memdesc:a431c46b50b0b50ccf3a7d148af14e9af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Picks which archetypes to field for <code>budget</code>.  <br /></td></tr>
+<tr class="separator:a431c46b50b0b50ccf3a7d148af14e9af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aadab97ed54b812be2ed15ade9dbe56f3" id="r_aadab97ed54b812be2ed15ade9dbe56f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#aadab97ed54b812be2ed15ade9dbe56f3">volley_headings</a> (const <a class="el" href="structarpg_1_1firing__pattern.html">firing_pattern</a> &amp;pattern, <a class="el" href="structarpg_1_1vec2.html">vec2</a> towards, int volley, std::vector&lt; <a class="el" href="structarpg_1_1vec2.html">vec2</a> &gt; &amp;out)</td></tr>
 <tr class="memdesc:aadab97ed54b812be2ed15ade9dbe56f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fills <code>out</code> with the headings of volley number <code>volley</code>.  <br /></td></tr>
 <tr class="separator:aadab97ed54b812be2ed15ade9dbe56f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -503,6 +547,30 @@ std::vector&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bott
 <tr class="memitem:a920953eeafa908c2841fcf3627812b9f" id="r_a920953eeafa908c2841fcf3627812b9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structarpg_1_1level__layout.html">level_layout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a920953eeafa908c2841fcf3627812b9f">generate_level</a> (const <a class="el" href="structarpg_1_1level__recipe.html">level_recipe</a> &amp;recipe, <a class="el" href="classarpg_1_1rng.html">rng</a> &amp;generator)</td></tr>
 <tr class="memdesc:a920953eeafa908c2841fcf3627812b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lays a level out, drawing every choice from <code>generator</code>.  <br /></td></tr>
 <tr class="separator:a920953eeafa908c2841fcf3627812b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f5a14a85e14c762183b04d5c96882b" id="r_af9f5a14a85e14c762183b04d5c96882b"><td class="memItemLeft" align="right" valign="top"><a id="af9f5a14a85e14c762183b04d5c96882b" name="af9f5a14a85e14c762183b04d5c96882b"></a>
+<a class="el" href="structarpg_1_1level__run.html">level_run</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin_level</b> (<a class="el" href="structarpg_1_1level__layout.html">level_layout</a> layout)</td></tr>
+<tr class="memdesc:af9f5a14a85e14c762183b04d5c96882b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts <code>layout</code> at its entrance. <br /></td></tr>
+<tr class="separator:af9f5a14a85e14c762183b04d5c96882b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3091e3c384ebe3d5901e127b43ef2044" id="r_a3091e3c384ebe3d5901e127b43ef2044"><td class="memItemLeft" align="right" valign="top"><a id="a3091e3c384ebe3d5901e127b43ef2044" name="a3091e3c384ebe3d5901e127b43ef2044"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>room_is_clear</b> (const <a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;run)</td></tr>
+<tr class="memdesc:a3091e3c384ebe3d5901e127b43ef2044"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the room the player stands in has nothing left in it. <br /></td></tr>
+<tr class="separator:a3091e3c384ebe3d5901e127b43ef2044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a283e077195d1a90d75afbaff652e50e1" id="r_a283e077195d1a90d75afbaff652e50e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a283e077195d1a90d75afbaff652e50e1">clear_room</a> (<a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;run)</td></tr>
+<tr class="memdesc:a283e077195d1a90d75afbaff652e50e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks the current room as done.  <br /></td></tr>
+<tr class="separator:a283e077195d1a90d75afbaff652e50e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1c3c3456e0aeeebeb9c6ab65b9d5d80" id="r_ac1c3c3456e0aeeebeb9c6ab65b9d5d80"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#ac1c3c3456e0aeeebeb9c6ab65b9d5d80">open_doors</a> (const <a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;run)</td></tr>
+<tr class="memdesc:ac1c3c3456e0aeeebeb9c6ab65b9d5d80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rooms the player may walk into from where they stand.  <br /></td></tr>
+<tr class="separator:ac1c3c3456e0aeeebeb9c6ab65b9d5d80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab211b349bbbc2156f9f09648dc0bdc3f" id="r_ab211b349bbbc2156f9f09648dc0bdc3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#ab211b349bbbc2156f9f09648dc0bdc3f">enter_room</a> (<a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;run, std::size_t room)</td></tr>
+<tr class="memdesc:ab211b349bbbc2156f9f09648dc0bdc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves into <code>room</code>, which must be one the doors lead to.  <br /></td></tr>
+<tr class="separator:ab211b349bbbc2156f9f09648dc0bdc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7046f4dffcfc8c14eab56d4a313e2be" id="r_af7046f4dffcfc8c14eab56d4a313e2be"><td class="memItemLeft" align="right" valign="top"><a id="af7046f4dffcfc8c14eab56d4a313e2be" name="af7046f4dffcfc8c14eab56d4a313e2be"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>level_finished</b> (const <a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;run)</td></tr>
+<tr class="memdesc:af7046f4dffcfc8c14eab56d4a313e2be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the boss room has been cleared, which is what ends a level. <br /></td></tr>
+<tr class="separator:af7046f4dffcfc8c14eab56d4a313e2be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5097cd0247df30038b397e30de126acf" id="r_a5097cd0247df30038b397e30de126acf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a5097cd0247df30038b397e30de126acf">door_position</a> (const <a class="el" href="structarpg_1_1viewport__rect.html">viewport_rect</a> &amp;from, const <a class="el" href="structarpg_1_1viewport__rect.html">viewport_rect</a> &amp;to)</td></tr>
+<tr class="memdesc:a5097cd0247df30038b397e30de126acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the door to <code>to</code> sits on the wall of <code>from</code>.  <br /></td></tr>
+<tr class="separator:a5097cd0247df30038b397e30de126acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Vector arithmetic</div></td></tr>
 <tr class="memitem:a8a6a501f19fe9041da297aa6541aec11" id="r_a8a6a501f19fe9041da297aa6541aec11"><td class="memItemLeft" align="right" valign="top"><a id="a8a6a501f19fe9041da297aa6541aec11" name="a8a6a501f19fe9041da297aa6541aec11"></a>
 constexpr <a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (<a class="el" href="structarpg_1_1vec2.html">vec2</a> a, <a class="el" href="structarpg_1_1vec2.html">vec2</a> b)</td></tr>
@@ -537,6 +605,15 @@ constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>acti
 constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>asset_root_variable</b> = &quot;ARPG_ASSETS&quot;</td></tr>
 <tr class="memdesc:ad0ec3a9d9be33aa7e1b15306b03a9cc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the environment variable read into <code>from_environment</code>. <br /></td></tr>
 <tr class="separator:ad0ec3a9d9be33aa7e1b15306b03a9cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dde7799c7f08855de1314b8cbc51221" id="r_a6dde7799c7f08855de1314b8cbc51221"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a6dde7799c7f08855de1314b8cbc51221">enemies_schema</a> = 1</td></tr>
+<tr class="memdesc:a6dde7799c7f08855de1314b8cbc51221"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the loaders in this build understand, one number per kind of file.  <br /></td></tr>
+<tr class="separator:a6dde7799c7f08855de1314b8cbc51221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39c28e6513bcfe45890a8de02ec84f04" id="r_a39c28e6513bcfe45890a8de02ec84f04"><td class="memItemLeft" align="right" valign="top"><a id="a39c28e6513bcfe45890a8de02ec84f04" name="a39c28e6513bcfe45890a8de02ec84f04"></a>
+constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>player_schema</b> = 1</td></tr>
+<tr class="separator:a39c28e6513bcfe45890a8de02ec84f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced64c90ec69e104af07c8cdaad4aa4f" id="r_aced64c90ec69e104af07c8cdaad4aa4f"><td class="memItemLeft" align="right" valign="top"><a id="aced64c90ec69e104af07c8cdaad4aa4f" name="aced64c90ec69e104af07c8cdaad4aa4f"></a>
+constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>biome_schema</b> = 1</td></tr>
+<tr class="separator:aced64c90ec69e104af07c8cdaad4aa4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Everything the engine defines. </p>
@@ -1187,6 +1264,37 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 </div>
 </div>
+<a id="aaae97779feb8cfb26bce4118b11ef5d6" name="aaae97779feb8cfb26bce4118b11ef5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaae97779feb8cfb26bce4118b11ef5d6">&#9670;&#160;</a></span>load_biomes_from()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structarpg_1_1loaded__biomes.html">loaded_biomes</a> arpg::load_biomes_from </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classarpg_1_1script__host.html">script_host</a> &amp;&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>directory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads every <code>.lua</code> file in <code>directory</code>, in the order of their names. </p>
+<p>Sorted rather than left to the filesystem: the order decides nothing today, and the day it decides something, an unordered walk would make two machines disagree about a level drawn from the same seed. </p>
+
+</div>
+</div>
 <a id="a5182c48c4a43b77d06dba69867d01a8e" name="a5182c48c4a43b77d06dba69867d01a8e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5182c48c4a43b77d06dba69867d01a8e">&#9670;&#160;</a></span>load_enemies()</h2>
 
@@ -1279,6 +1387,66 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 <p>Reads the stamp from the filesystem. </p>
 <p>Errors are reported as absence rather than as exceptions, since a file being written to is briefly unreachable. </p>
+
+</div>
+</div>
+<a id="a15e03e657b533dc2c08c2536203c5790" name="a15e03e657b533dc2c08c2536203c5790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15e03e657b533dc2c08c2536203c5790">&#9670;&#160;</a></span>disk_listing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacearpg.html#af8d9e4ea7a07796e36127c63275d9cf1">directory_listing</a> arpg::disk_listing </td>
+          <td>(</td>
+          <td class="paramtype">const std::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>directory</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lists the <code>.lua</code> files of a directory, sorted by name. </p>
+<p>Sorted rather than left to the filesystem: the order decides nothing today, and the day it decides something, an unordered walk would make two machines disagree about a world drawn from the same seed. </p>
+
+</div>
+</div>
+<a id="a35adeefbe527f41820dba7a7de045ac1" name="a35adeefbe527f41820dba7a7de045ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35adeefbe527f41820dba7a7de045ac1">&#9670;&#160;</a></span>schema_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string arpg::schema_error </td>
+          <td>(</td>
+          <td class="paramtype">const sol::table &amp;&#160;</td>
+          <td class="paramname"><em>described</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>what</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>understood</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Empty when <code>described</code> is written for a version this build reads. </p>
+<p>A data file normally travels with the binary, so this is worth nothing until someone drops a file of their own beside it. Then it is the difference between "this biome has no fauna" and "this file is written for
+a version this build no longer reads".</p>
+<p>A file that states no version is taken for the first one, which is what makes the field possible to add after the fact. </p>
 
 </div>
 </div>
@@ -1384,6 +1552,56 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 </div>
 </div>
+<a id="ab81af0920c5a372ce6f9cc4078617701" name="ab81af0920c5a372ce6f9cc4078617701"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81af0920c5a372ce6f9cc4078617701">&#9670;&#160;</a></span>pick_spawn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structarpg_1_1vec2.html">vec2</a> arpg::pick_spawn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classarpg_1_1rng.html">rng</a> &amp;&#160;</td>
+          <td class="paramname"><em>generator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structarpg_1_1viewport__rect.html">viewport_rect</a>&#160;</td>
+          <td class="paramname"><em>room</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structarpg_1_1vec2.html">vec2</a> &gt;&#160;</td>
+          <td class="paramname"><em>keep_clear</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>clearance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Picks somewhere inside <code>room</code> to put a body of radius <code>radius</code>. </p>
+<p>Keeps <code>clearance</code> away from every point of <code>keep_clear</code>, which is where the player sets foot and where the doorways are: arriving inside an enemy is not difficulty, it is a hit nobody could have avoided.</p>
+<p>A small room ringed with doors may leave nowhere clear at all. Rather than fail, or loop, it gives up after a fixed number of tries and answers with the last spot it looked at: a wave quietly missing its enemies would be a worse bug than one standing a little too close. </p>
+
+</div>
+</div>
 <a id="a689a992c28f710137e114a8c2543cf5e" name="a689a992c28f710137e114a8c2543cf5e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a689a992c28f710137e114a8c2543cf5e">&#9670;&#160;</a></span>combat_budget()</h2>
 
@@ -1422,8 +1640,8 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 </div>
 </div>
-<a id="a2af0bed93ff9d26fb35d9cd67d6773a8" name="a2af0bed93ff9d26fb35d9cd67d6773a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2af0bed93ff9d26fb35d9cd67d6773a8">&#9670;&#160;</a></span>compose_wave()</h2>
+<a id="a431c46b50b0b50ccf3a7d148af14e9af" name="a431c46b50b0b50ccf3a7d148af14e9af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a431c46b50b0b50ccf3a7d148af14e9af">&#9670;&#160;</a></span>compose_wave()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1443,6 +1661,12 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">std::span&lt; const int &gt;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="classarpg_1_1rng.html">rng</a> &amp;&#160;</td>
           <td class="paramname"><em>generator</em>&#160;</td>
         </tr>
@@ -1456,7 +1680,8 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 <p>Picks which archetypes to field for <code>budget</code>. </p>
 <p>Spends greedily on what fits, so a rich room can afford the expensive archetypes while a corridor ends up with a handful of cheap ones. Draws from <code>generator</code>, so a seed replays the same room.</p>
-<dl class="section return"><dt>Returns</dt><dd>indices into <code>catalogue</code>, one per enemy to spawn. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>indices into <code>catalogue</code>, one per enemy to spawn. Composes a wave worth <code>budget</code> out of <code>catalogue</code>.</dd></dl>
+<p><code>weights</code> says how often each kind is offered, and is either empty, for an even draw, or as long as the catalogue. It is not the same lever as the cost: a brute costing eight parasites is already rare by the room it fills, but without a weight it is still offered as often as one. </p>
 
 </div>
 </div>
@@ -1874,6 +2099,110 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 
 </div>
 </div>
+<a id="a283e077195d1a90d75afbaff652e50e1" name="a283e077195d1a90d75afbaff652e50e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a283e077195d1a90d75afbaff652e50e1">&#9670;&#160;</a></span>clear_room()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void arpg::clear_room </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;&#160;</td>
+          <td class="paramname"><em>run</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Marks the current room as done. </p>
+<p>Doing it twice changes nothing, so a caller need not remember whether it already did. </p>
+
+</div>
+</div>
+<a id="ac1c3c3456e0aeeebeb9c6ab65b9d5d80" name="ac1c3c3456e0aeeebeb9c6ab65b9d5d80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c3c3456e0aeeebeb9c6ab65b9d5d80">&#9670;&#160;</a></span>open_doors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::size_t &gt; arpg::open_doors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;&#160;</td>
+          <td class="paramname"><em>run</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rooms the player may walk into from where they stand. </p>
+<p>Empty until the room is clear: a fight has to be finished rather than walked out of, or every room becomes optional and the level a corridor. </p>
+
+</div>
+</div>
+<a id="ab211b349bbbc2156f9f09648dc0bdc3f" name="ab211b349bbbc2156f9f09648dc0bdc3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab211b349bbbc2156f9f09648dc0bdc3f">&#9670;&#160;</a></span>enter_room()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool arpg::enter_room </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structarpg_1_1level__run.html">level_run</a> &amp;&#160;</td>
+          <td class="paramname"><em>run</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>room</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moves into <code>room</code>, which must be one the doors lead to. </p>
+<p>Anything else is refused rather than teleporting the player across the level. </p>
+
+</div>
+</div>
+<a id="a5097cd0247df30038b397e30de126acf" name="a5097cd0247df30038b397e30de126acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5097cd0247df30038b397e30de126acf">&#9670;&#160;</a></span>door_position()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structarpg_1_1vec2.html">vec2</a> arpg::door_position </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structarpg_1_1viewport__rect.html">viewport_rect</a> &amp;&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structarpg_1_1viewport__rect.html">viewport_rect</a> &amp;&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Where the door to <code>to</code> sits on the wall of <code>from</code>. </p>
+<p>On the side facing the other room, and slid along that wall to face it, so a door leads towards where it goes rather than out of a corner. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a08c14cd84ab0d2753927d0e08b573742" name="a08c14cd84ab0d2753927d0e08b573742"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a08c14cd84ab0d2753927d0e08b573742">&#9670;&#160;</a></span>movement_actions</h2>
@@ -1924,6 +2253,31 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 <div class="line">                                                action::menu_right}</div>
 </div><!-- fragment -->
 <p>Directions of a menu: the navigation actions. </p>
+
+</div>
+</div>
+<a id="a6dde7799c7f08855de1314b8cbc51221" name="a6dde7799c7f08855de1314b8cbc51221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dde7799c7f08855de1314b8cbc51221">&#9670;&#160;</a></span>enemies_schema</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int arpg::enemies_schema = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What the loaders in this build understand, one number per kind of file. </p>
+<p>Bumped when a change to a format would make a file written for the previous one mean something else. A field merely added does not need it: a loader that refuses what it does not recognise would refuse too much. </p>
 
 </div>
 </div>

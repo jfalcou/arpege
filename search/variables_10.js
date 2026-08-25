@@ -1,12 +1,10 @@
 var searchData=
 [
-  ['screens_0',['screens',['../structarpg_1_1app__context.html#ab80f3478a9a2cc7ad38d6bfc267b789e',1,'arpg::app_context']]],
-  ['shots_1',['shots',['../structarpg_1_1enemy__archetype.html#a7a0970d50226563baa37fe6aa31c1d90',1,'arpg::enemy_archetype']]],
-  ['sight_2',['sight',['../structarpg_1_1enemy__archetype.html#afecc24dde1e2d39984c7764c98423a5c',1,'arpg::enemy_archetype']]],
-  ['slice_3',['slice',['../structarpg_1_1enemy__brain.html#aef6ad41b1965792867b261cf2b4212ec',1,'arpg::enemy_brain']]],
-  ['spacing_4',['spacing',['../structarpg_1_1level__recipe.html#ab1a810f95a39468aa6d609cf9b02b7ee',1,'arpg::level_recipe']]],
-  ['speed_5',['speed',['../structarpg_1_1dash__profile.html#aa0a86d60172fb395df566ccd3b1f8348',1,'arpg::dash_profile']]],
-  ['spin_6',['spin',['../structarpg_1_1firing__pattern.html#aed0434b3dccf587d86d904a2f6b398a2',1,'arpg::firing_pattern']]],
-  ['state_5ftimer_7',['state_timer',['../structarpg_1_1enemy__brain.html#a048846c6822785dd2e07e6f736e78d67',1,'arpg::enemy_brain']]],
-  ['stick_5fdeadzone_8',['stick_deadzone',['../classarpg_1_1raylib__input.html#a0c775870b6f6369e9bee7a0c9c3ce79a',1,'arpg::raylib_input']]]
+  ['reach_0',['reach',['../structarpg_1_1enemy__archetype.html#a41a5f24e240d0ff18e07a4686a07a015',1,'arpg::enemy_archetype']]],
+  ['remaining_1',['remaining',['../structarpg_1_1dash__state.html#aa69eb4f0e7bb60b913091914ccfb0cb5',1,'arpg::dash_state']]],
+  ['resizable_2',['resizable',['../structarpg_1_1app__config.html#ab967353be436a3283acc89bb37b455c0',1,'arpg::app_config']]],
+  ['right_3',['right',['../structarpg_1_1direction__actions.html#a69294ee9d1bd70e4aa9bbc38df57b5c0',1,'arpg::direction_actions']]],
+  ['right_5fstick_4',['right_stick',['../structarpg_1_1input__snapshot.html#a49d9c6a34694caf35266a625d3540e1b',1,'arpg::input_snapshot']]],
+  ['room_5fmin_5',['room_min',['../structarpg_1_1level__recipe.html#a4030588e29cec447e3fb0b1de3169db6',1,'arpg::level_recipe']]],
+  ['rooms_5fmin_6',['rooms_min',['../structarpg_1_1level__recipe.html#a5a0a1e1a47e98cdd1a5d0d640e5a5459',1,'arpg::level_recipe']]]
 ];

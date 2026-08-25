@@ -104,35 +104,59 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:acbf511bed9c62ca704bcce5edf96b3fd" id="r_acbf511bed9c62ca704bcce5edf96b3fd"><td class="memItemLeft" align="right" valign="top"><a id="acbf511bed9c62ca704bcce5edf96b3fd" name="acbf511bed9c62ca704bcce5edf96b3fd"></a>
 <a class="el" href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081">level_shape</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shape</b> = <a class="el" href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a938af4ac7c74159f98e4e42b47d0cfd2">level_shape::rigid</a></td></tr>
 <tr class="separator:acbf511bed9c62ca704bcce5edf96b3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31fb8d550c65162c37c7e49651e9fa21" id="r_a31fb8d550c65162c37c7e49651e9fa21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__recipe.html#a31fb8d550c65162c37c7e49651e9fa21">rooms</a> = 8</td></tr>
-<tr class="memdesc:a31fb8d550c65162c37c7e49651e9fa21"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many rooms are wanted.  <br /></td></tr>
-<tr class="separator:a31fb8d550c65162c37c7e49651e9fa21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85924df2d80965af90612f4ad86517c6" id="r_a85924df2d80965af90612f4ad86517c6"><td class="memItemLeft" align="right" valign="top"><a id="a85924df2d80965af90612f4ad86517c6" name="a85924df2d80965af90612f4ad86517c6"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>room_min</b> = 200.0f</td></tr>
-<tr class="separator:a85924df2d80965af90612f4ad86517c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1154784bcd2f7c03bf03c2297d70d476" id="r_a1154784bcd2f7c03bf03c2297d70d476"><td class="memItemLeft" align="right" valign="top"><a id="a1154784bcd2f7c03bf03c2297d70d476" name="a1154784bcd2f7c03bf03c2297d70d476"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>room_max</b> = 420.0f</td></tr>
-<tr class="separator:a1154784bcd2f7c03bf03c2297d70d476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a0a1e1a47e98cdd1a5d0d640e5a5459" id="r_a5a0a1e1a47e98cdd1a5d0d640e5a5459"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__recipe.html#a5a0a1e1a47e98cdd1a5d0d640e5a5459">rooms_min</a> = 6</td></tr>
+<tr class="memdesc:a5a0a1e1a47e98cdd1a5d0d640e5a5459"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many rooms a level holds, drawn between the two so that two levels of the same biome are not the same walk.  <br /></td></tr>
+<tr class="separator:a5a0a1e1a47e98cdd1a5d0d640e5a5459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdcf328c95c47ae9f58778acb537a016" id="r_acdcf328c95c47ae9f58778acb537a016"><td class="memItemLeft" align="right" valign="top"><a id="acdcf328c95c47ae9f58778acb537a016" name="acdcf328c95c47ae9f58778acb537a016"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>rooms_max</b> = 8</td></tr>
+<tr class="separator:acdcf328c95c47ae9f58778acb537a016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4030588e29cec447e3fb0b1de3169db6" id="r_a4030588e29cec447e3fb0b1de3169db6"><td class="memItemLeft" align="right" valign="top"><a id="a4030588e29cec447e3fb0b1de3169db6" name="a4030588e29cec447e3fb0b1de3169db6"></a>
+<a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><b>room_min</b> {200.0f, 200.0f}</td></tr>
+<tr class="memdesc:a4030588e29cec447e3fb0b1de3169db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per axis, since a view is wider than it is tall: one figure for both would make a room that is a screen and a half wide four screens deep. <br /></td></tr>
+<tr class="separator:a4030588e29cec447e3fb0b1de3169db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24d95a3e9a47bfad6199880a218e2bee" id="r_a24d95a3e9a47bfad6199880a218e2bee"><td class="memItemLeft" align="right" valign="top"><a id="a24d95a3e9a47bfad6199880a218e2bee" name="a24d95a3e9a47bfad6199880a218e2bee"></a>
+<a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><b>room_max</b> {420.0f, 420.0f}</td></tr>
+<tr class="separator:a24d95a3e9a47bfad6199880a218e2bee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1a810f95a39468aa6d609cf9b02b7ee" id="r_ab1a810f95a39468aa6d609cf9b02b7ee"><td class="memItemLeft" align="right" valign="top"><a id="ab1a810f95a39468aa6d609cf9b02b7ee" name="ab1a810f95a39468aa6d609cf9b02b7ee"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>spacing</b> = 48.0f</td></tr>
 <tr class="memdesc:ab1a810f95a39468aa6d609cf9b02b7ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">What is left between two rooms, which is where a corridor goes. <br /></td></tr>
 <tr class="separator:ab1a810f95a39468aa6d609cf9b02b7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab80961e675da8605718826b3c990e3e8" id="r_ab80961e675da8605718826b3c990e3e8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__recipe.html#ab80961e675da8605718826b3c990e3e8">service_scale</a> = 0.5f</td></tr>
+<tr class="memdesc:ab80961e675da8605718826b3c990e3e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">How much of an ordinary room a room holding no fight takes.  <br /></td></tr>
+<tr class="separator:ab80961e675da8605718826b3c990e3e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a31fb8d550c65162c37c7e49651e9fa21" name="a31fb8d550c65162c37c7e49651e9fa21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31fb8d550c65162c37c7e49651e9fa21">&#9670;&#160;</a></span>rooms</h2>
+<a id="a5a0a1e1a47e98cdd1a5d0d640e5a5459" name="a5a0a1e1a47e98cdd1a5d0d640e5a5459"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a0a1e1a47e98cdd1a5d0d640e5a5459">&#9670;&#160;</a></span>rooms_min</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int arpg::level_recipe::rooms = 8</td>
+          <td class="memname">int arpg::level_recipe::rooms_min = 6</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>How many rooms are wanted. </p>
-<p>Both generators may fall short of it rather than force a room where none fits, so it is a ceiling, not a promise. </p>
+<p>How many rooms a level holds, drawn between the two so that two levels of the same biome are not the same walk. </p>
+<p>Both generators may fall short of what is drawn rather than force a room where none fits, so the upper bound is a ceiling and not a promise. </p>
+
+</div>
+</div>
+<a id="ab80961e675da8605718826b3c990e3e8" name="ab80961e675da8605718826b3c990e3e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab80961e675da8605718826b3c990e3e8">&#9670;&#160;</a></span>service_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float arpg::level_recipe::service_scale = 0.5f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>How much of an ordinary room a room holding no fight takes. </p>
+<p>A station is a desk and the clerk behind it, not an arena, and giving it the size of one would promise a fight that never comes. </p>
 
 </div>
 </div>

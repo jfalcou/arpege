@@ -1,12 +1,4 @@
 var searchData=
 [
-  ['pad_5fdown_0',['pad_down',['../structarpg_1_1control__codes.html#a13892f56fde7afa02bd78d1e13d91dad',1,'arpg::control_codes']]],
-  ['pad_5feast_1',['pad_east',['../structarpg_1_1control__codes.html#a64efda8cbe5a34768895d0a666bab1ba',1,'arpg::control_codes']]],
-  ['pad_5fleft_2',['pad_left',['../structarpg_1_1control__codes.html#a0cc51a7fd2ce82a76c18348bd5623209',1,'arpg::control_codes']]],
-  ['pad_5fleft_5fshoulder_3',['pad_left_shoulder',['../structarpg_1_1control__codes.html#a04a6e5fb75d169288827dfdd149d5e83',1,'arpg::control_codes']]],
-  ['pad_5fright_4',['pad_right',['../structarpg_1_1control__codes.html#a846b971eb91e8db1ec8d6603b924378d',1,'arpg::control_codes']]],
-  ['pad_5fright_5ftrigger_5',['pad_right_trigger',['../structarpg_1_1control__codes.html#ac83093c999bab1ecb9d7a281ee383b45',1,'arpg::control_codes']]],
-  ['pad_5fsouth_6',['pad_south',['../structarpg_1_1control__codes.html#a23e3cce6f743ba714d63257254108f25',1,'arpg::control_codes']]],
-  ['pad_5fstart_7',['pad_start',['../structarpg_1_1control__codes.html#a0f568f5a455705c5687c3cdbff0d3e12',1,'arpg::control_codes']]],
-  ['pad_5fup_8',['pad_up',['../structarpg_1_1control__codes.html#a2aac8aa0ee5ec6d05d1872f244bb3db2',1,'arpg::control_codes']]]
+  ['opened_5fwith_0',['opened_with',['../structarpg_1_1encounter.html#accfd37b578b7e6ce75508f9f6c2344dd',1,'arpg::encounter']]]
 ];

@@ -1,13 +1,15 @@
 var searchData=
 [
   ['begin_5fdraw_0',['begin_draw',['../classarpg_1_1pixel__canvas.html#a6e52399df065bfcbf378cad203db512b',1,'arpg::pixel_canvas']]],
-  ['below_1',['below',['../classarpg_1_1rng.html#ad8c426d390f4659e5580c124628f8353',1,'arpg::rng']]],
-  ['bind_2',['bind',['../classarpg_1_1action__map.html#a682f0e3241248906582365055114981d',1,'arpg::action_map']]],
-  ['binding_3',['binding',['../structarpg_1_1binding.html',1,'arpg']]],
-  ['blocks_5frender_4',['blocks_render',['../classarpg_1_1screen.html#aed964effc07b8bc7a9aa656a27250f03',1,'arpg::screen']]],
-  ['blocks_5fupdate_5',['blocks_update',['../classarpg_1_1screen.html#a82ba7fcf3411b269a33e041ec0ebd10d',1,'arpg::screen']]],
-  ['bounds_6',['bounds',['../structarpg_1_1level__room.html#afb2e5c76b056511ce5cac9ec530b457d',1,'arpg::level_room']]],
-  ['building_7',['Building',['../index.html#autotoc_md3',1,'']]],
-  ['built_20with_8',['Built with',['../index.html#autotoc_md2',1,'']]],
-  ['bullets_9',['bullets',['../structarpg_1_1firing__pattern.html#ad5fe55c557fa41d25ffa1414ed92f3c3',1,'arpg::firing_pattern']]]
+  ['begin_5flevel_1',['begin_level',['../namespacearpg.html#af9f5a14a85e14c762183b04d5c96882b',1,'arpg']]],
+  ['below_2',['below',['../classarpg_1_1rng.html#ad8c426d390f4659e5580c124628f8353',1,'arpg::rng']]],
+  ['bind_3',['bind',['../classarpg_1_1action__map.html#a682f0e3241248906582365055114981d',1,'arpg::action_map']]],
+  ['binding_4',['binding',['../structarpg_1_1binding.html',1,'arpg']]],
+  ['biome_5',['biome',['../structarpg_1_1biome.html',1,'arpg']]],
+  ['blocks_5frender_6',['blocks_render',['../classarpg_1_1screen.html#aed964effc07b8bc7a9aa656a27250f03',1,'arpg::screen']]],
+  ['blocks_5fupdate_7',['blocks_update',['../classarpg_1_1screen.html#a82ba7fcf3411b269a33e041ec0ebd10d',1,'arpg::screen']]],
+  ['bounds_8',['bounds',['../structarpg_1_1level__room.html#afb2e5c76b056511ce5cac9ec530b457d',1,'arpg::level_room']]],
+  ['building_9',['Building',['../index.html#autotoc_md3',1,'']]],
+  ['built_20with_10',['Built with',['../index.html#autotoc_md2',1,'']]],
+  ['bullets_11',['bullets',['../structarpg_1_1firing__pattern.html#ad5fe55c557fa41d25ffa1414ed92f3c3',1,'arpg::firing_pattern']]]
 ];

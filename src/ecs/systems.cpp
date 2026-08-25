@@ -89,6 +89,14 @@ void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 ta
   }
 }
 
+void advance_appearances(entt::registry& world, float dt)
+{
+  for (auto [entity, look] : world.view<appearance>().each())
+  {
+    look.elapsed += dt;
+  }
+}
+
 void expire_lifetimes(entt::registry& world, float dt)
 {
   std::vector<entt::entity> expired;

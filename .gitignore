@@ -46,6 +46,9 @@ compile_commands.json
 # VS Code specific
 .vscode/
 
+# Where Dear ImGui remembers the panel layout of the editor, per machine.
+imgui.ini
+
 # OS generated files
 .DS_Store
 .DS_Store?

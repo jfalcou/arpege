@@ -23,6 +23,13 @@ void integrate_motion(entt::registry& world, float dt);
 /// Ages every lifetime and destroys what ran out.
 void expire_lifetimes(entt::registry& world, float dt);
 
+/// Moves every animation on by @p dt.
+///
+/// Cosmetic, and still on the fixed step: an animation running on the render
+/// clock would play at a different speed on a faster screen, and a replay would
+/// not look like what was recorded.
+void advance_appearances(entt::registry& world, float dt);
+
 /// Destroys projectiles that left @p bounds by more than @p margin.
 ///
 /// Only projectiles: an enemy walking in from off screen is not a stray shot.

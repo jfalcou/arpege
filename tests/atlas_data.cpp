@@ -307,3 +307,19 @@ TTS_CASE("A duration is written as short as it can be and still read back")
   TTS_EXPECT(back.valid()) << back.error;
   TTS_EQUAL(back.value.animations[0].frames[0].seconds, 0.1f);
 };
+
+TTS_CASE("A read animation knows where its pictures are without looking them up")
+{
+  arpg::script_host host;
+  const arpg::loaded_atlas read = arpg::load_atlas(host, arpg::write_atlas(sound_atlas()), "x");
+
+  TTS_EXPECT(read.valid()) << read.error;
+
+  // The reader has to look the name up to refuse a typo, so it keeps what it
+  // found: searching a list of names once per bullet per frame is a cost paid
+  // sixty times a second for an answer that never changes.
+  const arpg::sprite_animation& walk = read.value.animations[0];
+
+  TTS_EQUAL(read.value.frames[walk.frames[0].index].name, walk.frames[0].frame);
+  TTS_EQUAL(read.value.frames[walk.frames[1].index].name, walk.frames[1].frame);
+};

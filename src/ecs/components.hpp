@@ -92,6 +92,23 @@ struct projectile
 };
 
 /// Time left before this can fire again, in seconds.
+/// What an entity looks like.
+///
+/// Indices rather than names: this is copied into every entity that has one,
+/// and a wall of bullets carrying a string apiece would spend its time on
+/// allocations. What the indices point into is held by whoever is drawing.
+struct appearance
+{
+  /// Which sheet, among those the screen loaded.
+  std::uint16_t sheet = 0;
+
+  /// Which animation of that sheet.
+  std::uint16_t clip = 0;
+
+  /// Seconds since the animation began.
+  float elapsed = 0.0f;
+};
+
 struct weapon
 {
   float cooldown = 0.0f;

@@ -199,11 +199,16 @@ loaded_atlas read_atlas(const sol::table& described, std::string_view named)
 
       // Checked against the frames of this very atlas: an animation naming a
       // picture nobody cut out would draw nothing, and a typo would be found
-      // by looking at the game rather than by being told.
-      if (out.value.find_frame(held.frame) == nullptr)
+      // by looking at the game rather than by being told. What the search
+      // finds is kept, so nothing has to look again while the game runs.
+      const sprite_frame* found = out.value.find_frame(held.frame);
+
+      if (found == nullptr)
       {
         return refuse("'" + clip.name + "' plays '" + held.frame + "', which nothing cuts out");
       }
+
+      held.index = static_cast<std::size_t>(found - out.value.frames.data());
 
       if (held.seconds <= 0.0f)
       {

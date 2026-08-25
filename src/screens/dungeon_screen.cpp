@@ -27,6 +27,9 @@ constexpr const char* player_file = "data/player.lua";
 constexpr const char* roster_file = "data/enemies.lua";
 constexpr const char* biomes_directory = "data/biomes";
 
+/// The sheet everything is drawn from while there is only one.
+constexpr const char* placeholder_sheet = "parasite";
+
 /// How close the player must come to a door for it to take them.
 constexpr float door_radius = 22.0f;
 
@@ -63,6 +66,10 @@ void dungeon_screen::on_enter()
   m_player_watch = file_watch{*ctx().assets / player_file};
   m_roster_watch = file_watch{*ctx().assets / roster_file};
   m_biomes_watch = directory_watch{*ctx().assets / biomes_directory};
+
+  m_sprites.emplace(m_scripts, *ctx().assets / "textures");
+  m_sheets.clear();
+  m_sheets.push_back(m_sprites->get(placeholder_sheet));
 
   read_content();
 
@@ -209,6 +216,13 @@ void dungeon_screen::spawn_player(vec2 at)
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
 
+  // Drawn from the first animation of the first sheet while there is only one
+  // of each. What decides this is data as soon as an archetype names a look.
+  if (!m_sheets.empty() && m_sheets.front().usable() && !m_sheets.front().atlas->animations.empty())
+  {
+    m_world.emplace<appearance>(m_player);
+  }
+
   // Snapped rather than eased on the first step, or the room would slide into
   // place from a corner every time it opens.
   m_camera.centre = follow_camera(middle, middle, room(), view(), 0.0f, 0.0f);
@@ -272,6 +286,45 @@ void dungeon_screen::spawn_wave()
   }
 
   m_fight.opened_with = composition.size();
+}
+
+bool dungeon_screen::draw_sprite(entt::entity who, vec2 at)
+{
+  const auto* look = m_world.try_get<appearance>(who);
+
+  if (look == nullptr || look->sheet >= m_sheets.size())
+  {
+    return false;
+  }
+
+  const sheet& from = m_sheets[look->sheet];
+
+  if (!from.usable() || look->clip >= from.atlas->animations.size())
+  {
+    return false;
+  }
+
+  const sprite_animation& clip = from.atlas->animations[look->clip];
+
+  if (clip.frames.empty())
+  {
+    return false;
+  }
+
+  const sprite_frame& picture = from.atlas->frames[clip.frames[frame_at(clip, look->elapsed)].index];
+
+  const Rectangle source{static_cast<float>(picture.x), static_cast<float>(picture.y),
+                         static_cast<float>(picture.width), static_cast<float>(picture.height)};
+
+  // Placed by its origin rather than by its corner: what stands at the entity
+  // is the point the picture was given, which for a body seen from above is
+  // its feet.
+  const Rectangle target{at.x - picture.origin.x, at.y - picture.origin.y, static_cast<float>(picture.width),
+                         static_cast<float>(picture.height)};
+
+  DrawTexturePro(*from.texture, source, target, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+
+  return true;
 }
 
 void dungeon_screen::draw_minimap()
@@ -624,6 +677,7 @@ void dungeon_screen::update(float dt)
 
   integrate_motion(m_world, dt);
   expire_lifetimes(m_world, dt);
+  advance_appearances(m_world, dt);
 
   const viewport_rect bounds = room();
 
@@ -748,9 +802,16 @@ void dungeon_screen::render(float alpha)
     const bool hurt = shield != nullptr && shield->remaining > 0.0f && !dashing(m_dash);
     const bool blinking = hurt && static_cast<int>(shield->remaining * 20.0f) % 2 == 0;
 
-    if (!blinking)
+    if (blinking)
     {
-      DrawCircleV(to_raylib(interpolated(place, alpha) - origin), drawn, tint);
+      continue;
+    }
+
+    const vec2 at = interpolated(place, alpha) - origin;
+
+    if (!draw_sprite(entity, at))
+    {
+      DrawCircleV(to_raylib(at), drawn, tint);
     }
   }
 

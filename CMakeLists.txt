@@ -85,6 +85,7 @@ target_link_libraries(arpg_core PUBLIC EnTT::EnTT sol2 arpg_coverage PRIVATE arp
 add_library(arpg_app STATIC
   src/core/application.cpp
   src/core/pixel_canvas.cpp
+  src/core/sprite_store.cpp
   src/core/raylib_input.cpp
   src/screens/bureau_screen.cpp
   src/screens/dungeon_screen.cpp

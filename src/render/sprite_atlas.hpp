@@ -44,6 +44,15 @@ struct animation_frame
   /// animation: holding the wind-up of a swing and flicking through the swing
   /// itself is most of what makes one read.
   float seconds = 0.1f;
+
+  /// Where that frame sits in the atlas, worked out when the file is read.
+  ///
+  /// Last, and after what the file states, so that writing one out by hand
+  /// stays a matter of a name and a duration. The reader already has to look
+  /// the name up to refuse a typo, so it keeps what it found: searching a list
+  /// of names once per bullet per frame is a cost paid sixty times a second
+  /// for an answer that never changes.
+  std::size_t index = 0;
 };
 
 struct sprite_animation

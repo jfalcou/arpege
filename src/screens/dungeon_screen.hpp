@@ -7,6 +7,7 @@
 #include <core/camera.hpp>
 #include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <core/sprite_store.hpp>
 #include <data/biome_data.hpp>
 #include <data/enemy_data.hpp>
 #include <data/hot_reload.hpp>
@@ -51,6 +52,10 @@ private:
 
   /// The room the player stands in, in level coordinates.
   viewport_rect room() const;
+
+  /// Draws @p who at @p at from its sheet. False when it has no picture, and
+  /// the caller falls back on the shape that stood in for one.
+  bool draw_sprite(entt::entity who, vec2 at);
 
   /// A plan of the level in a corner, since a level larger than the screen
   /// cannot be read from inside one of its rooms.
@@ -112,6 +117,13 @@ private:
 
   /// Outlives every load, since the tables the scripts return borrow it.
   script_host m_scripts;
+
+  /// Where the pictures come from. Built at entry, since it needs the asset
+  /// root, which a screen only has once it has been handed its services.
+  std::optional<sprite_store> m_sprites;
+
+  /// The sheets in play, which an appearance indexes into.
+  std::vector<sheet> m_sheets;
 
   /// Read from assets at every entry, and re-read whenever a file changes.
   player_profile m_profile;

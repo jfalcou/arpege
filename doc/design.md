@@ -68,6 +68,24 @@ Bullets are the enemy, not the enemies. What that implies:
   frame, buys nothing.
 - Bullets off screen, plus a margin, die immediately.
 
+### The dash
+
+The dash grants **invulnerability for its whole duration**, which is what turns
+a wall of bullets from a thing to avoid into a thing to read: the answer to a
+pattern that leaves no gap is to pass through it at the right moment. Without
+that, density can only ever be lowered until the wall is walkable, and the
+genre disappears.
+
+It **locks its heading** for the whole move. A dash that could be steered would
+be a faster way to walk; committing to a direction is what makes it a decision,
+and what makes reading the pattern before pressing the button worth anything.
+Asked for while standing still, it goes the last way the player asked for,
+rather than being spent on nothing.
+
+Its cooldown counts **from the start of one dash to the earliest start of the
+next**, so the figure in the data file keeps its meaning when the duration is
+tuned.
+
 ## The camera
 
 A room is **larger than the screen** and the camera follows the player across

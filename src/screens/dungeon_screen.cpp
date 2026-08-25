@@ -11,6 +11,7 @@
 
 #include <raylib.h>
 
+#include <algorithm>
 #include <array>
 
 namespace arpg
@@ -19,23 +20,8 @@ namespace arpg
 namespace
 {
 
-constexpr float player_speed = 70.0f;
-constexpr float focus_speed = 30.0f;
-constexpr float bullet_speed = 220.0f;
-constexpr float fire_interval = 0.12f;
-constexpr float bullet_life = 1.2f;
-
-/// How far a player shot actually carries. The room is wider than the screen,
-/// so a shot must die around the edge of the view rather than cross the whole
-/// room and kill what the player cannot even see.
-constexpr float player_range = bullet_speed * bullet_life;
-
-/// Every archetype wakes at the same distance, and that distance must stay
-/// above player_range: an enemy the player can already hit but that has not
-/// noticed anything is a free kill, not an encounter.
-constexpr float awareness = player_range + 24.0f;
-
-/// Where the roster is read from, under the asset root.
+/// Where the data files are read from, under the asset root.
+constexpr const char* player_file = "data/player.lua";
 constexpr const char* roster_file = "data/enemies.lua";
 
 /// How much larger than the screen a room is, for now. Rooms come from the
@@ -45,10 +31,6 @@ constexpr float room_scale = 2.0f;
 /// How eagerly the view catches up, in units per second. Tight enough to feel
 /// attached, loose enough not to judder on a fixed step.
 constexpr float camera_stiffness = 8.0f;
-
-/// A few pixels, far smaller than the sprite: the player must be able to thread
-/// a wall of bullets that visually looks impassable.
-constexpr float player_hitbox = 2.0f;
 
 Vector2 to_raylib(vec2 value)
 {
@@ -68,11 +50,10 @@ void dungeon_screen::on_enter()
 
   // The player's own range is what the roster is checked against: an enemy
   // waking closer than that could never answer.
-  const std::filesystem::path roster = *ctx().assets / roster_file;
+  m_player_watch = file_watch{*ctx().assets / player_file};
+  m_roster_watch = file_watch{*ctx().assets / roster_file};
 
-  m_roster = load_enemies_from(m_scripts, roster, player_range);
-  m_data_error = m_roster.error;
-  m_roster_watch = file_watch{roster};
+  read_content();
 
   spawn_player();
   spawn_wave();
@@ -98,10 +79,10 @@ void dungeon_screen::spawn_player()
   m_player = m_world.create();
   m_world.emplace<transform>(m_player, middle, middle);
   m_world.emplace<velocity>(m_player);
-  m_world.emplace<collider>(m_player, player_hitbox);
+  m_world.emplace<collider>(m_player, m_profile.hitbox);
   m_world.emplace<team>(m_player, faction::player);
-  m_world.emplace<health>(m_player, 3, 3);
-  m_world.emplace<invulnerable>(m_player);
+  m_world.emplace<health>(m_player, m_profile.health, m_profile.health);
+  m_world.emplace<invulnerable>(m_player, 0.0f, m_profile.mercy);
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
 
@@ -177,27 +158,52 @@ void dungeon_screen::purge_enemies()
   m_world.destroy(m_scratch.begin(), m_scratch.end());
 }
 
-void dungeon_screen::reload_roster()
+bool dungeon_screen::read_content()
 {
-  enemy_catalogue fresh = load_enemies_from(m_scripts, m_roster_watch.path(), player_range);
+  const loaded_player hero = load_player_from(m_scripts, m_player_watch.path());
 
-  if (!fresh.valid())
+  if (!hero.valid())
   {
-    // A file caught halfway through an edit must not empty the room: the last
-    // roster that made sense stays in place, and the reason is shown.
-    m_data_error = fresh.error;
+    m_data_error = hero.error;
+    return false;
+  }
+
+  // Checked against what the player can reach, which the file just gave us:
+  // the two data files answer to each other rather than to a constant.
+  enemy_catalogue roster = load_enemies_from(m_scripts, m_roster_watch.path(), hero.value.range());
+
+  if (!roster.valid())
+  {
+    m_data_error = roster.error;
+    return false;
+  }
+
+  m_profile = hero.value;
+  m_roster = std::move(roster);
+  m_data_error.clear();
+
+  return true;
+}
+
+void dungeon_screen::reload_content()
+{
+  // A file caught halfway through an edit must not empty the room: what made
+  // sense last stays in place, and the reason is shown.
+  if (!read_content())
+  {
     return;
   }
 
-  m_roster = std::move(fresh);
-  m_data_error.clear();
-
   // Re-formed from the same seed, so a changed figure is judged against the
   // room it was changed for rather than against a new one.
-  purge_enemies();
+  m_world.clear();
   m_generator = rng{m_seed};
   m_fight = encounter{};
   m_exit = exit_portal{};
+  m_dash = dash_state{};
+  m_fire_cooldown = 0.0f;
+
+  spawn_player();
   spawn_wave();
 }
 
@@ -219,14 +225,33 @@ bool dungeon_screen::player_alive() const
   return m_world.valid(m_player);
 }
 
-void dungeon_screen::steer_player()
+void dungeon_screen::steer_player(float dt)
 {
   const action_set held = m_bindings.resolve(*ctx().input);
   const vec2 heading = movement_direction(held, ctx().input->left_stick);
 
+  // Buffered rather than read on the edge: a dash asked for between two steps
+  // is still honoured, which is most of what makes one feel responsive.
+  if (advance_dash(m_dash, m_profile.dash, m_actions.consume(action::dash), heading, dt))
+  {
+    // Granted here rather than inside the dash, which knows nothing of the
+    // world. Never shortened: a dash taken right after a hit must not cut the
+    // mercy that hit bought.
+    invulnerable& shield = m_world.get<invulnerable>(m_player);
+    shield.remaining = std::max(shield.remaining, m_profile.dash.mercy);
+  }
+
+  if (dashing(m_dash))
+  {
+    // The steering is ignored for the whole dash: committing to a direction is
+    // what makes it a decision rather than a faster way to walk.
+    m_world.get<velocity>(m_player).value = dash_velocity(m_dash, m_profile.dash);
+    return;
+  }
+
   // Focus trades speed for precision, and is where the tiny hitbox earns its
   // keep.
-  const float speed = m_actions.held(action::focus) ? focus_speed : player_speed;
+  const float speed = m_actions.held(action::focus) ? m_profile.focus_speed : m_profile.speed;
 
   m_world.get<velocity>(m_player).value = heading * speed;
 }
@@ -240,7 +265,7 @@ void dungeon_screen::fire(float dt)
     return;
   }
 
-  m_fire_cooldown = fire_interval;
+  m_fire_cooldown = m_profile.fire_interval;
 
   const vec2 from = m_world.get<transform>(m_player).position;
   const aim_input aim = resolve_aim(*ctx().input, ctx().input->device);
@@ -258,11 +283,11 @@ void dungeon_screen::fire(float dt)
 
   const entt::entity shot = m_world.create();
   m_world.emplace<transform>(shot, from, from);
-  m_world.emplace<velocity>(shot, heading * bullet_speed);
-  m_world.emplace<collider>(shot, 1.5f);
+  m_world.emplace<velocity>(shot, heading * m_profile.bullet_speed);
+  m_world.emplace<collider>(shot, m_profile.bullet_radius);
   m_world.emplace<team>(shot, faction::player);
-  m_world.emplace<damage>(shot, 1);
-  m_world.emplace<lifetime>(shot, bullet_life);
+  m_world.emplace<damage>(shot, m_profile.bullet_damage);
+  m_world.emplace<lifetime>(shot, m_profile.bullet_life);
   m_world.emplace<projectile>(shot);
 }
 
@@ -285,12 +310,17 @@ void dungeon_screen::update(float dt)
     purge_enemies();
   }
 
-  if (m_roster_watch.poll(dt))
+  // Both are polled, since a change to either invalidates the room: the roster
+  // is checked against what the player can reach.
+  const bool player_changed = m_player_watch.poll(dt);
+  const bool roster_changed = m_roster_watch.poll(dt);
+
+  if (player_changed || roster_changed)
   {
-    reload_roster();
+    reload_content();
   }
 
-  steer_player();
+  steer_player(dt);
   fire(dt);
 
   const vec2 player_at = m_world.get<transform>(m_player).position;
@@ -376,8 +406,12 @@ void dungeon_screen::render(float alpha)
     // Blinking while invulnerable: a hit that takes a third of the life bar
     // must be visible, and the pause it grants has to read as one.
     const auto* shield = m_world.try_get<invulnerable>(entity);
-    const bool blinking =
-        shield != nullptr && shield->remaining > 0.0f && static_cast<int>(shield->remaining * 20.0f) % 2 == 0;
+
+    // Not while dashing, although that grants the same mercy: the blink says
+    // "you were hit", and losing sight of the player during the one move that
+    // crosses the screen would be the worst moment for it.
+    const bool hurt = shield != nullptr && shield->remaining > 0.0f && !dashing(m_dash);
+    const bool blinking = hurt && static_cast<int>(shield->remaining * 20.0f) % 2 == 0;
 
     if (!blinking)
     {
@@ -389,6 +423,16 @@ void dungeon_screen::render(float alpha)
   {
     const auto& player_health = m_world.get<health>(m_player);
     DrawText(TextFormat("HP %d", player_health.current), 4, 4, 10, Color{226, 205, 154, 255});
+
+    // A dash that is not ready has to be visible without looking away from the
+    // bullets, so it sits under the figure it belongs to rather than in a
+    // corner of its own.
+    const float ready =
+        (m_profile.dash.cooldown <= 0.0f) ? 1.0f : 1.0f - std::min(1.0f, m_dash.cooldown / m_profile.dash.cooldown);
+
+    DrawRectangle(4, 16, 24, 2, Color{48, 42, 58, 255});
+    DrawRectangle(4, 16, static_cast<int>(24.0f * ready), 2,
+                  (ready >= 1.0f) ? Color{176, 128, 214, 255} : Color{96, 74, 118, 255});
   }
 
   const char* tally = TextFormat("%zu / %zu", enemies_alive(m_world), m_fight.opened_with);

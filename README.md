@@ -97,6 +97,8 @@ export CPM_SOURCE_CACHE=$HOME/.cache/CPM
 | --- | --- |
 | `WASD`, arrows, left stick | move |
 | left mouse button, right trigger | shoot |
+| `Space`, gamepad south button | dash |
+| `Shift`, left shoulder | focus: move slowly, aim precisely |
 | `Esc`, gamepad start | leave the room |
 | `F1` | debug panel |
 | `F9` | clear the room, to reach its end without playing it out |

@@ -34,6 +34,11 @@ private:
 
   run_state m_run;
 
+  /// Whether the post was filled last time this screen ran. A keystroke let go
+  /// of while someone was dying must not be what dismisses the notice of their
+  /// death.
+  bool m_post_was_filled = true;
+
   action_map m_bindings;
   action_state m_actions;
 };

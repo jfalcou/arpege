@@ -48,6 +48,16 @@ void bureau_screen::update(float)
 {
   m_actions.advance(m_bindings.resolve(*ctx().input));
 
+  // The screen does not run while the Failles are on top of it, so this is the
+  // first step after coming back. A press let go of down there is still in
+  // flight, and would dismiss a notice nobody has read.
+  if (m_post_was_filled && !employee_alive(m_run))
+  {
+    m_actions.flush();
+  }
+
+  m_post_was_filled = employee_alive(m_run);
+
   if (m_actions.consume(action::cancel))
   {
     ctx().screens->pop();
@@ -75,8 +85,13 @@ void bureau_screen::render(float)
   const pixel_canvas& canvas = *ctx().canvas;
   ClearBackground(Color{16, 15, 20, 255});
 
-  const char* title = "BUREAU";
-  DrawText(title, (canvas.width() - MeasureText(title, 20)) / 2, 18, 20, Color{226, 205, 154, 255});
+  // A vacancy says so outright. A line changing colour among five others is
+  // not an announcement, and someone died.
+  const bool vacant = employee_alive(m_run) == false;
+  const char* title = vacant ? "VACANCY" : "BUREAU";
+
+  DrawText(title, (canvas.width() - MeasureText(title, 20)) / 2, 18, 20,
+           vacant ? Color{198, 88, 78, 255} : Color{226, 205, 154, 255});
 
   if (!m_data_error.empty())
   {
@@ -93,12 +108,11 @@ void bureau_screen::render(float)
   }
   else
   {
-    // What the posting has cost so far, which is the only figure the Bureau
-    // keeps of the people themselves.
-    line(canvas, "the post is vacant", 76, Color{198, 88, 78, 255});
+    line(canvas, "the previous holder did not report back", 76, Color{198, 88, 78, 255});
   }
 
-  line(canvas, TextFormat("write-offs %d", m_run.lost), 90, Color{92, 84, 104, 255});
+  // The only figure the Bureau keeps of the people themselves.
+  line(canvas, TextFormat("write-offs %d", m_run.lost), 90, vacant ? Color{198, 88, 78, 255} : Color{92, 84, 104, 255});
 
   const bool on_pad = ctx().input->device == input_device::gamepad;
 

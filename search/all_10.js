@@ -17,8 +17,11 @@ var searchData=
   ['resolve_5fprojectile_5fhits_14',['resolve_projectile_hits',['../namespacearpg.html#abb1a9f9358fdc61b4edd3630c63c5319',1,'arpg']]],
   ['right_15',['right',['../structarpg_1_1direction__actions.html#a69294ee9d1bd70e4aa9bbc38df57b5c0',1,'arpg::direction_actions']]],
   ['right_5fstick_16',['right_stick',['../structarpg_1_1input__snapshot.html#a49d9c6a34694caf35266a625d3540e1b',1,'arpg::input_snapshot']]],
-  ['rng_17',['rng',['../classarpg_1_1rng.html#ad450ccad0846691d1e0fa0866cd42ba1',1,'arpg::rng::rng()'],['../classarpg_1_1rng.html',1,'arpg::rng']]],
-  ['room_5fcleared_18',['room_cleared',['../structarpg_1_1room__cleared.html',1,'arpg']]],
-  ['run_19',['run',['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application::run()'],['../classarpg_1_1script__host.html#a37c9c218f0c70913292d0c7e95d46598',1,'arpg::script_host::run(std::string_view source, std::string_view name)']]],
-  ['run_5ffile_20',['run_file',['../classarpg_1_1script__host.html#a1be7d03f6e0f6a62e5876bca6e4cb9da',1,'arpg::script_host']]]
+  ['rigid_17',['rigid',['../namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a938af4ac7c74159f98e4e42b47d0cfd2',1,'arpg']]],
+  ['rng_18',['rng',['../classarpg_1_1rng.html',1,'arpg::rng'],['../classarpg_1_1rng.html#ad450ccad0846691d1e0fa0866cd42ba1',1,'arpg::rng::rng()']]],
+  ['room_5fcleared_19',['room_cleared',['../structarpg_1_1room__cleared.html',1,'arpg']]],
+  ['room_5frole_20',['room_role',['../namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96',1,'arpg']]],
+  ['rooms_21',['rooms',['../structarpg_1_1level__recipe.html#a31fb8d550c65162c37c7e49651e9fa21',1,'arpg::level_recipe']]],
+  ['run_22',['run',['../classarpg_1_1script__host.html#a37c9c218f0c70913292d0c7e95d46598',1,'arpg::script_host::run()'],['../classarpg_1_1application.html#a110a06be682c7a04a32adf804352c1af',1,'arpg::application::run()']]],
+  ['run_5ffile_23',['run_file',['../classarpg_1_1script__host.html#a1be7d03f6e0f6a62e5876bca6e4cb9da',1,'arpg::script_host']]]
 ];

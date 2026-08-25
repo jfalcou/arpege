@@ -190,6 +190,16 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1launch__options.html">launch_options</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the command line asked for.  <a href="structarpg_1_1launch__options.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__layout.html">level_layout</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The whole of a level, and the only thing a generator produces.  <a href="structarpg_1_1level__layout.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__link.html">level_link</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A way through, between two rooms named by their index in the layout.  <a href="structarpg_1_1level__link.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__recipe.html">level_recipe</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1level__room.html">level_room</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1lifetime.html">lifetime</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long an entity has left, in seconds.  <a href="structarpg_1_1lifetime.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -326,6 +336,18 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ace661b405ea5947859c2ae2a203600a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the volley points from.  <a href="namespacearpg.html#ace661b405ea5947859c2ae2a203600a0">More...</a><br /></td></tr>
 <tr class="separator:ace661b405ea5947859c2ae2a203600a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1964e3621e4f8e2d82eec236917f96" id="r_a6d1964e3621e4f8e2d82eec236917f96"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96">room_role</a> : std::uint8_t { <b>start</b>
+, <b>fight</b>
+, <b>boss</b>
+, <b>station</b>
+ }</td></tr>
+<tr class="memdesc:a6d1964e3621e4f8e2d82eec236917f96"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a room is there for.  <a href="namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96">More...</a><br /></td></tr>
+<tr class="separator:a6d1964e3621e4f8e2d82eec236917f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cd9a3668c145484df1f8abcd3d78081" id="r_a9cd9a3668c145484df1f8abcd3d78081"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081">level_shape</a> : std::uint8_t { <a class="el" href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a938af4ac7c74159f98e4e42b47d0cfd2">rigid</a>
+, <a class="el" href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a92247aa9766c9c6deebb28f078f75b83">organic</a>
+ }</td></tr>
+<tr class="memdesc:a9cd9a3668c145484df1f8abcd3d78081"><td class="mdescLeft">&#160;</td><td class="mdescRight">How the rooms are laid out, which is what a biome chooses.  <a href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081">More...</a><br /></td></tr>
+<tr class="separator:a9cd9a3668c145484df1f8abcd3d78081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -471,6 +493,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>tick_invulnerability<
 <tr class="memitem:abb1a9f9358fdc61b4edd3630c63c5319" id="r_abb1a9f9358fdc61b4edd3630c63c5319"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#abb1a9f9358fdc61b4edd3630c63c5319">resolve_projectile_hits</a> (entt::registry &amp;world, const <a class="el" href="classarpg_1_1spatial__hash.html">spatial_hash</a> &amp;hash, std::vector&lt; entt::entity &gt; &amp;scratch)</td></tr>
 <tr class="memdesc:abb1a9f9358fdc61b4edd3630c63c5319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies projectile damage to the opposing side.  <br /></td></tr>
 <tr class="separator:abb1a9f9358fdc61b4edd3630c63c5319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa1ff5dcba39630673266fa8696609d8" id="r_afa1ff5dcba39630673266fa8696609d8"><td class="memItemLeft" align="right" valign="top"><a id="afa1ff5dcba39630673266fa8696609d8" name="afa1ff5dcba39630673266fa8696609d8"></a>
+std::vector&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>neighbours_of</b> (const <a class="el" href="structarpg_1_1level__layout.html">level_layout</a> &amp;layout, std::size_t room)</td></tr>
+<tr class="memdesc:afa1ff5dcba39630673266fa8696609d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rooms reachable in one step from <code>room</code>. <br /></td></tr>
+<tr class="separator:afa1ff5dcba39630673266fa8696609d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f909ea415f4a7890a1b9d898b9b7e65" id="r_a0f909ea415f4a7890a1b9d898b9b7e65"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a0f909ea415f4a7890a1b9d898b9b7e65">fully_connected</a> (const <a class="el" href="structarpg_1_1level__layout.html">level_layout</a> &amp;layout)</td></tr>
+<tr class="memdesc:a0f909ea415f4a7890a1b9d898b9b7e65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether every room can be reached from the start by following the links.  <br /></td></tr>
+<tr class="separator:a0f909ea415f4a7890a1b9d898b9b7e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a920953eeafa908c2841fcf3627812b9f" id="r_a920953eeafa908c2841fcf3627812b9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structarpg_1_1level__layout.html">level_layout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacearpg.html#a920953eeafa908c2841fcf3627812b9f">generate_level</a> (const <a class="el" href="structarpg_1_1level__recipe.html">level_recipe</a> &amp;recipe, <a class="el" href="classarpg_1_1rng.html">rng</a> &amp;generator)</td></tr>
+<tr class="memdesc:a920953eeafa908c2841fcf3627812b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lays a level out, drawing every choice from <code>generator</code>.  <br /></td></tr>
+<tr class="separator:a920953eeafa908c2841fcf3627812b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Vector arithmetic</div></td></tr>
 <tr class="memitem:a8a6a501f19fe9041da297aa6541aec11" id="r_a8a6a501f19fe9041da297aa6541aec11"><td class="memItemLeft" align="right" valign="top"><a id="a8a6a501f19fe9041da297aa6541aec11" name="a8a6a501f19fe9041da297aa6541aec11"></a>
 constexpr <a class="el" href="structarpg_1_1vec2.html">vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (<a class="el" href="structarpg_1_1vec2.html">vec2</a> a, <a class="el" href="structarpg_1_1vec2.html">vec2</a> b)</td></tr>
@@ -680,6 +712,64 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
 </td></tr>
 <tr><td class="fieldname"><a id="ace661b405ea5947859c2ae2a203600a0acec315e3d0975e5cc2811d5d8725f149" name="ace661b405ea5947859c2ae2a203600a0acec315e3d0975e5cc2811d5d8725f149"></a>fixed&#160;</td><td class="fielddoc"><p>At a heading of its own, which only the spin moves. </p>
 <p>A wall of bullets that ignores where the player stands is what makes a room a place to read rather than a duel. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a6d1964e3621e4f8e2d82eec236917f96" name="a6d1964e3621e4f8e2d82eec236917f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1964e3621e4f8e2d82eec236917f96">&#9670;&#160;</a></span>room_role</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96">arpg::room_role</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What a room is there for. </p>
+<p>The role is what the rest of the game reads: a fight fills with a wave, the boss room holds the portals that end the level, the station is where loot is sent back to the Bureau. </p>
+
+</div>
+</div>
+<a id="a9cd9a3668c145484df1f8abcd3d78081" name="a9cd9a3668c145484df1f8abcd3d78081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cd9a3668c145484df1f8abcd3d78081">&#9670;&#160;</a></span>level_shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081">arpg::level_shape</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How the rooms are laid out, which is what a biome chooses. </p>
+<p>The shape decides how it looks; the topology it comes with decides how it plays. Both generators here grow a tree, so a level has no loop yet. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9cd9a3668c145484df1f8abcd3d78081a938af4ac7c74159f98e4e42b47d0cfd2" name="a9cd9a3668c145484df1f8abcd3d78081a938af4ac7c74159f98e4e42b47d0cfd2"></a>rigid&#160;</td><td class="fielddoc"><p>Recursive splitting of one box. </p>
+<p>Rooms are axis aligned and tightly packed: the architecture of something built by people, however mad. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9cd9a3668c145484df1f8abcd3d78081a92247aa9766c9c6deebb28f078f75b83" name="a9cd9a3668c145484df1f8abcd3d78081a92247aa9766c9c6deebb28f078f75b83"></a>organic&#160;</td><td class="fielddoc"><p>Rooms accreted one against another, each attached to a wall of one already placed. </p>
+<p>Irregular, but always made of actual rooms, which a bullet hell needs: an arena has to be readable at a glance. </p>
 </td></tr>
 </table>
 
@@ -1729,6 +1819,58 @@ constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>ass
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>how many hits were applied, which the caller turns into sounds and particles rather than having this reach for them. </dd></dl>
+
+</div>
+</div>
+<a id="a0f909ea415f4a7890a1b9d898b9b7e65" name="a0f909ea415f4a7890a1b9d898b9b7e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f909ea415f4a7890a1b9d898b9b7e65">&#9670;&#160;</a></span>fully_connected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool arpg::fully_connected </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structarpg_1_1level__layout.html">level_layout</a> &amp;&#160;</td>
+          <td class="paramname"><em>layout</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether every room can be reached from the start by following the links. </p>
+<p>A generator that cannot promise this has produced a level someone can be shut out of, so it is worth asking rather than assuming. </p>
+
+</div>
+</div>
+<a id="a920953eeafa908c2841fcf3627812b9f" name="a920953eeafa908c2841fcf3627812b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a920953eeafa908c2841fcf3627812b9f">&#9670;&#160;</a></span>generate_level()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structarpg_1_1level__layout.html">level_layout</a> arpg::generate_level </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structarpg_1_1level__recipe.html">level_recipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classarpg_1_1rng.html">rng</a> &amp;&#160;</td>
+          <td class="paramname"><em>generator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lays a level out, drawing every choice from <code>generator</code>. </p>
+<p>Deterministic: the same recipe and the same seed give the same level, which is what lets a level be derived from the seed of a posting rather than stored. </p>
 
 </div>
 </div>

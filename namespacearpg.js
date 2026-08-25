@@ -28,6 +28,10 @@ var namespacearpg =
     [ "input_snapshot", "structarpg_1_1input__snapshot.html", "structarpg_1_1input__snapshot" ],
     [ "invulnerable", "structarpg_1_1invulnerable.html", "structarpg_1_1invulnerable" ],
     [ "launch_options", "structarpg_1_1launch__options.html", "structarpg_1_1launch__options" ],
+    [ "level_layout", "structarpg_1_1level__layout.html", null ],
+    [ "level_link", "structarpg_1_1level__link.html", null ],
+    [ "level_recipe", "structarpg_1_1level__recipe.html", "structarpg_1_1level__recipe" ],
+    [ "level_room", "structarpg_1_1level__room.html", "structarpg_1_1level__room" ],
     [ "lifetime", "structarpg_1_1lifetime.html", null ],
     [ "loaded_player", "structarpg_1_1loaded__player.html", "structarpg_1_1loaded__player" ],
     [ "main_menu_screen", "classarpg_1_1main__menu__screen.html", "classarpg_1_1main__menu__screen" ],
@@ -96,6 +100,16 @@ var namespacearpg =
       [ "aimed", "namespacearpg.html#ace661b405ea5947859c2ae2a203600a0a4ecfd9ee814874449b80055cda251d0b", null ],
       [ "fixed", "namespacearpg.html#ace661b405ea5947859c2ae2a203600a0acec315e3d0975e5cc2811d5d8725f149", null ]
     ] ],
+    [ "room_role", "namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96", [
+      [ "start", "namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96aea2b2676c28c0db26d39331a336c6b92", null ],
+      [ "fight", "namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96a9e6417ebffecef071eaeeb2ed0ca654b", null ],
+      [ "boss", "namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96aceb8447cc4ab78d2ec34cd9f11e4bed2", null ],
+      [ "station", "namespacearpg.html#a6d1964e3621e4f8e2d82eec236917f96ae8ed3f2846110837f3adb8015ccad5ec", null ]
+    ] ],
+    [ "level_shape", "namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081", [
+      [ "rigid", "namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a938af4ac7c74159f98e4e42b47d0cfd2", null ],
+      [ "organic", "namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a92247aa9766c9c6deebb28f078f75b83", null ]
+    ] ],
     [ "index_of", "namespacearpg.html#ae7f6e334c381f86f1378feafe9b775eb", null ],
     [ "movement_direction", "namespacearpg.html#a50b688d21c2c5bbcbfd13681e9be8364", null ],
     [ "resolve_aim", "namespacearpg.html#aae48783c2f7aa3fd58c4ed81761740bb", null ],
@@ -141,6 +155,9 @@ var namespacearpg =
     [ "tick_invulnerability", "namespacearpg.html#aeaeb74f4deaa588768f0d3c5181f4ca8", null ],
     [ "resolve_contact_damage", "namespacearpg.html#aef47d4cba6bb27915229e0303de1d49f", null ],
     [ "resolve_projectile_hits", "namespacearpg.html#abb1a9f9358fdc61b4edd3630c63c5319", null ],
+    [ "neighbours_of", "namespacearpg.html#afa1ff5dcba39630673266fa8696609d8", null ],
+    [ "fully_connected", "namespacearpg.html#a0f909ea415f4a7890a1b9d898b9b7e65", null ],
+    [ "generate_level", "namespacearpg.html#a920953eeafa908c2841fcf3627812b9f", null ],
     [ "action_count", "namespacearpg.html#aa6eb7f23dcdaa7b8b39caf8bc76ebab9", null ],
     [ "movement_actions", "namespacearpg.html#a08c14cd84ab0d2753927d0e08b573742", null ],
     [ "menu_actions", "namespacearpg.html#a84b9f10cce68e67676b4640aeaa1e10d", null ],

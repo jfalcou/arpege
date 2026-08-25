@@ -7,5 +7,6 @@ var searchData=
   ['operator_2a_4',['operator*',['../namespacearpg.html#a535f555c7b5741f53033351fbfa55358',1,'arpg::operator*(vec2 v, float factor)'],['../namespacearpg.html#ad367443d26470ffaaaaded59b2a54a19',1,'arpg::operator*(float factor, vec2 v)']]],
   ['operator_2b_5',['operator+',['../namespacearpg.html#a8a6a501f19fe9041da297aa6541aec11',1,'arpg']]],
   ['operator_2d_6',['operator-',['../namespacearpg.html#aa2b3d6b267f99e994cbb8df4a0129d77',1,'arpg']]],
-  ['operator_3d_3d_7',['operator==',['../structarpg_1_1binding.html#a07a3e4a41420e7db05357db7cc4ce63f',1,'arpg::binding::operator=='],['../structarpg_1_1vec2.html#a3baf0b94d5201b0425e717f015323549',1,'arpg::vec2::operator==']]]
+  ['operator_3d_3d_7',['operator==',['../structarpg_1_1binding.html#a07a3e4a41420e7db05357db7cc4ce63f',1,'arpg::binding::operator=='],['../structarpg_1_1vec2.html#a3baf0b94d5201b0425e717f015323549',1,'arpg::vec2::operator==']]],
+  ['organic_8',['organic',['../namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a92247aa9766c9c6deebb28f078f75b83',1,'arpg']]]
 ];

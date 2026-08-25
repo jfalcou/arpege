@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ranged_0',['ranged',['../namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26adc18a2eaca63070ab8c88c511ae4e4cd',1,'arpg']]]
+  ['organic_0',['organic',['../namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081a92247aa9766c9c6deebb28f078f75b83',1,'arpg']]]
 ];

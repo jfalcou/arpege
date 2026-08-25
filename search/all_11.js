@@ -15,12 +15,13 @@ var searchData=
   ['sight_12',['sight',['../structarpg_1_1enemy__archetype.html#afecc24dde1e2d39984c7764c98423a5c',1,'arpg::enemy_archetype']]],
   ['size_13',['size',['../classarpg_1_1action__map.html#a532e00bddaa3f12ea28a9f460d88c823',1,'arpg::action_map::size()'],['../classarpg_1_1screen__manager.html#a896793bfe77c4fd9be53e0f2e8c5ad46',1,'arpg::screen_manager::size()']]],
   ['slice_14',['slice',['../structarpg_1_1enemy__brain.html#aef6ad41b1965792867b261cf2b4212ec',1,'arpg::enemy_brain']]],
-  ['spatial_5fhash_15',['spatial_hash',['../classarpg_1_1spatial__hash.html',1,'arpg::spatial_hash'],['../classarpg_1_1spatial__hash.html#ae4b0b5b8664b0d8bbdfffeed7ade8c4a',1,'arpg::spatial_hash::spatial_hash()']]],
-  ['spawn_5fprojectile_16',['spawn_projectile',['../namespacearpg.html#a069eb89b5fe92f489baf77a46c9781e9',1,'arpg']]],
-  ['speed_17',['speed',['../structarpg_1_1dash__profile.html#aa0a86d60172fb395df566ccd3b1f8348',1,'arpg::dash_profile']]],
-  ['spin_18',['spin',['../structarpg_1_1firing__pattern.html#aed0434b3dccf587d86d904a2f6b398a2',1,'arpg::firing_pattern']]],
-  ['stamp_5freader_19',['stamp_reader',['../namespacearpg.html#aed60f4171e7c460081167cc688ced0c8',1,'arpg']]],
-  ['state_5ftimer_20',['state_timer',['../structarpg_1_1enemy__brain.html#a048846c6822785dd2e07e6f736e78d67',1,'arpg::enemy_brain']]],
-  ['status_21',['Status',['../index.html#autotoc_md1',1,'']]],
-  ['stick_5fdeadzone_22',['stick_deadzone',['../classarpg_1_1raylib__input.html#a0c775870b6f6369e9bee7a0c9c3ce79a',1,'arpg::raylib_input']]]
+  ['spacing_15',['spacing',['../structarpg_1_1level__recipe.html#ab1a810f95a39468aa6d609cf9b02b7ee',1,'arpg::level_recipe']]],
+  ['spatial_5fhash_16',['spatial_hash',['../classarpg_1_1spatial__hash.html',1,'arpg::spatial_hash'],['../classarpg_1_1spatial__hash.html#ae4b0b5b8664b0d8bbdfffeed7ade8c4a',1,'arpg::spatial_hash::spatial_hash()']]],
+  ['spawn_5fprojectile_17',['spawn_projectile',['../namespacearpg.html#a069eb89b5fe92f489baf77a46c9781e9',1,'arpg']]],
+  ['speed_18',['speed',['../structarpg_1_1dash__profile.html#aa0a86d60172fb395df566ccd3b1f8348',1,'arpg::dash_profile']]],
+  ['spin_19',['spin',['../structarpg_1_1firing__pattern.html#aed0434b3dccf587d86d904a2f6b398a2',1,'arpg::firing_pattern']]],
+  ['stamp_5freader_20',['stamp_reader',['../namespacearpg.html#aed60f4171e7c460081167cc688ced0c8',1,'arpg']]],
+  ['state_5ftimer_21',['state_timer',['../structarpg_1_1enemy__brain.html#a048846c6822785dd2e07e6f736e78d67',1,'arpg::enemy_brain']]],
+  ['status_22',['Status',['../index.html#autotoc_md1',1,'']]],
+  ['stick_5fdeadzone_23',['stick_deadzone',['../classarpg_1_1raylib__input.html#a0c775870b6f6369e9bee7a0c9c3ce79a',1,'arpg::raylib_input']]]
 ];

@@ -6,10 +6,15 @@ var searchData=
   ['left_5fstick_3',['left_stick',['../structarpg_1_1input__snapshot.html#aca5f3c39d6f3dc7efe824ffc065b5839',1,'arpg::input_snapshot']]],
   ['length_4',['length',['../namespacearpg.html#a4a6a9bcdafa41e7f863da31bcdb9622b',1,'arpg']]],
   ['length_5fsquared_5',['length_squared',['../namespacearpg.html#a17ef660e29da3bb64496f23fccf95b8d',1,'arpg']]],
-  ['license_6',['License',['../index.html#autotoc_md7',1,'']]],
-  ['life_7',['life',['../structarpg_1_1firing__pattern.html#af7c92606fb40157d8882961fea7e341c',1,'arpg::firing_pattern::life'],['../structarpg_1_1shot__recipe.html#a56d63a74bcde1a8358a9fef668cbf782',1,'arpg::shot_recipe::life']]],
-  ['lifetime_8',['lifetime',['../structarpg_1_1lifetime.html',1,'arpg']]],
-  ['load_5fenemies_9',['load_enemies',['../namespacearpg.html#a5182c48c4a43b77d06dba69867d01a8e',1,'arpg']]],
-  ['load_5fenemies_5ffrom_10',['load_enemies_from',['../namespacearpg.html#a1bc43f914787d3e2135b239d0f6d31dd',1,'arpg']]],
-  ['loaded_5fplayer_11',['loaded_player',['../structarpg_1_1loaded__player.html',1,'arpg']]]
+  ['level_5flayout_6',['level_layout',['../structarpg_1_1level__layout.html',1,'arpg']]],
+  ['level_5flink_7',['level_link',['../structarpg_1_1level__link.html',1,'arpg']]],
+  ['level_5frecipe_8',['level_recipe',['../structarpg_1_1level__recipe.html',1,'arpg']]],
+  ['level_5froom_9',['level_room',['../structarpg_1_1level__room.html',1,'arpg']]],
+  ['level_5fshape_10',['level_shape',['../namespacearpg.html#a9cd9a3668c145484df1f8abcd3d78081',1,'arpg']]],
+  ['license_11',['License',['../index.html#autotoc_md7',1,'']]],
+  ['life_12',['life',['../structarpg_1_1shot__recipe.html#a56d63a74bcde1a8358a9fef668cbf782',1,'arpg::shot_recipe::life'],['../structarpg_1_1firing__pattern.html#af7c92606fb40157d8882961fea7e341c',1,'arpg::firing_pattern::life']]],
+  ['lifetime_13',['lifetime',['../structarpg_1_1lifetime.html',1,'arpg']]],
+  ['load_5fenemies_14',['load_enemies',['../namespacearpg.html#a5182c48c4a43b77d06dba69867d01a8e',1,'arpg']]],
+  ['load_5fenemies_5ffrom_15',['load_enemies_from',['../namespacearpg.html#a1bc43f914787d3e2135b239d0f6d31dd',1,'arpg']]],
+  ['loaded_5fplayer_16',['loaded_player',['../structarpg_1_1loaded__player.html',1,'arpg']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['width_0',['width',['../classarpg_1_1pixel__canvas.html#a0e74226e0444e9b44027e6cb596c8b81',1,'arpg::pixel_canvas']]],
-  ['window_5fto_5fcanvas_1',['window_to_canvas',['../namespacearpg.html#a65b4f61bca3163710500b7cccfbf7c05',1,'arpg']]]
+  ['view_5forigin_0',['view_origin',['../namespacearpg.html#ab39fd1d93ea449b6645b95a77cdda0ca',1,'arpg']]],
+  ['volley_5fheadings_1',['volley_headings',['../namespacearpg.html#aadab97ed54b812be2ed15ade9dbe56f3',1,'arpg']]]
 ];

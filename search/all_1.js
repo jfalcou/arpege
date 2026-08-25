@@ -6,7 +6,8 @@ var searchData=
   ['binding_3',['binding',['../structarpg_1_1binding.html',1,'arpg']]],
   ['blocks_5frender_4',['blocks_render',['../classarpg_1_1screen.html#aed964effc07b8bc7a9aa656a27250f03',1,'arpg::screen']]],
   ['blocks_5fupdate_5',['blocks_update',['../classarpg_1_1screen.html#a82ba7fcf3411b269a33e041ec0ebd10d',1,'arpg::screen']]],
-  ['building_6',['Building',['../index.html#autotoc_md3',1,'']]],
-  ['built_20with_7',['Built with',['../index.html#autotoc_md2',1,'']]],
-  ['bullets_8',['bullets',['../structarpg_1_1firing__pattern.html#ad5fe55c557fa41d25ffa1414ed92f3c3',1,'arpg::firing_pattern']]]
+  ['bounds_6',['bounds',['../structarpg_1_1level__room.html#afb2e5c76b056511ce5cac9ec530b457d',1,'arpg::level_room']]],
+  ['building_7',['Building',['../index.html#autotoc_md3',1,'']]],
+  ['built_20with_8',['Built with',['../index.html#autotoc_md2',1,'']]],
+  ['bullets_9',['bullets',['../structarpg_1_1firing__pattern.html#ad5fe55c557fa41d25ffa1414ed92f3c3',1,'arpg::firing_pattern']]]
 ];

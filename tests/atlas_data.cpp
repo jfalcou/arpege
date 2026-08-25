@@ -230,3 +230,55 @@ TTS_CASE("Time before the beginning shows the first frame")
   const arpg::sprite_animation& walk = *atlas.find_animation("walk");
   TTS_EQUAL(arpg::frame_at(walk, -0.5f), 0U);
 };
+
+TTS_CASE("A sheet on a grid cuts into whole cells, row by row")
+{
+  const std::vector<arpg::sprite_frame> cut = arpg::slice_grid(32, 16, arpg::grid_slice{.cell_width = 8, .cell_height = 8});
+
+  TTS_EQUAL(cut.size(), 8U);
+  TTS_EQUAL(cut[0].x, 0);
+  TTS_EQUAL(cut[0].y, 0);
+  TTS_EQUAL(cut[3].x, 24);
+  TTS_EQUAL(cut[3].y, 0);
+  TTS_EQUAL(cut[4].x, 0);
+  TTS_EQUAL(cut[4].y, 8);
+  TTS_EQUAL(cut[7].name, std::string{"frame_7"});
+};
+
+TTS_CASE("A column that does not fit yields no half frame")
+{
+  // A sheet 30 wide holds three cells of eight and six pixels nobody asked
+  // for. Half a picture is never what was meant.
+  const std::vector<arpg::sprite_frame> cut = arpg::slice_grid(30, 8, arpg::grid_slice{.cell_width = 8, .cell_height = 8});
+
+  TTS_EQUAL(cut.size(), 3U);
+  TTS_EQUAL(cut.back().x + cut.back().width, 24);
+};
+
+TTS_CASE("Margin and spacing are left alone")
+{
+  const std::vector<arpg::sprite_frame> cut =
+      arpg::slice_grid(40, 20, arpg::grid_slice{.cell_width = 8, .cell_height = 8, .margin = 2, .spacing = 4});
+
+  TTS_EQUAL(cut[0].x, 2);
+  TTS_EQUAL(cut[0].y, 2);
+  TTS_EQUAL(cut[1].x, 14);
+};
+
+TTS_CASE("The origin of a cut frame stands at its feet")
+{
+  const std::vector<arpg::sprite_frame> cut =
+      arpg::slice_grid(16, 16, arpg::grid_slice{.cell_width = 16, .cell_height = 16});
+
+  // The middle of the width and the bottom of the height, which is what a body
+  // seen from above stands on.
+  TTS_EQUAL(cut[0].origin.x, 8.0f);
+  TTS_EQUAL(cut[0].origin.y, 16.0f);
+};
+
+TTS_CASE("A cut nobody could make yields nothing")
+{
+  TTS_EXPECT(arpg::slice_grid(32, 32, arpg::grid_slice{.cell_width = 0}).empty());
+  TTS_EXPECT(arpg::slice_grid(32, 32, arpg::grid_slice{.cell_height = -4}).empty());
+  TTS_EXPECT(arpg::slice_grid(4, 4, arpg::grid_slice{.cell_width = 8, .cell_height = 8}).empty());
+};

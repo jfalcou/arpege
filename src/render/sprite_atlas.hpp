@@ -73,6 +73,36 @@ struct sprite_atlas
   const sprite_animation* find_animation(std::string_view name) const;
 };
 
+/// How a sheet is cut when it is cut on a grid, which most pixel art is.
+struct grid_slice
+{
+  int cell_width = 8;
+  int cell_height = 8;
+
+  /// Border left around the whole sheet before the first cell.
+  int margin = 0;
+
+  /// Ground between two cells, which some exporters leave to keep filtering
+  /// from bleeding one into the next.
+  int spacing = 0;
+
+  /// What the frames are called, followed by their number.
+  std::string prefix = "frame";
+
+  /// Where the origin of each frame goes, as a share of the cell. The foot of
+  /// the middle by default, since that is what a body seen from above stands
+  /// on.
+  vec2 origin{0.5f, 1.0f};
+};
+
+/// Cuts a sheet of @p image_width by @p image_height into frames.
+///
+/// Row by row, and only whole cells: a sheet whose last column does not fit
+/// yields no half frame, since a half picture is never what was meant.
+///
+/// Pure, so what a cut produces is checked without a sheet to cut.
+std::vector<sprite_frame> slice_grid(int image_width, int image_height, const grid_slice& how);
+
 /// How long an animation runs, which is what tells a played-once one when it
 /// has finished.
 float duration_of(const sprite_animation& clip);

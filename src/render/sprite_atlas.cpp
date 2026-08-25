@@ -24,6 +24,41 @@ const sprite_animation* sprite_atlas::find_animation(std::string_view name) cons
   return (found == animations.end()) ? nullptr : &(*found);
 }
 
+std::vector<sprite_frame> slice_grid(int image_width, int image_height, const grid_slice& how)
+{
+  std::vector<sprite_frame> cut;
+
+  if (how.cell_width <= 0 || how.cell_height <= 0 || how.margin < 0 || how.spacing < 0)
+  {
+    return cut;
+  }
+
+  const int step_x = how.cell_width + how.spacing;
+  const int step_y = how.cell_height + how.spacing;
+
+  int number = 0;
+
+  for (int y = how.margin; y + how.cell_height <= image_height; y += step_y)
+  {
+    for (int x = how.margin; x + how.cell_width <= image_width; x += step_x)
+    {
+      sprite_frame frame;
+      frame.name = how.prefix + "_" + std::to_string(number);
+      frame.x = x;
+      frame.y = y;
+      frame.width = how.cell_width;
+      frame.height = how.cell_height;
+      frame.origin =
+          vec2{how.origin.x * static_cast<float>(how.cell_width), how.origin.y * static_cast<float>(how.cell_height)};
+
+      cut.push_back(std::move(frame));
+      ++number;
+    }
+  }
+
+  return cut;
+}
+
 float duration_of(const sprite_animation& clip)
 {
   float total = 0.0f;

@@ -94,6 +94,16 @@ add_library(arpg_app STATIC
 target_link_libraries(arpg_app PUBLIC arpg_core raylib rlimgui PRIVATE arpg_warnings)
 
 # --- Game executable --------------------------------------------------------
+# The sprite editor: a second program, sharing the atlas format with the game
+# and nothing else. It links raylib and Dear ImGui, never arpg_app: a tool has
+# no business reaching into the game, and the game must not carry the tool.
+add_executable(arpg_editor tools/sprite_editor/main.cpp)
+target_link_libraries(arpg_editor PRIVATE arpg_core raylib rlimgui arpg_warnings)
+
+if(WIN32 AND NOT MSVC)
+  target_link_options(arpg_editor PRIVATE -static)
+endif()
+
 add_executable(arpg src/main.cpp)
 target_link_libraries(arpg PRIVATE arpg_app arpg_warnings)
 

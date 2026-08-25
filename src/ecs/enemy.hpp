@@ -108,6 +108,16 @@ vec2 pick_spawn(rng& generator, viewport_rect room, float radius, std::span<cons
 /// @p generator, so a seed replays the same room.
 ///
 /// @return indices into @p catalogue, one per enemy to spawn.
+/// Composes a wave worth @p budget out of @p catalogue.
+///
+/// @p weights says how often each kind is offered, and is either empty, for an
+/// even draw, or as long as the catalogue. It is not the same lever as the
+/// cost: a brute costing eight parasites is already rare by the room it fills,
+/// but without a weight it is still offered as often as one.
+std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetype> catalogue,
+                                      std::span<const int> weights, rng& generator);
+
+/// Same, offering every kind evenly.
 std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetype> catalogue, rng& generator);
 
 } // namespace arpg

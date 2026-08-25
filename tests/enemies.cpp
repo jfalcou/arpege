@@ -454,3 +454,72 @@ TTS_CASE("The same seed places the same body")
   TTS_EQUAL(a.x, b.x);
   TTS_EQUAL(a.y, b.y);
 };
+
+TTS_CASE("A weight decides how often a kind is offered")
+{
+  arpg::rng generator(4);
+
+  // Two archetypes of the same price, so nothing but the weight can tell them
+  // apart in the draw.
+  constexpr arpg::enemy_archetype common{
+      .cost = 5, .health = 2, .speed = 40.0f, .radius = 3.0f, .touch = 1, .sight = 90.0f, .reach = 20.0f};
+  constexpr arpg::enemy_archetype rare{
+      .cost = 5, .health = 2, .speed = 40.0f, .radius = 3.0f, .touch = 1, .sight = 90.0f, .reach = 20.0f};
+
+  const std::array<arpg::enemy_archetype, 2> pair{common, rare};
+  const std::array<int, 2> weights{9, 1};
+
+  int firsts = 0;
+  int total = 0;
+
+  for (int round = 0; round < 200; ++round)
+  {
+    for (const std::size_t index : arpg::compose_wave(100, pair, weights, generator))
+    {
+      firsts += (index == 0) ? 1 : 0;
+      ++total;
+    }
+  }
+
+  // Nine to one, so anywhere near half would mean the weights are ignored.
+  TTS_EXPECT(firsts > total * 3 / 4);
+  TTS_EXPECT(firsts < total);
+};
+
+TTS_CASE("A catalogue handed no weights is offered evenly")
+{
+  arpg::rng generator(6);
+  const std::array<int, 0> none{};
+
+  int firsts = 0;
+  int total = 0;
+
+  for (int round = 0; round < 200; ++round)
+  {
+    for (const std::size_t index : arpg::compose_wave(100, catalogue, none, generator))
+    {
+      firsts += (index == 0) ? 1 : 0;
+      ++total;
+    }
+  }
+
+  TTS_EXPECT(firsts > 0);
+  TTS_EXPECT(firsts < total);
+};
+
+TTS_CASE("A weighted wave still spends what it was given")
+{
+  arpg::rng generator(8);
+  const std::array<int, 3> weights{1, 1, 1};
+
+  int spent = 0;
+
+  for (const std::size_t index : arpg::compose_wave(120, catalogue, weights, generator))
+  {
+    spent += catalogue[index].cost;
+  }
+
+  // The weights change who is drawn, never how much a room can afford.
+  TTS_EXPECT(spent <= 120);
+  TTS_EXPECT(spent > 120 - catalogue[0].cost);
+};

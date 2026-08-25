@@ -49,8 +49,10 @@ include(documentation)
 add_library(arpg_core STATIC
   src/ecs/encounter.cpp
   src/data/asset_root.cpp
+  src/data/biome_data.cpp
   src/data/hot_reload.cpp
   src/data/player_data.cpp
+  src/data/schema.cpp
   src/data/script_host.cpp
   src/data/enemy_data.cpp
   src/ecs/dash.cpp

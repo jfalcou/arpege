@@ -5,6 +5,9 @@
 #include <filesystem>
 #include <functional>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace arpg
 {
@@ -55,6 +58,44 @@ private:
   float m_interval = 1.0f;
   float m_elapsed = 0.0f;
   std::optional<file_stamp> m_seen;
+};
+
+/// What a directory holds, by name and by stamp.
+using directory_listing = std::vector<std::pair<std::string, file_stamp>>;
+
+/// Reads what a directory holds, or nothing when it cannot be reached.
+using directory_reader = std::function<directory_listing(const std::filesystem::path&)>;
+
+/// Lists the `.lua` files of a directory, sorted by name.
+///
+/// Sorted rather than left to the filesystem: the order decides nothing today,
+/// and the day it decides something, an unordered walk would make two machines
+/// disagree about a world drawn from the same seed.
+directory_listing disk_listing(const std::filesystem::path& directory);
+
+/// Watches a directory of data files rather than one file.
+///
+/// A file appearing or disappearing is a change like a file being rewritten:
+/// dropping a biome in beside the others has to take effect, which is the
+/// whole point of one file per biome.
+class directory_watch
+{
+public:
+  directory_watch() = default;
+
+  explicit directory_watch(std::filesystem::path directory, float interval = 1.0f,
+                           directory_reader read = disk_listing);
+
+  bool poll(float dt);
+
+  const std::filesystem::path& path() const { return m_path; }
+
+private:
+  std::filesystem::path m_path;
+  directory_reader m_read;
+  float m_interval = 1.0f;
+  float m_elapsed = 0.0f;
+  directory_listing m_seen;
 };
 
 } // namespace arpg

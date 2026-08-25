@@ -21,18 +21,11 @@ namespace arpg
 namespace
 {
 
-/// Where the data files are read from, under the asset root.
+/// Where the data files are read from, under the asset root. Biomes are a
+/// directory rather than a file, so that a mod adds one by dropping a file in.
 constexpr const char* player_file = "data/player.lua";
 constexpr const char* roster_file = "data/enemies.lua";
-
-/// How much larger than the screen a room is. The generator draws its sizes
-/// between these, so a room is always at least a screenful and never so wide
-/// that its far side is out of reach.
-constexpr float room_scale_min = 0.75f;
-constexpr float room_scale_max = 1.25f;
-
-/// How many rooms a level is laid out with.
-constexpr int rooms_per_level = 9;
+constexpr const char* biomes_directory = "data/biomes";
 
 /// How close the player must come to a door for it to take them.
 constexpr float door_radius = 22.0f;
@@ -69,8 +62,10 @@ void dungeon_screen::on_enter()
   // waking closer than that could never answer.
   m_player_watch = file_watch{*ctx().assets / player_file};
   m_roster_watch = file_watch{*ctx().assets / roster_file};
+  m_biomes_watch = directory_watch{*ctx().assets / biomes_directory};
 
   read_content();
+  choose_biome();
 
   m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
   m_carried_health = m_profile.health;
@@ -80,13 +75,9 @@ void dungeon_screen::on_enter()
 
 level_recipe dungeon_screen::level_shape_in_use() const
 {
-  const vec2 screen = view();
-
-  return level_recipe{.shape = level_shape::organic,
-                      .rooms = rooms_per_level,
-                      .room_min = screen * room_scale_min,
-                      .room_max = screen * room_scale_max,
-                      .spacing = 96.0f};
+  // Every distance a biome states is a multiple of the view, so a room keeps
+  // the shape of a screen whatever the canvas is.
+  return recipe_for(m_biome, view());
 }
 
 viewport_rect dungeon_screen::room() const
@@ -193,7 +184,7 @@ void dungeon_screen::spawn_player(vec2 at)
 
 void dungeon_screen::spawn_wave()
 {
-  if (!m_roster.valid())
+  if (m_fauna.empty())
   {
     return;
   }
@@ -208,7 +199,7 @@ void dungeon_screen::spawn_wave()
   // while there is no boss to put in it.
   const int depth = (m_level.layout.rooms[m_level.here].role == room_role::boss) ? boss_depth : 1;
   const int budget = combat_budget(width * height, depth);
-  const auto composition = compose_wave(budget, m_roster.kinds, m_generator);
+  const auto composition = compose_wave(budget, m_fauna, m_weights, m_generator);
 
   // Every doorway of this room, since the player may come back through any of
   // them and must not walk into a body on the threshold.
@@ -225,7 +216,7 @@ void dungeon_screen::spawn_wave()
 
   for (const std::size_t index : composition)
   {
-    const enemy_archetype& kind = m_roster.kinds[index];
+    const enemy_archetype& kind = m_fauna[index];
 
     const vec2 spot = pick_spawn(m_generator, bounds, kind.radius, doorways, spawn_clearance);
 
@@ -369,11 +360,61 @@ bool dungeon_screen::read_content()
     return false;
   }
 
+  loaded_biomes places = load_biomes_from(m_scripts, *ctx().assets / biomes_directory);
+
+  if (!places.valid())
+  {
+    m_data_error = places.error;
+    return false;
+  }
+
+  // A biome fields its fauna by name, and the roster is the only place those
+  // names exist. Left unchecked, a typo would quietly give a place one enemy
+  // fewer than it was written with.
+  for (const biome& place : places.all)
+  {
+    for (const biome::dweller& lives_here : place.fauna)
+    {
+      if (std::find(roster.names.begin(), roster.names.end(), lives_here.name) == roster.names.end())
+      {
+        m_data_error = place.key + ": nothing in the roster is called '" + lives_here.name + "'";
+        return false;
+      }
+    }
+  }
+
   m_profile = hero.value;
   m_roster = std::move(roster);
+  m_biomes = std::move(places);
   m_data_error.clear();
 
   return true;
+}
+
+void dungeon_screen::choose_biome()
+{
+  if (m_biomes.all.empty())
+  {
+    return;
+  }
+
+  m_biome = m_biomes.all[m_generator.below(static_cast<std::uint32_t>(m_biomes.all.size()))];
+
+  // Gathered once here rather than looked up per wave: what lives in a place
+  // does not change while the player is in it.
+  m_fauna.clear();
+  m_weights.clear();
+
+  for (const biome::dweller& lives_here : m_biome.fauna)
+  {
+    const auto found = std::find(m_roster.names.begin(), m_roster.names.end(), lives_here.name);
+
+    if (found != m_roster.names.end())
+    {
+      m_fauna.push_back(m_roster.kinds[static_cast<std::size_t>(std::distance(m_roster.names.begin(), found))]);
+      m_weights.push_back(lives_here.weight);
+    }
+  }
 }
 
 void dungeon_screen::reload_content()
@@ -393,6 +434,7 @@ void dungeon_screen::reload_content()
   const std::vector<bool> cleared = m_level.cleared;
 
   m_generator = rng{m_seed};
+  choose_biome();
   m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
 
   if (m_level.cleared.size() == cleared.size())
@@ -513,8 +555,9 @@ void dungeon_screen::update(float dt)
   // is checked against what the player can reach.
   const bool player_changed = m_player_watch.poll(dt);
   const bool roster_changed = m_roster_watch.poll(dt);
+  const bool biomes_changed = m_biomes_watch.poll(dt);
 
-  if (player_changed || roster_changed)
+  if (player_changed || roster_changed || biomes_changed)
   {
     reload_content();
   }
@@ -676,6 +719,7 @@ void dungeon_screen::render(float alpha)
   // Right aligned, so the number moving does not shift the whole line.
   DrawText(tally, ctx().canvas->width() - MeasureText(tally, tally_size) - 4, 4, tally_size,
            (m_fight.state == encounter_state::cleared) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
+  DrawText(m_biome.name.c_str(), 4, 154, 10, Color{120, 110, 130, 255});
   DrawText("ESC leave   -   F9 clear", 4, 166, 10, Color{120, 110, 130, 255});
 
   draw_minimap();

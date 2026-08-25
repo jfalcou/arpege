@@ -2,6 +2,8 @@
 
 #include <data/player_data.hpp>
 
+#include <data/schema.hpp>
+
 namespace arpg
 {
 
@@ -12,6 +14,13 @@ loaded_player read_player(const sol::table& described)
 {
   loaded_player out;
   player_profile& profile = out.value;
+
+  out.error = schema_error(described, "this profile", player_schema);
+
+  if (!out.error.empty())
+  {
+    return out;
+  }
 
   profile.health = described.get_or("health", 0);
   profile.speed = described.get_or("speed", 0.0f);

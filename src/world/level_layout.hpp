@@ -75,9 +75,12 @@ struct level_recipe
 {
   level_shape shape = level_shape::rigid;
 
-  /// How many rooms are wanted. Both generators may fall short of it rather
-  /// than force a room where none fits, so it is a ceiling, not a promise.
-  int rooms = 8;
+  /// How many rooms a level holds, drawn between the two so that two levels
+  /// of the same biome are not the same walk. Both generators may fall short
+  /// of what is drawn rather than force a room where none fits, so the upper
+  /// bound is a ceiling and not a promise.
+  int rooms_min = 6;
+  int rooms_max = 8;
 
   /// Per axis, since a view is wider than it is tall: one figure for both
   /// would make a room that is a screen and a half wide four screens deep.

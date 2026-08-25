@@ -7,6 +7,7 @@
 #include <core/camera.hpp>
 #include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <data/biome_data.hpp>
 #include <data/enemy_data.hpp>
 #include <data/hot_reload.hpp>
 #include <data/player_data.hpp>
@@ -34,8 +35,11 @@ public:
   void render(float alpha) override;
 
 private:
-  /// How the level is laid out. A biome names this once biomes exist.
+  /// How the level is laid out, which the biome in play names.
   level_recipe level_shape_in_use() const;
+
+  /// Draws which biome this level is in, and gathers what lives there.
+  void choose_biome();
 
   /// The room the player stands in, in level coordinates.
   viewport_rect room() const;
@@ -101,9 +105,16 @@ private:
   /// Read from assets at every entry, and re-read whenever a file changes.
   player_profile m_profile;
   enemy_catalogue m_roster;
+  loaded_biomes m_biomes;
+
+  /// The place this level is in, and the part of the roster that lives there.
+  biome m_biome;
+  std::vector<enemy_archetype> m_fauna;
+  std::vector<int> m_weights;
 
   file_watch m_player_watch;
   file_watch m_roster_watch;
+  directory_watch m_biomes_watch;
 
   /// Why the last read failed, shown in place rather than left to a log
   /// nobody has open while tuning.

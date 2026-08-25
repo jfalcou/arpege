@@ -77,13 +77,13 @@ void split(const viewport_rect& box, const level_recipe& recipe, int depth, rng&
   }
 }
 
-level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
+level_layout lay_out_rigid(const level_recipe& recipe, int wanted, rng& generator)
 {
   level_layout out;
 
   // Depth is what bounds the room count, since every split doubles the leaves.
   int depth = 0;
-  while ((1 << depth) < recipe.rooms)
+  while ((1 << depth) < wanted)
   {
     ++depth;
   }
@@ -125,7 +125,7 @@ level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
 
 // --- organic ----------------------------------------------------------------
 
-level_layout lay_out_organic(const level_recipe& recipe, rng& generator)
+level_layout lay_out_organic(const level_recipe& recipe, int wanted, rng& generator)
 {
   level_layout out;
 
@@ -133,7 +133,7 @@ level_layout lay_out_organic(const level_recipe& recipe, rng& generator)
                                                between(generator, recipe.room_min.y, recipe.room_max.y)},
                                  room_role::fight});
 
-  while (static_cast<int>(out.rooms.size()) < recipe.rooms)
+  while (static_cast<int>(out.rooms.size()) < wanted)
   {
     bool placed = false;
 
@@ -340,14 +340,20 @@ bool fully_connected(const level_layout& layout)
 
 level_layout generate_level(const level_recipe& recipe, rng& generator)
 {
-  if (recipe.rooms <= 0 || recipe.room_min.x <= 0.0f || recipe.room_min.y <= 0.0f ||
-      recipe.room_max.x < recipe.room_min.x || recipe.room_max.y < recipe.room_min.y)
+  if (recipe.rooms_min <= 0 || recipe.rooms_max < recipe.rooms_min || recipe.room_min.x <= 0.0f ||
+      recipe.room_min.y <= 0.0f || recipe.room_max.x < recipe.room_min.x || recipe.room_max.y < recipe.room_min.y)
   {
     return level_layout{};
   }
 
-  level_layout out =
-      (recipe.shape == level_shape::organic) ? lay_out_organic(recipe, generator) : lay_out_rigid(recipe, generator);
+  // Drawn here rather than by the caller: the generator owns what is random
+  // about a level, and a biome names the range it is drawn from.
+  const int wanted =
+      recipe.rooms_min +
+      static_cast<int>(generator.below(static_cast<std::uint32_t>(recipe.rooms_max - recipe.rooms_min + 1)));
+
+  level_layout out = (recipe.shape == level_shape::organic) ? lay_out_organic(recipe, wanted, generator)
+                                                            : lay_out_rigid(recipe, wanted, generator);
 
   assign_roles(out, generator, std::clamp(recipe.service_scale, 0.2f, 1.0f), recipe.room_min);
 

@@ -11,10 +11,12 @@ namespace
 {
 
 constexpr arpg::level_recipe rigid{
-    .shape = arpg::level_shape::rigid, .rooms = 8, .room_min = {200.0f, 200.0f}, .room_max = {420.0f, 420.0f}, .spacing = 48.0f};
+    .shape = arpg::level_shape::rigid, .rooms_min = 8,
+                                   .rooms_max = 8, .room_min = {200.0f, 200.0f}, .room_max = {420.0f, 420.0f}, .spacing = 48.0f};
 
 constexpr arpg::level_recipe organic{.shape = arpg::level_shape::organic,
-                                     .rooms = 8,
+                                     .rooms_min = 8,
+                                   .rooms_max = 8,
                                      .room_min = {200.0f, 200.0f},
                                      .room_max = {420.0f, 420.0f},
                                      .spacing = 48.0f,
@@ -273,13 +275,13 @@ TTS_CASE("A recipe that asks for nothing lays out nothing")
 {
   arpg::rng generator(3);
 
-  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms = 0}, generator).rooms.empty());
-  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms = -4}, generator).rooms.empty());
+  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms_min = 0, .rooms_max = 0}, generator).rooms.empty());
+  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms_min = -4, .rooms_max = -4}, generator).rooms.empty());
 
   // A minimum above the maximum has no size to draw from, and guessing which
   // of the two was meant would be worse than refusing.
   TTS_EXPECT(
-      arpg::generate_level(arpg::level_recipe{.rooms = 6, .room_min = {500.0f, 500.0f}, .room_max = {100.0f, 100.0f}}, generator)
+      arpg::generate_level(arpg::level_recipe{.rooms_min = 6, .rooms_max = 6, .room_min = {500.0f, 500.0f}, .room_max = {100.0f, 100.0f}}, generator)
           .rooms.empty());
 };
 

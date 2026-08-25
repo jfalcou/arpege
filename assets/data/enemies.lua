@@ -15,6 +15,8 @@
 --         bullets = 1, spin = 23, aim fixed   spiral
 
 return {
+  version = 1,
+
   {
     name = "parasite",
     cost = 5,

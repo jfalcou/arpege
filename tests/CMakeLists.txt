@@ -66,6 +66,7 @@ target_compile_definitions(enemy_data PRIVATE ARPG_ASSETS_DIR="${CMAKE_CURRENT_S
 target_compile_definitions(player_data PRIVATE ARPG_ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../assets")
 arpg_add_test(rng)
 arpg_add_test(spatial_hash)
+arpg_add_test(level_layout)
 
 arpg_add_compile_test(screens)
 arpg_add_compile_test(application)

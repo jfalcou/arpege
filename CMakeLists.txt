@@ -50,8 +50,10 @@ add_library(arpg_core STATIC
   src/ecs/encounter.cpp
   src/data/asset_root.cpp
   src/data/hot_reload.cpp
+  src/data/player_data.cpp
   src/data/script_host.cpp
   src/data/enemy_data.cpp
+  src/ecs/dash.cpp
   src/ecs/enemy.cpp
   src/ecs/firing_pattern.cpp
   src/ecs/spatial_hash.cpp

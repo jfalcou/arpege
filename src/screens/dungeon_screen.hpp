@@ -9,6 +9,7 @@
 #include <core/screen.hpp>
 #include <data/enemy_data.hpp>
 #include <data/hot_reload.hpp>
+#include <data/player_data.hpp>
 #include <ecs/encounter.hpp>
 #include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
@@ -47,13 +48,17 @@ private:
   /// Wipes the room from the debug key, sparing the wait to reach its end.
   void purge_enemies();
 
-  /// Re-reads the roster and re-forms the room from the same seed.
-  void reload_roster();
+  /// Reads both data files, leaving what is in place untouched if either is
+  /// refused. False when nothing was replaced.
+  bool read_content();
+
+  /// Re-reads the data files and re-forms the room from the same seed.
+  void reload_content();
 
   /// Opens the way out and announces the room, once the last enemy falls.
   void settle_room();
 
-  void steer_player();
+  void steer_player(float dt);
   void fire(float dt);
 
   entt::registry m_world;
@@ -74,12 +79,16 @@ private:
 
   float m_fire_cooldown = 0.0f;
 
+  dash_state m_dash;
+
   /// Outlives every load, since the tables the scripts return borrow it.
   script_host m_scripts;
 
-  /// Read from assets at every entry, and re-read whenever the file changes.
+  /// Read from assets at every entry, and re-read whenever a file changes.
+  player_profile m_profile;
   enemy_catalogue m_roster;
 
+  file_watch m_player_watch;
   file_watch m_roster_watch;
 
   /// Why the last read failed, shown in place rather than left to a log

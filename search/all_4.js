@@ -13,7 +13,7 @@ var searchData=
   ['enemy_5fstate_10',['enemy_state',['../namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5',1,'arpg']]],
   ['enter_5fportal_11',['enter_portal',['../namespacearpg.html#afa5fde0633d3f074187e958c8a7ee7f7',1,'arpg']]],
   ['enter_5froom_12',['enter_room',['../namespacearpg.html#ab211b349bbbc2156f9f09648dc0bdc3f',1,'arpg']]],
-  ['error_13',['error',['../structarpg_1_1loaded__player.html#ac47215be296bd945326ba4ad38127870',1,'arpg::loaded_player::error'],['../structarpg_1_1enemy__catalogue.html#a0d4b6cecb351ed3afc68db1c78085734',1,'arpg::enemy_catalogue::error'],['../structarpg_1_1loaded__biomes.html#a36dae1cd90dc293cc795d05f355b0220',1,'arpg::loaded_biomes::error'],['../structarpg_1_1launch__options.html#a174345716ab1c17d486973102195e183',1,'arpg::launch_options::error']]],
+  ['error_13',['error',['../structarpg_1_1enemy__catalogue.html#a0d4b6cecb351ed3afc68db1c78085734',1,'arpg::enemy_catalogue::error'],['../structarpg_1_1loaded__player.html#ac47215be296bd945326ba4ad38127870',1,'arpg::loaded_player::error'],['../structarpg_1_1loaded__biomes.html#a36dae1cd90dc293cc795d05f355b0220',1,'arpg::loaded_biomes::error'],['../structarpg_1_1loaded__atlas.html#a09e9752eeb14bfebfda88c2b8df7e5b6',1,'arpg::loaded_atlas::error'],['../structarpg_1_1launch__options.html#a174345716ab1c17d486973102195e183',1,'arpg::launch_options::error']]],
   ['events_14',['events',['../structarpg_1_1app__context.html#a4c0a27943886e650f18151514d17b73e',1,'arpg::app_context']]],
   ['exit_5fportal_15',['exit_portal',['../structarpg_1_1exit__portal.html',1,'arpg']]],
   ['expire_5flifetimes_16',['expire_lifetimes',['../namespacearpg.html#a5856c96eaec1411e9f24604cc3cf1c40',1,'arpg']]]

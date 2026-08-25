@@ -22,5 +22,6 @@ var searchData=
   ['dungeon_5fbindings_19',['dungeon_bindings',['../namespacearpg.html#a49c1590ab4f811b34ad7d46d6b737c9d',1,'arpg']]],
   ['dungeon_5fscreen_20',['dungeon_screen',['../classarpg_1_1dungeon__screen.html#a676cdf97dc510e5479c7c6f0448ad6c5',1,'arpg::dungeon_screen::dungeon_screen()'],['../classarpg_1_1dungeon__screen.html',1,'arpg::dungeon_screen']]],
   ['duration_21',['duration',['../structarpg_1_1invulnerable.html#a205916a2523b9f9ae535c219b3005def',1,'arpg::invulnerable::duration'],['../structarpg_1_1dash__profile.html#a95a934278f69abee8463f36fa0e5940a',1,'arpg::dash_profile::duration']]],
-  ['dweller_22',['dweller',['../structarpg_1_1biome_1_1dweller.html',1,'arpg::biome']]]
+  ['duration_5fof_22',['duration_of',['../namespacearpg.html#a259f3a1cebe9a4f1f795a12f527d4f16',1,'arpg']]],
+  ['dweller_23',['dweller',['../structarpg_1_1biome_1_1dweller.html',1,'arpg::biome']]]
 ];

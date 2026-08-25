@@ -7,6 +7,7 @@ var searchData=
   ['set_5fcontext_4',['set_context',['../classarpg_1_1screen__manager.html#a4541552986d38f0234bbf4dbde406fa5',1,'arpg::screen_manager']]],
   ['shutdown_5',['shutdown',['../classarpg_1_1screen__manager.html#a5c35a673676d6021f6fb5bb494c74708',1,'arpg::screen_manager']]],
   ['size_6',['size',['../classarpg_1_1action__map.html#a532e00bddaa3f12ea28a9f460d88c823',1,'arpg::action_map::size()'],['../classarpg_1_1screen__manager.html#a896793bfe77c4fd9be53e0f2e8c5ad46',1,'arpg::screen_manager::size()']]],
-  ['spatial_5fhash_7',['spatial_hash',['../classarpg_1_1spatial__hash.html#ae4b0b5b8664b0d8bbdfffeed7ade8c4a',1,'arpg::spatial_hash']]],
-  ['spawn_5fprojectile_8',['spawn_projectile',['../namespacearpg.html#a069eb89b5fe92f489baf77a46c9781e9',1,'arpg']]]
+  ['slice_5fgrid_7',['slice_grid',['../namespacearpg.html#a4a0d0712bebb78eb80acb18dc7396b2e',1,'arpg']]],
+  ['spatial_5fhash_8',['spatial_hash',['../classarpg_1_1spatial__hash.html#ae4b0b5b8664b0d8bbdfffeed7ade8c4a',1,'arpg::spatial_hash']]],
+  ['spawn_5fprojectile_9',['spawn_projectile',['../namespacearpg.html#a069eb89b5fe92f489baf77a46c9781e9',1,'arpg']]]
 ];

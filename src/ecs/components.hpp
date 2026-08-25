@@ -95,6 +95,10 @@ struct projectile
 struct weapon
 {
   float cooldown = 0.0f;
+
+  /// Which volley comes next. A spiral is a heading advanced by a fixed step
+  /// at every volley, so the count is what tells one from the previous.
+  int volley = 0;
 };
 
 /// Marks something the play area holds in.

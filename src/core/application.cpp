@@ -4,12 +4,14 @@
 
 #include <core/action_state.hpp>
 #include <core/default_bindings.hpp>
+#include <data/asset_root.hpp>
 
 #include <imgui.h>
 #include <raylib.h>
 #include <rlImGui.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <utility>
 
 namespace arpg
@@ -28,6 +30,11 @@ application::application(app_config config)
     flags |= FLAG_WINDOW_RESIZABLE;
   }
   SetConfigFlags(flags);
+
+  // Assets are mirrored next to the executable and reached by relative path.
+  // Launched from a file manager the working directory is elsewhere, so the
+  // game would run and find nothing.
+  ChangeDirectory(GetApplicationDirectory());
 
   InitWindow(m_config.canvas_width * m_config.window_scale, m_config.canvas_height * m_config.window_scale,
              m_config.title.c_str());
@@ -55,7 +62,15 @@ application::application(app_config config)
     }
   }
 
-  m_screens.set_context(app_context{&m_events, &m_screens, &(*m_canvas), &m_quit, &m_input});
+  const char* chosen = std::getenv(asset_root_variable);
+  m_assets = asset_root(m_config.assets, chosen != nullptr ? chosen : "", GetApplicationDirectory());
+
+  m_screens.set_context(app_context{.events = &m_events,
+                                    .screens = &m_screens,
+                                    .canvas = &(*m_canvas),
+                                    .quit_flag = &m_quit,
+                                    .assets = &m_assets,
+                                    .input = &m_input});
 }
 
 application::~application()

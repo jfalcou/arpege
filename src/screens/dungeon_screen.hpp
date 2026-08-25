@@ -7,6 +7,8 @@
 #include <core/camera.hpp>
 #include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <data/enemy_data.hpp>
+#include <data/hot_reload.hpp>
 #include <ecs/encounter.hpp>
 #include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
@@ -45,6 +47,9 @@ private:
   /// Wipes the room from the debug key, sparing the wait to reach its end.
   void purge_enemies();
 
+  /// Re-reads the roster and re-forms the room from the same seed.
+  void reload_roster();
+
   /// Opens the way out and announces the room, once the last enemy falls.
   void settle_room();
 
@@ -64,7 +69,22 @@ private:
   /// Reused by the collision pass so querying does not allocate every step.
   std::vector<entt::entity> m_scratch;
 
+  /// Same, for the headings a volley leaves along.
+  std::vector<vec2> m_headings;
+
   float m_fire_cooldown = 0.0f;
+
+  /// Outlives every load, since the tables the scripts return borrow it.
+  script_host m_scripts;
+
+  /// Read from assets at every entry, and re-read whenever the file changes.
+  enemy_catalogue m_roster;
+
+  file_watch m_roster_watch;
+
+  /// Why the last read failed, shown in place rather than left to a log
+  /// nobody has open while tuning.
+  std::string m_data_error;
 
   encounter m_fight;
   exit_portal m_exit;
@@ -73,7 +93,8 @@ private:
   std::uint64_t m_step = 0;
 
   /// Seeded per room. Everything that must replay identically draws from here.
-  rng m_generator{1};
+  std::uint64_t m_seed = 1;
+  rng m_generator{m_seed};
 
   camera_focus m_camera;
 };

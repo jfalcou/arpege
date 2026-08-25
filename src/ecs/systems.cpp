@@ -174,7 +174,7 @@ entt::entity spawn_projectile(entt::registry& world, const shot_recipe& recipe)
   return shot;
 }
 
-int fire_enemy_weapons(entt::registry& world, float dt, vec2 target)
+int fire_enemy_weapons(entt::registry& world, float dt, vec2 target, std::vector<vec2>& headings)
 {
   int fired = 0;
 
@@ -188,32 +188,37 @@ int fire_enemy_weapons(entt::registry& world, float dt, vec2 target)
       continue;
     }
 
-    if (gun.cooldown > 0.0f || kind.fire_interval <= 0.0f)
+    if (gun.cooldown > 0.0f || kind.shots.interval <= 0.0f)
     {
       continue;
     }
 
-    const vec2 heading = normalized(target - place.position);
+    volley_headings(kind.shots, target - place.position, gun.volley, headings);
 
-    // Standing exactly on the target leaves no direction to fire along, and a
-    // shot with no heading would sit on the muzzle hurting whatever walks in.
-    if (length_squared(heading) <= 0.0f)
+    // An aimed pattern yields nothing when the target stands on the muzzle,
+    // which must not consume the volley: the shooter tries again next step
+    // rather than losing its turn.
+    if (headings.empty())
     {
       continue;
     }
 
-    gun.cooldown = kind.fire_interval;
+    gun.cooldown = kind.shots.interval;
+    ++gun.volley;
 
-    // Started at the edge of the body rather than its centre, or a wide enemy
-    // would spawn its own shot inside itself.
-    spawn_projectile(world, shot_recipe{.from = place.position + heading * (shape.radius + kind.shot_radius),
-                                        .heading = heading,
-                                        .speed = kind.shot_speed,
-                                        .radius = kind.shot_radius,
-                                        .hurt = kind.shot_damage,
-                                        .life = 4.0f,
-                                        .side = faction::enemy});
-    ++fired;
+    for (const vec2 heading : headings)
+    {
+      // Started at the edge of the body rather than its centre, or a wide
+      // enemy would spawn its own shot inside itself.
+      spawn_projectile(world, shot_recipe{.from = place.position + heading * (shape.radius + kind.shots.radius),
+                                          .heading = heading,
+                                          .speed = kind.shots.speed,
+                                          .radius = kind.shots.radius,
+                                          .hurt = kind.shots.damage,
+                                          .life = kind.shots.life,
+                                          .side = faction::enemy});
+      ++fired;
+    }
   }
 
   return fired;

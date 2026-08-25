@@ -6,6 +6,8 @@
 
 #include <entt/signal/dispatcher.hpp>
 
+#include <filesystem>
+
 namespace arpg
 {
 
@@ -22,6 +24,11 @@ struct app_context
   screen_manager* screens = nullptr;    ///< The stack, to push or pop a screen.
   const pixel_canvas* canvas = nullptr; ///< Where the world is drawn.
   bool* quit_flag = nullptr;            ///< Raised by request_quit().
+
+  /// Where data files are read from, resolved once at start-up. Held by the
+  /// application, since this context is copied to every screen and stays a
+  /// handful of pointers.
+  const std::filesystem::path* assets = nullptr;
 
   /// Sampled once per rendered frame; every simulation step of that frame reads
   /// the same one. Screens resolve it through their own action_map.

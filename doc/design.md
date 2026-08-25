@@ -108,17 +108,107 @@ classes behind virtual calls. Heavy thinking is **spread across frames**: a
 quarter of the enemies reconsider on any given step, the rest keep their
 velocity. Nothing of it is visible, and the cost drops fourfold.
 
+## Data files
+
+Content is described in **Lua**, read through sol2 and loaded by a single
+script host. Lua rather than JSON or TOML: the files that state figures today
+are the ones that will describe boss phases later, and a format that can only
+hold literals would have to be replaced at that point rather than extended. A
+roster already gains from it — a family of related enemies is written once and
+varied in a loop instead of copied three times.
+
+The host opens **base, math, string and table, and nothing else**. A data file
+has no business opening files, reading the clock or loading libraries of its
+own: an edit meant to tune a number must not be able to reach outside the game.
+
+Loading **validates and refuses**. An archetype that costs nothing would be
+bought forever by the wave budget; one that wakes closer than the player can
+strike would die without ever noticing. A file with one bad entry loads none of
+it, because half a roster fields a wave nobody designed, and that shows up as a
+strange fight rather than as a message.
+
+Files are watched and **re-read while the game runs**, once a second rather
+than every frame: a file changes when a human saves it. A read that fails
+keeps the last version that made sense and shows the reason on screen, since a
+file caught halfway through an edit would otherwise empty the room. What is
+re-read re-forms the room **from the same seed**, so a changed figure is judged
+against the room it was changed for.
+
+The build mirrors `assets/` next to the executable, and that copy is
+overwritten by the next build. `arpg --assets DIR`, or the `ARPG_ASSETS`
+variable when a shortcut is easier than a shell, points the game at the working
+copy instead, so the file being tuned live is the one under version control.
+What was typed for a run beats what a shell was left set to. An option that is
+not understood stops the game rather than being ignored, since a misspelt one
+would otherwise look like it worked and the game would quietly read the wrong
+directory.
+
+One roster file holds every archetype while there are a handful of them. Past
+a dozen it becomes one file per enemy under a scanned directory, which changes
+neither the loading API nor its tests: the split is deferred because deferring
+it costs nothing, not because it is undecided.
+
+Scripted behaviour, when an enemy eventually needs its own, runs **at events
+and not at every step**: on spawn, on a phase change, on death. A script called
+once per enemy per simulation step would be fifteen trips into an interpreter
+sixty times a second, and would pull the hot loop out of the contiguous data
+the flat state machine exists to keep it in. Lua describes what a behaviour is
+composed of; the C++ systems unroll it. A boss with three phases costs three
+calls over a fight. Whatever carries such a behaviour reaches the ECS as a
+handle into a table held by the data layer, since an archetype is copied into
+every entity that uses it and must stay trivially copyable.
+
+**No loader opens a file of its own.** Reading bytes and making sense of them
+are separate: a parser is handed text, and something else decides where that
+text came from. This is what keeps packaging for release an addition rather
+than a rewrite — a pack, or a blob inside the executable, is one more way to
+answer "give me `data/enemies.lua`", and no parser or test moves. The day a
+loader grows an `ifstream` of its own is the day that stops being true.
+
+Packaging, when it comes, is **layered rather than exclusive**, the way Diablo
+II shipped its archives: a pack carries the base content, and a loose tree
+beside it takes precedence over it. Modding and packaging then stop being
+opposed, and the development loop of today turns out to be the degenerate case
+of the mod system — a loose tree that happens to hold everything. `--assets`
+names where that loose layer lives.
+
+Three properties make that work, and two of them are easy to get wrong:
+
+- Resolution is **per file, not per tree**. A mod supplies only what it
+  changes. Were the rule "if the directory exists it replaces the pack", every
+  mod would have to duplicate the whole tree and would break on each update of
+  the game.
+- The loose layer **wins over the pack**, and is the only one watched. A
+  packaged build reloads nothing, which is as it should be.
+- A broken file in the loose layer **must not fall back to the packed one**.
+  Silently serving the original would leave a modder with a game that works, a
+  mod that does nothing, and no way to tell why. The last version that made
+  sense stays in place and the reason is shown, exactly as it does now.
+
+Nothing of this is built yet, and none of it changes anything until there is a
+game to hand someone. It is written down because the rule above — that no
+loader opens a file of its own — is what keeps the cost of it low, and that
+rule is cheap to keep and expensive to restore.
+
 ## Firing patterns
 
-A pattern is composed rather than coded, out of four parameterised pieces:
+A pattern is composed rather than coded. Aimed shot, fan, circle and spiral
+are not four kinds of volley: they are what falls out of **a count, an arc and
+a rotation per volley**, plus whether the volley points at the player or at a
+heading of its own. One bullet over no arc is an aimed shot; five over forty
+degrees is a fan; eight over a full turn is a circle; one with a rotation is a
+spiral. Naming the four would have meant four code paths that cannot be
+combined, and no way to write the fan that also turns.
 
-- an **emitter**: where it comes from, how often, how many per volley;
-- an **angular distribution**: aimed, fan, circle, spiral;
-- a **bullet behaviour**: speed, acceleration, curve, mid-life change, split;
-- a **temporal modulation**: phases and pauses.
+What remains to come is the rest of the vocabulary:
+
+- an **emitter** that is not the body itself: attached, offset, orbiting;
+- **bullet behaviour**: acceleration, curve, mid-life change, split;
+- **temporal modulation**: phases and pauses.
 
 Described as data and hot-reloaded, so a boss is tuned while it is running.
-Scripting is deliberately left out until data proves insufficient.
+Since that data is Lua, a pattern that outgrows a table of parameters becomes a
+function without anyone having to introduce a second format for it.
 
 ## Determinism
 

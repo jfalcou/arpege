@@ -35,43 +35,8 @@ constexpr float player_range = bullet_speed * bullet_life;
 /// noticed anything is a free kill, not an encounter.
 constexpr float awareness = player_range + 24.0f;
 
-/// Placeholder roster until archetypes come from data files.
-/// Rushes and hurts by touching. Cheap enough to come in numbers.
-constexpr enemy_archetype parasite{.cost = 5,
-                                   .health = 2,
-                                   .speed = 58.0f,
-                                   .radius = 3.0f,
-                                   .touch = 1,
-                                   .sight = awareness,
-                                   .reach = 10.0f,
-                                   .style = attack_style::melee};
-
-/// Holds at a distance and shoots, which is what makes the room a bullet hell
-/// rather than a crowd to outrun.
-constexpr enemy_archetype cultist{.cost = 10,
-                                  .health = 5,
-                                  .speed = 40.0f,
-                                  .radius = 6.0f,
-                                  .touch = 1,
-                                  .sight = awareness,
-                                  .reach = 120.0f,
-                                  .style = attack_style::ranged,
-                                  .fire_interval = 1.4f,
-                                  .shot_speed = 78.0f,
-                                  .shot_radius = 2.0f,
-                                  .shot_damage = 1};
-
-/// Slow, heavy, and dangerous only up close.
-constexpr enemy_archetype brute{.cost = 40,
-                                .health = 20,
-                                .speed = 32.0f,
-                                .radius = 10.0f,
-                                .touch = 2,
-                                .sight = awareness,
-                                .reach = 16.0f,
-                                .style = attack_style::melee};
-
-constexpr std::array<enemy_archetype, 3> roster{parasite, cultist, brute};
+/// Where the roster is read from, under the asset root.
+constexpr const char* roster_file = "data/enemies.lua";
 
 /// How much larger than the screen a room is, for now. Rooms come from the
 /// generator later and carry their own size.
@@ -100,6 +65,15 @@ vec2 interpolated(const transform& place, float alpha)
 void dungeon_screen::on_enter()
 {
   m_bindings = dungeon_bindings(raylib_input::codes());
+
+  // The player's own range is what the roster is checked against: an enemy
+  // waking closer than that could never answer.
+  const std::filesystem::path roster = *ctx().assets / roster_file;
+
+  m_roster = load_enemies_from(m_scripts, roster, player_range);
+  m_data_error = m_roster.error;
+  m_roster_watch = file_watch{roster};
+
   spawn_player();
   spawn_wave();
 }
@@ -138,6 +112,11 @@ void dungeon_screen::spawn_player()
 
 void dungeon_screen::spawn_wave()
 {
+  if (!m_roster.valid())
+  {
+    return;
+  }
+
   const viewport_rect bounds = room();
   const float width = bounds.width;
   const float height = bounds.height;
@@ -145,13 +124,13 @@ void dungeon_screen::spawn_wave()
   // The room pays for its own enemies: what fits in the budget is what shows
   // up, so a bigger room is dangerous in proportion rather than by luck.
   const int budget = combat_budget(width * height, 1);
-  const auto composition = compose_wave(budget, roster, m_generator);
+  const auto composition = compose_wave(budget, m_roster.kinds, m_generator);
 
   std::uint8_t slice = 0;
 
   for (const std::size_t index : composition)
   {
-    const enemy_archetype& kind = roster[index];
+    const enemy_archetype& kind = m_roster.kinds[index];
 
     // Spawned across the upper half, away from where the player starts.
     const vec2 spot{m_generator.unit() * (width - 2.0f * kind.radius) + kind.radius,
@@ -167,7 +146,7 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<damage>(foe, kind.touch);
 
     // Staggered, so a wave that spawns together does not fire in one volley.
-    m_world.emplace<weapon>(foe, m_generator.unit() * kind.fire_interval);
+    m_world.emplace<weapon>(foe, m_generator.unit() * kind.shots.interval);
     m_world.emplace<confined>(foe);
 
     // Dealt round-robin so the crowd is spread evenly over the thinking
@@ -196,6 +175,30 @@ void dungeon_screen::purge_enemies()
   // Gathered first: destroying entities while walking the view they come from
   // pulls the ground from under the iteration.
   m_world.destroy(m_scratch.begin(), m_scratch.end());
+}
+
+void dungeon_screen::reload_roster()
+{
+  enemy_catalogue fresh = load_enemies_from(m_scripts, m_roster_watch.path(), player_range);
+
+  if (!fresh.valid())
+  {
+    // A file caught halfway through an edit must not empty the room: the last
+    // roster that made sense stays in place, and the reason is shown.
+    m_data_error = fresh.error;
+    return;
+  }
+
+  m_roster = std::move(fresh);
+  m_data_error.clear();
+
+  // Re-formed from the same seed, so a changed figure is judged against the
+  // room it was changed for rather than against a new one.
+  purge_enemies();
+  m_generator = rng{m_seed};
+  m_fight = encounter{};
+  m_exit = exit_portal{};
+  spawn_wave();
 }
 
 void dungeon_screen::settle_room()
@@ -282,13 +285,18 @@ void dungeon_screen::update(float dt)
     purge_enemies();
   }
 
+  if (m_roster_watch.poll(dt))
+  {
+    reload_roster();
+  }
+
   steer_player();
   fire(dt);
 
   const vec2 player_at = m_world.get<transform>(m_player).position;
 
   advance_brains(m_world, dt, m_step, player_at);
-  fire_enemy_weapons(m_world, dt, player_at);
+  fire_enemy_weapons(m_world, dt, player_at, m_headings);
   ++m_step;
 
   integrate_motion(m_world, dt);
@@ -390,6 +398,11 @@ void dungeon_screen::render(float alpha)
   DrawText(tally, ctx().canvas->width() - MeasureText(tally, tally_size) - 4, 4, tally_size,
            (m_fight.state == encounter_state::cleared) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
   DrawText("ESC leave   -   F9 clear", 4, 166, 10, Color{120, 110, 130, 255});
+
+  if (!m_data_error.empty())
+  {
+    DrawText(m_data_error.c_str(), 4, 20, 10, Color{214, 118, 168, 255});
+  }
 
   if (m_fight.state == encounter_state::cleared)
   {

@@ -4,6 +4,7 @@
 
 #include <core/rng.hpp>
 #include <core/vec2.hpp>
+#include <ecs/firing_pattern.hpp>
 
 #include <cstdint>
 #include <span>
@@ -74,12 +75,8 @@ struct enemy_archetype
 
   attack_style style = attack_style::melee;
 
-  /// Seconds between shots. Ignored by a melee archetype.
-  float fire_interval = 1.2f;
-
-  float shot_speed = 70.0f;
-  float shot_radius = 2.0f;
-  int shot_damage = 1;
+  /// How it shoots. Ignored by a melee archetype.
+  firing_pattern shots{};
 };
 
 /// Points a room is worth spending on enemies.

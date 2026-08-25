@@ -56,6 +56,9 @@ private:
   /// cannot be read from inside one of its rooms.
   void draw_minimap();
 
+  /// Asks to leave the level, once and once only.
+  void leave();
+
   /// Wipes the world and rebuilds it around the room the run is now in.
   void enter_current_room();
 
@@ -146,6 +149,12 @@ private:
 
   /// The posting this level belongs to, owned by the Bureau below.
   run_state* m_run = nullptr;
+
+  /// Set once the screen has asked to leave. A pop is applied at the end of a
+  /// frame, and a frame holds up to five simulation steps: without this, a
+  /// screen keeps running after asking to go and asks again, popping whatever
+  /// was underneath it as well.
+  bool m_leaving = false;
 
   /// Seeded per level, derived from the posting rather than drawn here.
   std::uint64_t m_seed = 1;

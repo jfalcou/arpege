@@ -353,6 +353,17 @@ void dungeon_screen::draw_minimap()
   }
 }
 
+void dungeon_screen::leave()
+{
+  if (m_leaving)
+  {
+    return;
+  }
+
+  m_leaving = true;
+  ctx().screens->pop();
+}
+
 void dungeon_screen::purge_enemies()
 {
   m_scratch.clear();
@@ -571,14 +582,14 @@ void dungeon_screen::update(float dt)
   m_actions.advance(m_bindings.resolve(*ctx().input));
 
   // A step that finds no world to play is one whose room could not be built.
-  if (m_level.layout.rooms.empty())
+  if (m_leaving || m_level.layout.rooms.empty())
   {
     return;
   }
 
-  if (m_actions.consume(action::pause) || !player_alive())
+  if (m_actions.consume(action::pause))
   {
-    ctx().screens->pop();
+    leave();
     return;
   }
 
@@ -632,9 +643,10 @@ void dungeon_screen::update(float dt)
   if (!player_alive())
   {
     // Dying destroys the entity like any other, and everything above reads it.
-    // Leaving now beats simulating a room around a corpse; a defeat screen
-    // takes this place later.
-    ctx().screens->pop();
+    // What they carried goes with them; the posting stands, and the Bureau
+    // puts someone else on it.
+    lose_employee(*m_run);
+    leave();
     return;
   }
 
@@ -647,7 +659,12 @@ void dungeon_screen::update(float dt)
 
   if (level_finished(m_level) && enter_portal(m_exit, m_world.get<transform>(m_player).position))
   {
-    ctx().screens->pop();
+    // Whatever is left of the employee goes back with them, and the posting
+    // moves on to the next assignment.
+    m_run->health = m_world.get<health>(m_player).current;
+    finish_level(*m_run);
+
+    leave();
     return;
   }
 

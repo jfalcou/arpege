@@ -10,11 +10,14 @@ lighting and the post-processing.
 
 ## Status
 
-**Early — there is no game yet.** What exists is the engine foundation, and
-running the executable opens a menu screen with a bouncing marker that responds
-to the keyboard and to a gamepad. Nothing else is playable.
+**Early — the combat core works, the run around it does not.** Starting the
+game drops you into a single dungeon room: a wave sized against the area of the
+room, enemies that either close in and hurt on contact or hold at a distance and
+shoot, and a rift that opens once the last of them falls. Leaving through it
+returns to the menu, since there is no map for it to lead to yet. Everything is
+drawn as coloured circles — there is no art.
 
-What the foundation covers:
+What exists:
 
 - a fixed 60 Hz simulation step decoupled from the render rate, with the
   leftover of the accumulator handed to the renderer so movement interpolates
@@ -29,9 +32,17 @@ What the foundation covers:
   of bindings; it does radial deadzones, eight-way movement, input buffering and
   tracks which device was last used
 - an ImGui debug panel, on `F1`
+- a room of enemies over an ECS: a budget that sizes the wave against the area
+  it has to fill, archetypes that a room draws from, a flat state machine spread
+  across frames so a crowd costs a quarter of what it looks like, and a uniform
+  grid rebuilt every step for the collisions
+- firing patterns that are a count, an arc and a rotation per volley rather than
+  a list of named shapes, which is what lets a fan also turn
+- content described in Lua and re-read while the game runs, so a figure is tuned
+  without a rebuild
 
-What it does not cover yet: the dungeons, the enemies, the bullet patterns, the
-run map, the audio, and saving.
+What it does not cover yet: the run map, the meta progression, the audio, and
+saving.
 
 ## Built with
 
@@ -40,6 +51,7 @@ run map, the audio, and saving.
 | [raylib](https://github.com/raysan5/raylib) | window, rendering, audio, input, shaders |
 | [EnTT](https://github.com/skypjack/entt) | entity component system and event dispatcher |
 | [Dear ImGui](https://github.com/ocornut/imgui) + [rlImGui](https://github.com/raylib-extras/rlImGui) | developer tooling only, never the game UI |
+| [Lua](https://github.com/lua/lua) + [sol2](https://github.com/ThePhD/sol2) | the data files, and the boss scripting they will grow into |
 | [TTS](https://github.com/jfalcou/tts) | unit tests |
 | [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake) | dependencies |
 
@@ -53,7 +65,15 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
-The executable lands in `build/bin`, next to a copy of `assets/`.
+The executable lands in `build/bin`, next to a copy of `assets/`. That copy is
+overwritten by the next build, so tuning the data files in place would lose the
+work: point the game at the working tree instead, and it re-reads what you save.
+
+```sh
+build/bin/arpg --assets ./assets
+```
+
+`ARPG_ASSETS` does the same for a shortcut, and the option wins over it.
 
 On Linux you also need the usual windowing development packages:
 
@@ -76,8 +96,10 @@ export CPM_SOURCE_CACHE=$HOME/.cache/CPM
 | Input | Action |
 | --- | --- |
 | `WASD`, arrows, left stick | move |
-| `Esc`, gamepad east button | leave |
+| left mouse button, right trigger | shoot |
+| `Esc`, gamepad start | leave the room |
 | `F1` | debug panel |
+| `F9` | clear the room, to reach its end without playing it out |
 
 Both WASD and the arrow keys are bound, so the game is playable on an AZERTY
 keyboard without touching anything.
@@ -87,6 +109,7 @@ keyboard without touching anything.
 ```
 src/core/     game loop, screen stack, canvas, input layer
 src/screens/  game modes
+src/data/     Lua host, content loading, hot reload
 src/ecs/      components and systems
 src/ui/       widgets
 tests/        unit tests, and compile tests for what cannot be run headless

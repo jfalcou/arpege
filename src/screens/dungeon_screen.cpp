@@ -65,10 +65,16 @@ void dungeon_screen::on_enter()
   m_biomes_watch = directory_watch{*ctx().assets / biomes_directory};
 
   read_content();
+
+  // Derived from the posting: a save keeping only its seed must give back the
+  // same level, which is what makes a run resumable at all.
+  m_seed = current_level_seed(*m_run);
+  m_generator = rng{m_seed};
+  m_carried_health = m_run->health;
+
   choose_biome();
 
   m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
-  m_carried_health = m_profile.health;
 
   enter_current_room();
 }
@@ -469,7 +475,9 @@ void dungeon_screen::reload_content()
     m_level.here = here;
   }
 
-  m_carried_health = m_profile.health;
+  // What the employee is worth now, not what a fresh one would be: a reload
+  // is a tool for looking at a room again, not a way to be healed.
+  m_carried_health = m_run->health;
 
   enter_current_room();
 }

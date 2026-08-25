@@ -4,7 +4,7 @@
 
 #include <core/pixel_canvas.hpp>
 #include <core/screen_manager.hpp>
-#include <screens/dungeon_screen.hpp>
+#include <screens/bureau_screen.hpp>
 
 #include <core/raylib_input.hpp>
 #include <memory>
@@ -40,9 +40,9 @@ void main_menu_screen::update(float dt)
 
   if (m_actions.consume(action::confirm))
   {
-    // Pushed rather than replacing: the menu stays alive underneath, which is
-    // what leaving the dungeon returns to.
-    ctx().screens->push(std::make_unique<dungeon_screen>());
+    // Pushed rather than replacing: the title stays alive underneath, so
+    // clocking off at the Bureau comes back here rather than to nothing.
+    ctx().screens->push(std::make_unique<bureau_screen>());
     return;
   }
 

@@ -15,6 +15,7 @@
 #include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
 #include <world/level_run.hpp>
+#include <world/run_state.hpp>
 
 #include <entt/entity/registry.hpp>
 
@@ -30,6 +31,13 @@ namespace arpg
 class dungeon_screen : public screen
 {
 public:
+  /// Takes the posting by reference and changes it: what a level costs and
+  /// what it yields has to outlive the level.
+  explicit dungeon_screen(run_state& run)
+    : m_run(&run)
+  {
+  }
+
   void on_enter() override;
   void update(float dt) override;
   void render(float alpha) override;
@@ -136,7 +144,10 @@ private:
   /// Counted per simulation step, so the enemies can take turns thinking.
   std::uint64_t m_step = 0;
 
-  /// Seeded per room. Everything that must replay identically draws from here.
+  /// The posting this level belongs to, owned by the Bureau below.
+  run_state* m_run = nullptr;
+
+  /// Seeded per level, derived from the posting rather than drawn here.
   std::uint64_t m_seed = 1;
   rng m_generator{m_seed};
 

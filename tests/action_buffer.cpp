@@ -15,6 +15,18 @@ arpg::action_set only(arpg::action target)
   return set;
 }
 
+/// A state that has already seen one step with nothing down.
+///
+/// Nothing is a press on the very first step, since what is down then was
+/// pressed before the state existed. These tests are about what the buffer
+/// does with a press, so they start after that.
+arpg::action_state ready()
+{
+  arpg::action_state state;
+  state.advance(arpg::action_set{});
+  return state;
+}
+
 } // namespace
 
 TTS_CASE("Nothing is claimable before anything is pressed")
@@ -31,7 +43,7 @@ TTS_CASE("Nothing is claimable before anything is pressed")
 
 TTS_CASE("A press is an edge, holding is not")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
 
   state.advance(only(arpg::action::dash));
   TTS_EXPECT(state.pressed(arpg::action::dash));
@@ -48,7 +60,7 @@ TTS_CASE("A press is an edge, holding is not")
 
 TTS_CASE("A press stays claimable for a few steps after release")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
   state.advance(only(arpg::action::dash));
 
   // Four steps go by with the button already released.
@@ -62,7 +74,7 @@ TTS_CASE("A press stays claimable for a few steps after release")
 
 TTS_CASE("An old press expires")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
   state.advance(only(arpg::action::dash));
 
   for (int i = 0; i < arpg::action_state::default_buffer_steps + 2; ++i)
@@ -75,7 +87,7 @@ TTS_CASE("An old press expires")
 
 TTS_CASE("A press is claimed once and only once")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
   state.advance(only(arpg::action::dash));
 
   TTS_EXPECT(state.consume(arpg::action::dash));
@@ -88,7 +100,7 @@ TTS_CASE("Claiming one action leaves the others alone")
   both.set(arpg::index_of(arpg::action::dash));
   both.set(arpg::index_of(arpg::action::shoot));
 
-  arpg::action_state state;
+  arpg::action_state state = ready();
   state.advance(both);
 
   TTS_EXPECT(state.consume(arpg::action::dash));
@@ -97,7 +109,7 @@ TTS_CASE("Claiming one action leaves the others alone")
 
 TTS_CASE("A new press after a claim is claimable again")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
 
   state.advance(only(arpg::action::dash));
   TTS_EXPECT(state.consume(arpg::action::dash));
@@ -109,7 +121,7 @@ TTS_CASE("A new press after a claim is claimable again")
 
 TTS_CASE("A tighter window rejects a press the default would accept")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
   state.advance(only(arpg::action::dash));
 
   for (int i = 0; i < 3; ++i)
@@ -123,7 +135,7 @@ TTS_CASE("A tighter window rejects a press the default would accept")
 
 TTS_CASE("Flushing drops what was buffered")
 {
-  arpg::action_state state;
+  arpg::action_state state = ready();
   state.advance(only(arpg::action::dash));
 
   state.flush();

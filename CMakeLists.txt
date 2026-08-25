@@ -71,6 +71,7 @@ add_library(arpg_core STATIC
   src/core/viewport.cpp
   src/world/level_layout.cpp
   src/world/level_run.cpp
+  src/world/run_state.cpp
 )
 
 target_include_directories(arpg_core PUBLIC src)
@@ -83,6 +84,7 @@ add_library(arpg_app STATIC
   src/core/application.cpp
   src/core/pixel_canvas.cpp
   src/core/raylib_input.cpp
+  src/screens/bureau_screen.cpp
   src/screens/dungeon_screen.cpp
   src/screens/main_menu_screen.cpp
 )

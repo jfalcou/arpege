@@ -188,3 +188,33 @@ TTS_CASE("Aim is a position on mouse and a direction on pad")
   TTS_EXPECT_NOT(with_pad.absolute);
   TTS_ULP_EQUAL(arpg::length(with_pad.value), 1.0f, 2.0);
 };
+
+TTS_CASE("A control already down when a state begins is not a press")
+{
+  arpg::action_state state;
+  arpg::action_set down;
+  down.set(arpg::index_of(arpg::action::confirm));
+
+  state.advance(down);
+
+  // A screen opened by a key sees that key still down on its first step. Were
+  // it a press, the screen would act on the keystroke that opened it and be
+  // gone before anyone saw it.
+  TTS_EXPECT(state.held(arpg::action::confirm));
+  TTS_EXPECT_NOT(state.pressed(arpg::action::confirm));
+  TTS_EXPECT_NOT(state.consume(arpg::action::confirm));
+};
+
+TTS_CASE("Releasing and pressing again does count")
+{
+  arpg::action_state state;
+  arpg::action_set down;
+  down.set(arpg::index_of(arpg::action::confirm));
+
+  state.advance(down);
+  state.advance(arpg::action_set{});
+  state.advance(down);
+
+  TTS_EXPECT(state.pressed(arpg::action::confirm));
+  TTS_EXPECT(state.consume(arpg::action::confirm));
+};

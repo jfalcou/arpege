@@ -165,12 +165,30 @@ than a rewrite — a pack, or a blob inside the executable, is one more way to
 answer "give me `data/enemies.lua`", and no parser or test moves. The day a
 loader grows an `ifstream` of its own is the day that stops being true.
 
-Packaging itself is deliberately not done yet. It changes nothing until there
-is a game to hand someone, and the decision is tied to modding: a roguelike
-whose enemies, patterns and rooms are Lua is moddable by construction, which
-may be a feature rather than a leak. Hot reload only ever applies to the
-directory source; a packaged build reloads nothing, and that is as it should
-be.
+Packaging, when it comes, is **layered rather than exclusive**, the way Diablo
+II shipped its archives: a pack carries the base content, and a loose tree
+beside it takes precedence over it. Modding and packaging then stop being
+opposed, and the development loop of today turns out to be the degenerate case
+of the mod system — a loose tree that happens to hold everything. `--assets`
+names where that loose layer lives.
+
+Three properties make that work, and two of them are easy to get wrong:
+
+- Resolution is **per file, not per tree**. A mod supplies only what it
+  changes. Were the rule "if the directory exists it replaces the pack", every
+  mod would have to duplicate the whole tree and would break on each update of
+  the game.
+- The loose layer **wins over the pack**, and is the only one watched. A
+  packaged build reloads nothing, which is as it should be.
+- A broken file in the loose layer **must not fall back to the packed one**.
+  Silently serving the original would leave a modder with a game that works, a
+  mod that does nothing, and no way to tell why. The last version that made
+  sense stays in place and the reason is shown, exactly as it does now.
+
+Nothing of this is built yet, and none of it changes anything until there is a
+game to hand someone. It is written down because the rule above — that no
+loader opens a file of its own — is what keeps the cost of it low, and that
+rule is cheap to keep and expensive to restore.
 
 ## Firing patterns
 

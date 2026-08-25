@@ -67,6 +67,7 @@ target_compile_definitions(player_data PRIVATE ARPG_ASSETS_DIR="${CMAKE_CURRENT_
 arpg_add_test(rng)
 arpg_add_test(spatial_hash)
 arpg_add_test(level_layout)
+arpg_add_test(level_run)
 
 arpg_add_compile_test(screens)
 arpg_add_compile_test(application)

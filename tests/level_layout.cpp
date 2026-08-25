@@ -11,10 +11,10 @@ namespace
 {
 
 constexpr arpg::level_recipe rigid{
-    .shape = arpg::level_shape::rigid, .rooms = 8, .room_min = 200.0f, .room_max = 420.0f, .spacing = 48.0f};
+    .shape = arpg::level_shape::rigid, .rooms = 8, .room_min = {200.0f, 200.0f}, .room_max = {420.0f, 420.0f}, .spacing = 48.0f};
 
 constexpr arpg::level_recipe organic{
-    .shape = arpg::level_shape::organic, .rooms = 8, .room_min = 200.0f, .room_max = 420.0f, .spacing = 48.0f};
+    .shape = arpg::level_shape::organic, .rooms = 8, .room_min = {200.0f, 200.0f}, .room_max = {420.0f, 420.0f}, .spacing = 48.0f};
 
 bool overlap(const arpg::viewport_rect& a, const arpg::viewport_rect& b)
 {
@@ -198,10 +198,10 @@ TTS_CASE("Every room is the size the recipe asked for")
 
       for (const arpg::level_room& room : arpg::generate_level(recipe, generator).rooms)
       {
-        TTS_EXPECT(room.bounds.width >= recipe.room_min);
-        TTS_EXPECT(room.bounds.height >= recipe.room_min);
-        TTS_EXPECT(room.bounds.width <= recipe.room_max);
-        TTS_EXPECT(room.bounds.height <= recipe.room_max);
+        TTS_EXPECT(room.bounds.width >= recipe.room_min.x);
+        TTS_EXPECT(room.bounds.height >= recipe.room_min.y);
+        TTS_EXPECT(room.bounds.width <= recipe.room_max.x);
+        TTS_EXPECT(room.bounds.height <= recipe.room_max.y);
       }
     }
   }
@@ -235,7 +235,7 @@ TTS_CASE("A recipe that asks for nothing lays out nothing")
   // A minimum above the maximum has no size to draw from, and guessing which
   // of the two was meant would be worse than refusing.
   TTS_EXPECT(
-      arpg::generate_level(arpg::level_recipe{.rooms = 6, .room_min = 500.0f, .room_max = 100.0f}, generator)
+      arpg::generate_level(arpg::level_recipe{.rooms = 6, .room_min = {500.0f, 500.0f}, .room_max = {100.0f, 100.0f}}, generator)
           .rooms.empty());
 };
 

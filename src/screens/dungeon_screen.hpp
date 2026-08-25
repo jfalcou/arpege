@@ -13,6 +13,7 @@
 #include <ecs/encounter.hpp>
 #include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
+#include <world/level_run.hpp>
 
 #include <entt/entity/registry.hpp>
 
@@ -33,13 +34,26 @@ public:
   void render(float alpha) override;
 
 private:
-  /// The room, larger than the screen: the camera follows the player across it.
+  /// How the level is laid out. A biome names this once biomes exist.
+  level_recipe level_shape_in_use() const;
+
+  /// The room the player stands in, in level coordinates.
   viewport_rect room() const;
+
+  /// A plan of the level in a corner, since a level larger than the screen
+  /// cannot be read from inside one of its rooms.
+  void draw_minimap();
+
+  /// Wipes the world and rebuilds it around the room the run is now in.
+  void enter_current_room();
+
+  /// Walks through a door once the room is clear and the player reaches one.
+  void take_doors();
 
   /// What is on screen, in room coordinates.
   vec2 view() const;
 
-  void spawn_player();
+  void spawn_player(vec2 at);
   void spawn_wave();
   /// Whether the player is still standing. Their entity is destroyed on death
   /// like any other, so everything reaching for it has to ask first.
@@ -94,6 +108,12 @@ private:
   /// Why the last read failed, shown in place rather than left to a log
   /// nobody has open while tuning.
   std::string m_data_error;
+
+  level_run m_level;
+
+  /// Carried from room to room, since the player entity is rebuilt with the
+  /// world every time one is entered.
+  int m_carried_health = 0;
 
   encounter m_fight;
   exit_portal m_exit;

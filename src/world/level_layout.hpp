@@ -3,6 +3,7 @@
 #pragma once
 
 #include <core/rng.hpp>
+#include <core/vec2.hpp>
 #include <core/viewport.hpp>
 
 #include <cstddef>
@@ -78,8 +79,10 @@ struct level_recipe
   /// than force a room where none fits, so it is a ceiling, not a promise.
   int rooms = 8;
 
-  float room_min = 200.0f;
-  float room_max = 420.0f;
+  /// Per axis, since a view is wider than it is tall: one figure for both
+  /// would make a room that is a screen and a half wide four screens deep.
+  vec2 room_min{200.0f, 200.0f};
+  vec2 room_max{420.0f, 420.0f};
 
   /// What is left between two rooms, which is where a corridor goes.
   float spacing = 48.0f;

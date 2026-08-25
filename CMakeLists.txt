@@ -68,6 +68,7 @@ add_library(arpg_core STATIC
   src/core/screen_manager.cpp
   src/core/viewport.cpp
   src/world/level_layout.cpp
+  src/world/level_run.cpp
 )
 
 target_include_directories(arpg_core PUBLIC src)

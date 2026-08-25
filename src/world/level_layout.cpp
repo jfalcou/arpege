@@ -43,9 +43,10 @@ float between(rng& generator, float low, float high)
 void split(const viewport_rect& box, const level_recipe& recipe, int depth, rng& generator,
            std::vector<viewport_rect>& leaves)
 {
-  const float least = recipe.room_min + recipe.spacing;
-  const bool can_split_x = box.width >= 2.0f * least;
-  const bool can_split_y = box.height >= 2.0f * least;
+  const float least_x = recipe.room_min.x + recipe.spacing;
+  const float least_y = recipe.room_min.y + recipe.spacing;
+  const bool can_split_x = box.width >= 2.0f * least_x;
+  const bool can_split_y = box.height >= 2.0f * least_y;
 
   if (depth <= 0 || (!can_split_x && !can_split_y))
   {
@@ -56,6 +57,7 @@ void split(const viewport_rect& box, const level_recipe& recipe, int depth, rng&
   // The longer side is cut, so rooms stay closer to square than to corridors.
   const bool cut_x = can_split_x && (!can_split_y || box.width >= box.height);
   const float span = cut_x ? box.width : box.height;
+  const float least = cut_x ? least_x : least_y;
 
   // Never at the middle, or every box halved exactly would give a grid, and a
   // grid does not read as architecture. Kept a whole plot away from either end
@@ -86,10 +88,12 @@ level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
     ++depth;
   }
 
-  const float side = std::ceil(std::sqrt(static_cast<float>(1 << depth))) * (recipe.room_max + recipe.spacing);
+  const float rows = std::ceil(std::sqrt(static_cast<float>(1 << depth)));
+  const float side_x = rows * (recipe.room_max.x + recipe.spacing);
+  const float side_y = rows * (recipe.room_max.y + recipe.spacing);
 
   std::vector<viewport_rect> leaves;
-  split(viewport_rect{0.0f, 0.0f, side, side}, recipe, depth, generator, leaves);
+  split(viewport_rect{0.0f, 0.0f, side_x, side_y}, recipe, depth, generator, leaves);
 
   for (const viewport_rect& leaf : leaves)
   {
@@ -100,8 +104,8 @@ level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
     const float plot_width = std::max(1.0f, leaf.width - recipe.spacing);
     const float plot_height = std::max(1.0f, leaf.height - recipe.spacing);
 
-    const float width = std::min(plot_width, recipe.room_max);
-    const float height = std::min(plot_height, recipe.room_max);
+    const float width = std::min(plot_width, recipe.room_max.x);
+    const float height = std::min(plot_height, recipe.room_max.y);
 
     out.rooms.push_back(level_room{
         viewport_rect{leaf.x + (leaf.width - width) * 0.5f, leaf.y + (leaf.height - height) * 0.5f, width, height},
@@ -125,8 +129,8 @@ level_layout lay_out_organic(const level_recipe& recipe, rng& generator)
 {
   level_layout out;
 
-  out.rooms.push_back(level_room{viewport_rect{0.0f, 0.0f, between(generator, recipe.room_min, recipe.room_max),
-                                               between(generator, recipe.room_min, recipe.room_max)},
+  out.rooms.push_back(level_room{viewport_rect{0.0f, 0.0f, between(generator, recipe.room_min.x, recipe.room_max.x),
+                                               between(generator, recipe.room_min.y, recipe.room_max.y)},
                                  room_role::fight});
 
   while (static_cast<int>(out.rooms.size()) < recipe.rooms)
@@ -138,8 +142,8 @@ level_layout lay_out_organic(const level_recipe& recipe, rng& generator)
       const std::size_t against = generator.below(static_cast<std::uint32_t>(out.rooms.size()));
       const viewport_rect& host = out.rooms[against].bounds;
 
-      const float width = between(generator, recipe.room_min, recipe.room_max);
-      const float height = between(generator, recipe.room_min, recipe.room_max);
+      const float width = between(generator, recipe.room_min.x, recipe.room_max.x);
+      const float height = between(generator, recipe.room_min.y, recipe.room_max.y);
 
       // Slid along the shared wall rather than centred on it, or every room
       // would line up on the axis of the one it hangs from.
@@ -318,7 +322,8 @@ bool fully_connected(const level_layout& layout)
 
 level_layout generate_level(const level_recipe& recipe, rng& generator)
 {
-  if (recipe.rooms <= 0 || recipe.room_min <= 0.0f || recipe.room_max < recipe.room_min)
+  if (recipe.rooms <= 0 || recipe.room_min.x <= 0.0f || recipe.room_min.y <= 0.0f ||
+      recipe.room_max.x < recipe.room_min.x || recipe.room_max.y < recipe.room_min.y)
   {
     return level_layout{};
   }

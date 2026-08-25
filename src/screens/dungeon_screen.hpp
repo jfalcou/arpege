@@ -7,12 +7,14 @@
 #include <core/camera.hpp>
 #include <core/rng.hpp>
 #include <core/screen.hpp>
+#include <data/biome_data.hpp>
 #include <data/enemy_data.hpp>
 #include <data/hot_reload.hpp>
 #include <data/player_data.hpp>
 #include <ecs/encounter.hpp>
 #include <ecs/enemy.hpp>
 #include <ecs/spatial_hash.hpp>
+#include <world/level_run.hpp>
 
 #include <entt/entity/registry.hpp>
 
@@ -33,13 +35,29 @@ public:
   void render(float alpha) override;
 
 private:
-  /// The room, larger than the screen: the camera follows the player across it.
+  /// How the level is laid out, which the biome in play names.
+  level_recipe level_shape_in_use() const;
+
+  /// Draws which biome this level is in, and gathers what lives there.
+  void choose_biome();
+
+  /// The room the player stands in, in level coordinates.
   viewport_rect room() const;
+
+  /// A plan of the level in a corner, since a level larger than the screen
+  /// cannot be read from inside one of its rooms.
+  void draw_minimap();
+
+  /// Wipes the world and rebuilds it around the room the run is now in.
+  void enter_current_room();
+
+  /// Walks through a door once the room is clear and the player reaches one.
+  void take_doors();
 
   /// What is on screen, in room coordinates.
   vec2 view() const;
 
-  void spawn_player();
+  void spawn_player(vec2 at);
   void spawn_wave();
   /// Whether the player is still standing. Their entity is destroyed on death
   /// like any other, so everything reaching for it has to ask first.
@@ -87,13 +105,30 @@ private:
   /// Read from assets at every entry, and re-read whenever a file changes.
   player_profile m_profile;
   enemy_catalogue m_roster;
+  loaded_biomes m_biomes;
+
+  /// The place this level is in, and the part of the roster that lives there.
+  biome m_biome;
+  std::vector<enemy_archetype> m_fauna;
+  std::vector<int> m_weights;
 
   file_watch m_player_watch;
   file_watch m_roster_watch;
+  directory_watch m_biomes_watch;
 
   /// Why the last read failed, shown in place rather than left to a log
   /// nobody has open while tuning.
   std::string m_data_error;
+
+  level_run m_level;
+
+  /// Which room was left to get here, so the player is set down at the door
+  /// they came through. Out of range while nowhere has been left yet.
+  std::size_t m_came_from = static_cast<std::size_t>(-1);
+
+  /// Carried from room to room, since the player entity is rebuilt with the
+  /// world every time one is entered.
+  int m_carried_health = 0;
 
   encounter m_fight;
   exit_portal m_exit;

@@ -10,6 +10,20 @@ namespace arpg
 namespace
 {
 
+/// What a kind is worth in the draw. A catalogue handed no weights at all is
+/// offered evenly, and a weight of nothing or less is taken for one: refusing
+/// to draw a kind a biome went to the trouble of naming would be stranger than
+/// drawing it rarely.
+int weight_of(std::span<const int> weights, std::size_t index)
+{
+  if (index >= weights.size() || weights[index] <= 0)
+  {
+    return 1;
+  }
+
+  return weights[index];
+}
+
 /// Points per pixel of floor.
 ///
 /// Tuned against a room of two screens by two, which is what the camera makes
@@ -23,6 +37,32 @@ constexpr float depth_bonus = 0.25f;
 
 } // namespace
 
+vec2 pick_spawn(rng& generator, viewport_rect room, float radius, std::span<const vec2> keep_clear, float clearance)
+{
+  // How many spots are offered before one is taken anyway.
+  constexpr int attempts = 20;
+
+  const float span_x = std::max(0.0f, room.width - 2.0f * radius);
+  const float span_y = std::max(0.0f, room.height - 2.0f * radius);
+
+  vec2 spot{};
+
+  for (int attempt = 0; attempt < attempts; ++attempt)
+  {
+    spot = vec2{room.x + radius + generator.unit() * span_x, room.y + radius + generator.unit() * span_y};
+
+    const bool crowded = std::any_of(keep_clear.begin(), keep_clear.end(),
+                                     [&](vec2 avoid) { return length_squared(spot - avoid) < clearance * clearance; });
+
+    if (!crowded)
+    {
+      break;
+    }
+  }
+
+  return spot;
+}
+
 int combat_budget(float area, int depth)
 {
   if (area <= 0.0f || depth <= 0)
@@ -35,6 +75,12 @@ int combat_budget(float area, int depth)
 }
 
 std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetype> catalogue, rng& generator)
+{
+  return compose_wave(budget, catalogue, {}, generator);
+}
+
+std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetype> catalogue,
+                                      std::span<const int> weights, rng& generator)
 {
   std::vector<std::size_t> picked;
 
@@ -70,7 +116,34 @@ std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetyp
       }
     }
 
-    const std::size_t chosen = affordable[generator.below(static_cast<std::uint32_t>(affordable.size()))];
+    // Drawn against the weights of what is affordable rather than against all
+    // of them, so a kind priced out of the remaining budget does not still
+    // take up room in the draw.
+    int total = 0;
+
+    for (const std::size_t index : affordable)
+    {
+      total += weight_of(weights, index);
+    }
+
+    std::size_t chosen = affordable.front();
+
+    if (total > 0)
+    {
+      int ticket = static_cast<int>(generator.below(static_cast<std::uint32_t>(total)));
+
+      for (const std::size_t index : affordable)
+      {
+        ticket -= weight_of(weights, index);
+
+        if (ticket < 0)
+        {
+          chosen = index;
+          break;
+        }
+      }
+    }
+
     picked.push_back(chosen);
     left -= catalogue[chosen].cost;
   }

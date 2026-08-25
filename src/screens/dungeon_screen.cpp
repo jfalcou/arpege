@@ -8,6 +8,7 @@
 #include <core/raylib_input.hpp>
 #include <core/screen_manager.hpp>
 #include <ecs/systems.hpp>
+#include <world/level_layout.hpp>
 
 #include <raylib.h>
 
@@ -20,13 +21,22 @@ namespace arpg
 namespace
 {
 
-/// Where the data files are read from, under the asset root.
+/// Where the data files are read from, under the asset root. Biomes are a
+/// directory rather than a file, so that a mod adds one by dropping a file in.
 constexpr const char* player_file = "data/player.lua";
 constexpr const char* roster_file = "data/enemies.lua";
+constexpr const char* biomes_directory = "data/biomes";
 
-/// How much larger than the screen a room is, for now. Rooms come from the
-/// generator later and carry their own size.
-constexpr float room_scale = 2.0f;
+/// How close the player must come to a door for it to take them.
+constexpr float door_radius = 22.0f;
+
+/// What the boss room is worth against an ordinary one, as a depth for the
+/// combat budget.
+constexpr int boss_depth = 4;
+
+/// How much ground is left clear around where the player sets foot and around
+/// every doorway, since either is somewhere they may appear.
+constexpr float spawn_clearance = 72.0f;
 
 /// How eagerly the view catches up, in units per second. Tight enough to feel
 /// attached, loose enough not to judder on a fixed step.
@@ -52,17 +62,33 @@ void dungeon_screen::on_enter()
   // waking closer than that could never answer.
   m_player_watch = file_watch{*ctx().assets / player_file};
   m_roster_watch = file_watch{*ctx().assets / roster_file};
+  m_biomes_watch = directory_watch{*ctx().assets / biomes_directory};
 
   read_content();
+  choose_biome();
 
-  spawn_player();
-  spawn_wave();
+  m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
+  m_carried_health = m_profile.health;
+
+  enter_current_room();
+}
+
+level_recipe dungeon_screen::level_shape_in_use() const
+{
+  // Every distance a biome states is a multiple of the view, so a room keeps
+  // the shape of a screen whatever the canvas is.
+  return recipe_for(m_biome, view());
 }
 
 viewport_rect dungeon_screen::room() const
 {
-  const vec2 screen = view();
-  return viewport_rect{0.0f, 0.0f, screen.x * room_scale, screen.y * room_scale};
+  if (m_level.here >= m_level.layout.rooms.size())
+  {
+    const vec2 screen = view();
+    return viewport_rect{0.0f, 0.0f, screen.x, screen.y};
+  }
+
+  return m_level.layout.rooms[m_level.here].bounds;
 }
 
 vec2 dungeon_screen::view() const
@@ -71,17 +97,108 @@ vec2 dungeon_screen::view() const
   return vec2{static_cast<float>(canvas.width()), static_cast<float>(canvas.height())};
 }
 
-void dungeon_screen::spawn_player()
+void dungeon_screen::enter_current_room()
 {
+  // A level with no room in it means the data was refused. Reading a role out
+  // of an empty layout would be the first thing to go wrong, and the least
+  // legible.
+  if (m_level.here >= m_level.layout.rooms.size())
+  {
+    m_world.clear();
+    m_player = entt::null;
+    return;
+  }
+
+  // Taken before the world goes, since the entity holding it goes with it.
+  // Without this a room change would hand the player a full life bar, which
+  // is a stranger bug than a crash for being invisible.
+  if (m_world.valid(m_player) && m_world.all_of<health>(m_player))
+  {
+    m_carried_health = m_world.get<health>(m_player).current;
+  }
+
+  m_world.clear();
+  m_dash = dash_state{};
+  m_fire_cooldown = 0.0f;
+  m_fight = encounter{};
+  m_exit = exit_portal{};
+
   const viewport_rect bounds = room();
-  const vec2 middle{bounds.width * 0.5f, bounds.height * 0.75f};
+
+  // Set down just inside the door led back to, rather than in the middle of
+  // the room: without a corridor to walk, this is what keeps crossing a
+  // threshold from reading as being teleported.
+  vec2 landing{bounds.x + bounds.width * 0.5f, bounds.y + bounds.height * 0.5f};
+
+  if (m_came_from < m_level.layout.rooms.size() && m_came_from != m_level.here)
+  {
+    const vec2 back = door_position(bounds, m_level.layout.rooms[m_came_from].bounds);
+    const vec2 towards_middle = landing - back;
+
+    // A doorway falling exactly on the middle of the room leaves no direction
+    // to step inward along, and normalising nothing gives a position that is
+    // not a number: every comparison against it then answers false, which
+    // reads as the room having no walls and no doors.
+    if (length_squared(towards_middle) > 0.0f)
+    {
+      landing = back + normalized(towards_middle) * (door_radius + 12.0f);
+    }
+  }
+
+  spawn_player(landing);
+
+  // A landing and a service room hold nothing: arriving in a fight one has not
+  // seen coming reads as an ambush rather than as a level.
+  const room_role role = m_level.layout.rooms[m_level.here].role;
+  const bool peaceful = role == room_role::start || role == room_role::station;
+
+  if (room_is_clear(m_level) || peaceful)
+  {
+    clear_room(m_level);
+    m_fight = encounter{};
+    settle_room();
+  }
+  else
+  {
+    spawn_wave();
+  }
+}
+
+void dungeon_screen::take_doors()
+{
+  const viewport_rect here = room();
+  const vec2 player_at = m_world.get<transform>(m_player).position;
+
+  for (const std::size_t neighbour : open_doors(m_level))
+  {
+    const vec2 door = door_position(here, m_level.layout.rooms[neighbour].bounds);
+
+    if (length_squared(player_at - door) > door_radius * door_radius)
+    {
+      continue;
+    }
+
+    const std::size_t leaving = m_level.here;
+
+    if (enter_room(m_level, neighbour))
+    {
+      m_came_from = leaving;
+      enter_current_room();
+      return;
+    }
+  }
+}
+
+void dungeon_screen::spawn_player(vec2 at)
+{
+  const vec2 middle = at;
 
   m_player = m_world.create();
   m_world.emplace<transform>(m_player, middle, middle);
   m_world.emplace<velocity>(m_player);
   m_world.emplace<collider>(m_player, m_profile.hitbox);
   m_world.emplace<team>(m_player, faction::player);
-  m_world.emplace<health>(m_player, m_profile.health, m_profile.health);
+  m_world.emplace<health>(m_player, std::max(1, m_carried_health), m_profile.health);
   m_world.emplace<invulnerable>(m_player, 0.0f, m_profile.mercy);
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
@@ -93,7 +210,7 @@ void dungeon_screen::spawn_player()
 
 void dungeon_screen::spawn_wave()
 {
-  if (!m_roster.valid())
+  if (m_fauna.empty())
   {
     return;
   }
@@ -103,19 +220,31 @@ void dungeon_screen::spawn_wave()
   const float height = bounds.height;
 
   // The room pays for its own enemies: what fits in the budget is what shows
-  // up, so a bigger room is dangerous in proportion rather than by luck.
-  const int budget = combat_budget(width * height, 1);
-  const auto composition = compose_wave(budget, m_roster.kinds, m_generator);
+  // up, so a bigger room is dangerous in proportion rather than by luck. The
+  // boss room counts as deeper, which is what makes it the end of the level
+  // while there is no boss to put in it.
+  const int depth = (m_level.layout.rooms[m_level.here].role == room_role::boss) ? boss_depth : 1;
+  const int budget = combat_budget(width * height, depth);
+  const auto composition = compose_wave(budget, m_fauna, m_weights, m_generator);
+
+  // Every doorway of this room, since the player may come back through any of
+  // them and must not walk into a body on the threshold.
+  std::vector<vec2> doorways;
+
+  for (const std::size_t neighbour : neighbours_of(m_level.layout, m_level.here))
+  {
+    doorways.push_back(door_position(bounds, m_level.layout.rooms[neighbour].bounds));
+  }
+
+  doorways.push_back(m_world.get<transform>(m_player).position);
 
   std::uint8_t slice = 0;
 
   for (const std::size_t index : composition)
   {
-    const enemy_archetype& kind = m_roster.kinds[index];
+    const enemy_archetype& kind = m_fauna[index];
 
-    // Spawned across the upper half, away from where the player starts.
-    const vec2 spot{m_generator.unit() * (width - 2.0f * kind.radius) + kind.radius,
-                    m_generator.unit() * height * 0.45f + kind.radius};
+    const vec2 spot = pick_spawn(m_generator, bounds, kind.radius, doorways, spawn_clearance);
 
     const entt::entity foe = m_world.create();
     m_world.emplace<transform>(foe, spot, spot);
@@ -137,6 +266,85 @@ void dungeon_screen::spawn_wave()
   }
 
   m_fight.opened_with = composition.size();
+}
+
+void dungeon_screen::draw_minimap()
+{
+  if (m_level.layout.rooms.empty())
+  {
+    return;
+  }
+
+  // A level larger than the screen cannot be read from inside one of its
+  // rooms: without a plan of it, choosing a door is choosing blind.
+  float min_x = m_level.layout.rooms[0].bounds.x;
+  float min_y = m_level.layout.rooms[0].bounds.y;
+  float max_x = min_x;
+  float max_y = min_y;
+
+  for (const level_room& each : m_level.layout.rooms)
+  {
+    min_x = std::min(min_x, each.bounds.x);
+    min_y = std::min(min_y, each.bounds.y);
+    max_x = std::max(max_x, each.bounds.x + each.bounds.width);
+    max_y = std::max(max_y, each.bounds.y + each.bounds.height);
+  }
+
+  constexpr float plan_width = 54.0f;
+  constexpr float plan_height = 34.0f;
+
+  const float left = static_cast<float>(ctx().canvas->width()) - plan_width - 4.0f;
+  const float top = static_cast<float>(ctx().canvas->height()) - plan_height - 4.0f;
+
+  // One scale for both axes, or a level wider than it is tall would come out
+  // square and the plan would lie about where things are.
+  const float scale = std::min(plan_width / (max_x - min_x), plan_height / (max_y - min_y));
+
+  DrawRectangle(static_cast<int>(left) - 2, static_cast<int>(top) - 2, static_cast<int>(plan_width) + 4,
+                static_cast<int>(plan_height) + 4, Color{12, 10, 16, 200});
+
+  // The links first, under the rooms. Nothing joins two rooms in the world —
+  // a door is a threshold, not a corridor — so the plan is the only place the
+  // shape of a level can be read at all.
+  for (const level_link& link : m_level.layout.links)
+  {
+    const viewport_rect& a = m_level.layout.rooms[link.from].bounds;
+    const viewport_rect& b = m_level.layout.rooms[link.to].bounds;
+
+    DrawLineV(Vector2{left + (a.x + a.width * 0.5f - min_x) * scale, top + (a.y + a.height * 0.5f - min_y) * scale},
+              Vector2{left + (b.x + b.width * 0.5f - min_x) * scale, top + (b.y + b.height * 0.5f - min_y) * scale},
+              Color{120, 110, 130, 255});
+  }
+
+  for (std::size_t index = 0; index < m_level.layout.rooms.size(); ++index)
+  {
+    const viewport_rect& each = m_level.layout.rooms[index].bounds;
+
+    const int x = static_cast<int>(left + (each.x - min_x) * scale);
+    const int y = static_cast<int>(top + (each.y - min_y) * scale);
+    const int w = std::max(2, static_cast<int>(each.width * scale));
+    const int h = std::max(2, static_cast<int>(each.height * scale));
+
+    const bool done = index < m_level.cleared.size() && m_level.cleared[index];
+
+    Color tint = done ? Color{92, 84, 104, 255} : Color{44, 38, 54, 255};
+
+    if (m_level.layout.rooms[index].role == room_role::boss)
+    {
+      tint = done ? Color{188, 84, 84, 255} : Color{96, 44, 44, 255};
+    }
+    else if (m_level.layout.rooms[index].role == room_role::station)
+    {
+      tint = Color{72, 112, 84, 255};
+    }
+
+    if (index == m_level.here)
+    {
+      tint = Color{226, 205, 154, 255};
+    }
+
+    DrawRectangle(x, y, w, h, tint);
+  }
 }
 
 void dungeon_screen::purge_enemies()
@@ -178,11 +386,61 @@ bool dungeon_screen::read_content()
     return false;
   }
 
+  loaded_biomes places = load_biomes_from(m_scripts, *ctx().assets / biomes_directory);
+
+  if (!places.valid())
+  {
+    m_data_error = places.error;
+    return false;
+  }
+
+  // A biome fields its fauna by name, and the roster is the only place those
+  // names exist. Left unchecked, a typo would quietly give a place one enemy
+  // fewer than it was written with.
+  for (const biome& place : places.all)
+  {
+    for (const biome::dweller& lives_here : place.fauna)
+    {
+      if (std::find(roster.names.begin(), roster.names.end(), lives_here.name) == roster.names.end())
+      {
+        m_data_error = place.key + ": nothing in the roster is called '" + lives_here.name + "'";
+        return false;
+      }
+    }
+  }
+
   m_profile = hero.value;
   m_roster = std::move(roster);
+  m_biomes = std::move(places);
   m_data_error.clear();
 
   return true;
+}
+
+void dungeon_screen::choose_biome()
+{
+  if (m_biomes.all.empty())
+  {
+    return;
+  }
+
+  m_biome = m_biomes.all[m_generator.below(static_cast<std::uint32_t>(m_biomes.all.size()))];
+
+  // Gathered once here rather than looked up per wave: what lives in a place
+  // does not change while the player is in it.
+  m_fauna.clear();
+  m_weights.clear();
+
+  for (const biome::dweller& lives_here : m_biome.fauna)
+  {
+    const auto found = std::find(m_roster.names.begin(), m_roster.names.end(), lives_here.name);
+
+    if (found != m_roster.names.end())
+    {
+      m_fauna.push_back(m_roster.kinds[static_cast<std::size_t>(std::distance(m_roster.names.begin(), found))]);
+      m_weights.push_back(lives_here.weight);
+    }
+  }
 }
 
 void dungeon_screen::reload_content()
@@ -195,16 +453,25 @@ void dungeon_screen::reload_content()
   }
 
   // Re-formed from the same seed, so a changed figure is judged against the
-  // room it was changed for rather than against a new one.
-  m_world.clear();
-  m_generator = rng{m_seed};
-  m_fight = encounter{};
-  m_exit = exit_portal{};
-  m_dash = dash_state{};
-  m_fire_cooldown = 0.0f;
+  // room it was changed for rather than against a new one. The level comes out
+  // identical for that reason, which is what lets the room the player stands in
+  // and what they have already cleared survive the reload.
+  const std::size_t here = m_level.here;
+  const std::vector<bool> cleared = m_level.cleared;
 
-  spawn_player();
-  spawn_wave();
+  m_generator = rng{m_seed};
+  choose_biome();
+  m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
+
+  if (m_level.cleared.size() == cleared.size())
+  {
+    m_level.cleared = cleared;
+    m_level.here = here;
+  }
+
+  m_carried_health = m_profile.health;
+
+  enter_current_room();
 }
 
 void dungeon_screen::settle_room()
@@ -295,6 +562,12 @@ void dungeon_screen::update(float dt)
 {
   m_actions.advance(m_bindings.resolve(*ctx().input));
 
+  // A step that finds no world to play is one whose room could not be built.
+  if (m_level.layout.rooms.empty())
+  {
+    return;
+  }
+
   if (m_actions.consume(action::pause) || !player_alive())
   {
     ctx().screens->pop();
@@ -314,8 +587,9 @@ void dungeon_screen::update(float dt)
   // is checked against what the player can reach.
   const bool player_changed = m_player_watch.poll(dt);
   const bool roster_changed = m_roster_watch.poll(dt);
+  const bool biomes_changed = m_biomes_watch.poll(dt);
 
-  if (player_changed || roster_changed)
+  if (player_changed || roster_changed || biomes_changed)
   {
     reload_content();
   }
@@ -358,10 +632,18 @@ void dungeon_screen::update(float dt)
 
   settle_room();
 
-  if (m_fight.state == encounter_state::cleared && enter_portal(m_exit, m_world.get<transform>(m_player).position))
+  if (m_fight.state == encounter_state::cleared)
+  {
+    clear_room(m_level);
+  }
+
+  if (level_finished(m_level) && enter_portal(m_exit, m_world.get<transform>(m_player).position))
   {
     ctx().screens->pop();
+    return;
   }
+
+  take_doors();
 }
 
 void dungeon_screen::render(float alpha)
@@ -380,9 +662,37 @@ void dungeon_screen::render(float alpha)
   DrawRectangleRec(floor, Color{24, 20, 30, 255});
   DrawRectangleLinesEx(floor, 2.0f, Color{86, 72, 102, 255});
 
+  // Every way out of a room that has been emptied. Drawn on the floor so the
+  // player walks over them rather than behind them.
+  for (const std::size_t neighbour : open_doors(m_level))
+  {
+    const vec2 door = door_position(bounds, m_level.layout.rooms[neighbour].bounds) - origin;
+    const room_role leads_to = m_level.layout.rooms[neighbour].role;
+
+    // A door towards the boss is worth knowing about before walking through
+    // it: the level ends there, and going back costs a room.
+    const Color tint = (leads_to == room_role::boss)      ? Color{188, 84, 84, 255}
+                       : (leads_to == room_role::station) ? Color{140, 200, 150, 255}
+                                                          : Color{176, 128, 214, 255};
+
+    // Drawn as a gap in the wall rather than as a dot: a doorway has to be
+    // read from the far side of a room wider than the screen.
+    const bool on_side = std::abs(door.x - (bounds.x - origin.x)) < 1.0f ||
+                         std::abs(door.x - (bounds.x + bounds.width - origin.x)) < 1.0f;
+
+    if (on_side)
+    {
+      DrawRectangle(static_cast<int>(door.x) - 3, static_cast<int>(door.y) - 14, 6, 28, tint);
+    }
+    else
+    {
+      DrawRectangle(static_cast<int>(door.x) - 14, static_cast<int>(door.y) - 3, 28, 6, tint);
+    }
+  }
+
   // Drawn before the entities so the player passes over it rather than
   // disappearing behind it.
-  if (m_fight.state == encounter_state::cleared)
+  if (level_finished(m_level))
   {
     const Vector2 rift = to_raylib(m_exit.centre - origin);
     DrawCircleV(rift, m_exit.radius, Color{58, 40, 82, 255});
@@ -441,14 +751,17 @@ void dungeon_screen::render(float alpha)
   // Right aligned, so the number moving does not shift the whole line.
   DrawText(tally, ctx().canvas->width() - MeasureText(tally, tally_size) - 4, 4, tally_size,
            (m_fight.state == encounter_state::cleared) ? Color{140, 200, 150, 255} : Color{160, 150, 170, 255});
+  DrawText(m_biome.name.c_str(), 4, 154, 10, Color{120, 110, 130, 255});
   DrawText("ESC leave   -   F9 clear", 4, 166, 10, Color{120, 110, 130, 255});
+
+  draw_minimap();
 
   if (!m_data_error.empty())
   {
     DrawText(m_data_error.c_str(), 4, 20, 10, Color{214, 118, 168, 255});
   }
 
-  if (m_fight.state == encounter_state::cleared)
+  if (level_finished(m_level))
   {
     const char* way_out = "the rift is open";
     const int hint_size = 10;

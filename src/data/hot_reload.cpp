@@ -2,6 +2,8 @@
 
 #include <data/hot_reload.hpp>
 
+#include <algorithm>
+
 namespace arpg
 {
 
@@ -64,6 +66,74 @@ bool file_watch::poll(float dt)
   }
 
   if (now == m_seen)
+  {
+    return false;
+  }
+
+  m_seen = now;
+  return true;
+}
+
+directory_listing disk_listing(const std::filesystem::path& directory)
+{
+  directory_listing found;
+  std::error_code failure;
+
+  for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(directory, failure))
+  {
+    if (!entry.is_regular_file() || entry.path().extension() != ".lua")
+    {
+      continue;
+    }
+
+    const std::optional<file_stamp> stamp = disk_stamp(entry.path());
+
+    if (stamp)
+    {
+      found.emplace_back(entry.path().filename().string(), *stamp);
+    }
+  }
+
+  if (failure)
+  {
+    return {};
+  }
+
+  std::sort(found.begin(), found.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+
+  return found;
+}
+
+directory_watch::directory_watch(std::filesystem::path directory, float interval, directory_reader read)
+  : m_path(std::move(directory))
+  , m_read(std::move(read))
+  , m_interval(interval)
+  , m_seen(m_read(m_path))
+{
+}
+
+bool directory_watch::poll(float dt)
+{
+  if (!m_read)
+  {
+    return false;
+  }
+
+  m_elapsed += dt;
+
+  if (m_elapsed < m_interval)
+  {
+    return false;
+  }
+
+  m_elapsed -= m_interval;
+
+  const directory_listing now = m_read(m_path);
+
+  // A directory that reads as empty is taken for one that could not be read:
+  // reporting it would reload a world with no biome in it, and a directory
+  // being written to is briefly unreadable.
+  if (now.empty() || now == m_seen)
   {
     return false;
   }

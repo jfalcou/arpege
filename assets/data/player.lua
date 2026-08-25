@@ -11,6 +11,10 @@
 --         closer than that or it dies without ever noticing
 
 return {
+  -- What this file is written for. A build that reads another version says so
+  -- rather than complaining about a field.
+  version = 1,
+
   health = 3,
   speed = 70,
   focus_speed = 30,

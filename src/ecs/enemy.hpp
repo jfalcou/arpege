@@ -4,6 +4,7 @@
 
 #include <core/rng.hpp>
 #include <core/vec2.hpp>
+#include <core/viewport.hpp>
 #include <ecs/firing_pattern.hpp>
 
 #include <cstdint>
@@ -88,6 +89,18 @@ struct enemy_archetype
 /// @param depth how deep the strate is, counted from one
 int combat_budget(float area, int depth);
 
+/// Picks somewhere inside @p room to put a body of radius @p radius.
+///
+/// Keeps @p clearance away from every point of @p keep_clear, which is where
+/// the player sets foot and where the doorways are: arriving inside an enemy
+/// is not difficulty, it is a hit nobody could have avoided.
+///
+/// A small room ringed with doors may leave nowhere clear at all. Rather than
+/// fail, or loop, it gives up after a fixed number of tries and answers with
+/// the last spot it looked at: a wave quietly missing its enemies would be a
+/// worse bug than one standing a little too close.
+vec2 pick_spawn(rng& generator, viewport_rect room, float radius, std::span<const vec2> keep_clear, float clearance);
+
 /// Picks which archetypes to field for @p budget.
 ///
 /// Spends greedily on what fits, so a rich room can afford the expensive
@@ -95,6 +108,16 @@ int combat_budget(float area, int depth);
 /// @p generator, so a seed replays the same room.
 ///
 /// @return indices into @p catalogue, one per enemy to spawn.
+/// Composes a wave worth @p budget out of @p catalogue.
+///
+/// @p weights says how often each kind is offered, and is either empty, for an
+/// even draw, or as long as the catalogue. It is not the same lever as the
+/// cost: a brute costing eight parasites is already rare by the room it fills,
+/// but without a weight it is still offered as often as one.
+std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetype> catalogue,
+                                      std::span<const int> weights, rng& generator);
+
+/// Same, offering every kind evenly.
 std::vector<std::size_t> compose_wave(int budget, std::span<const enemy_archetype> catalogue, rng& generator);
 
 } // namespace arpg

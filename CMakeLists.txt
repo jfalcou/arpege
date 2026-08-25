@@ -49,8 +49,10 @@ include(documentation)
 add_library(arpg_core STATIC
   src/ecs/encounter.cpp
   src/data/asset_root.cpp
+  src/data/biome_data.cpp
   src/data/hot_reload.cpp
   src/data/player_data.cpp
+  src/data/schema.cpp
   src/data/script_host.cpp
   src/data/enemy_data.cpp
   src/ecs/dash.cpp
@@ -68,6 +70,7 @@ add_library(arpg_core STATIC
   src/core/screen_manager.cpp
   src/core/viewport.cpp
   src/world/level_layout.cpp
+  src/world/level_run.cpp
 )
 
 target_include_directories(arpg_core PUBLIC src)

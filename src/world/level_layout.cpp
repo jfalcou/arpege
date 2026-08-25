@@ -43,9 +43,10 @@ float between(rng& generator, float low, float high)
 void split(const viewport_rect& box, const level_recipe& recipe, int depth, rng& generator,
            std::vector<viewport_rect>& leaves)
 {
-  const float least = recipe.room_min + recipe.spacing;
-  const bool can_split_x = box.width >= 2.0f * least;
-  const bool can_split_y = box.height >= 2.0f * least;
+  const float least_x = recipe.room_min.x + recipe.spacing;
+  const float least_y = recipe.room_min.y + recipe.spacing;
+  const bool can_split_x = box.width >= 2.0f * least_x;
+  const bool can_split_y = box.height >= 2.0f * least_y;
 
   if (depth <= 0 || (!can_split_x && !can_split_y))
   {
@@ -56,6 +57,7 @@ void split(const viewport_rect& box, const level_recipe& recipe, int depth, rng&
   // The longer side is cut, so rooms stay closer to square than to corridors.
   const bool cut_x = can_split_x && (!can_split_y || box.width >= box.height);
   const float span = cut_x ? box.width : box.height;
+  const float least = cut_x ? least_x : least_y;
 
   // Never at the middle, or every box halved exactly would give a grid, and a
   // grid does not read as architecture. Kept a whole plot away from either end
@@ -75,21 +77,23 @@ void split(const viewport_rect& box, const level_recipe& recipe, int depth, rng&
   }
 }
 
-level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
+level_layout lay_out_rigid(const level_recipe& recipe, int wanted, rng& generator)
 {
   level_layout out;
 
   // Depth is what bounds the room count, since every split doubles the leaves.
   int depth = 0;
-  while ((1 << depth) < recipe.rooms)
+  while ((1 << depth) < wanted)
   {
     ++depth;
   }
 
-  const float side = std::ceil(std::sqrt(static_cast<float>(1 << depth))) * (recipe.room_max + recipe.spacing);
+  const float rows = std::ceil(std::sqrt(static_cast<float>(1 << depth)));
+  const float side_x = rows * (recipe.room_max.x + recipe.spacing);
+  const float side_y = rows * (recipe.room_max.y + recipe.spacing);
 
   std::vector<viewport_rect> leaves;
-  split(viewport_rect{0.0f, 0.0f, side, side}, recipe, depth, generator, leaves);
+  split(viewport_rect{0.0f, 0.0f, side_x, side_y}, recipe, depth, generator, leaves);
 
   for (const viewport_rect& leaf : leaves)
   {
@@ -100,8 +104,8 @@ level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
     const float plot_width = std::max(1.0f, leaf.width - recipe.spacing);
     const float plot_height = std::max(1.0f, leaf.height - recipe.spacing);
 
-    const float width = std::min(plot_width, recipe.room_max);
-    const float height = std::min(plot_height, recipe.room_max);
+    const float width = std::min(plot_width, recipe.room_max.x);
+    const float height = std::min(plot_height, recipe.room_max.y);
 
     out.rooms.push_back(level_room{
         viewport_rect{leaf.x + (leaf.width - width) * 0.5f, leaf.y + (leaf.height - height) * 0.5f, width, height},
@@ -121,15 +125,15 @@ level_layout lay_out_rigid(const level_recipe& recipe, rng& generator)
 
 // --- organic ----------------------------------------------------------------
 
-level_layout lay_out_organic(const level_recipe& recipe, rng& generator)
+level_layout lay_out_organic(const level_recipe& recipe, int wanted, rng& generator)
 {
   level_layout out;
 
-  out.rooms.push_back(level_room{viewport_rect{0.0f, 0.0f, between(generator, recipe.room_min, recipe.room_max),
-                                               between(generator, recipe.room_min, recipe.room_max)},
+  out.rooms.push_back(level_room{viewport_rect{0.0f, 0.0f, between(generator, recipe.room_min.x, recipe.room_max.x),
+                                               between(generator, recipe.room_min.y, recipe.room_max.y)},
                                  room_role::fight});
 
-  while (static_cast<int>(out.rooms.size()) < recipe.rooms)
+  while (static_cast<int>(out.rooms.size()) < wanted)
   {
     bool placed = false;
 
@@ -138,8 +142,8 @@ level_layout lay_out_organic(const level_recipe& recipe, rng& generator)
       const std::size_t against = generator.below(static_cast<std::uint32_t>(out.rooms.size()));
       const viewport_rect& host = out.rooms[against].bounds;
 
-      const float width = between(generator, recipe.room_min, recipe.room_max);
-      const float height = between(generator, recipe.room_min, recipe.room_max);
+      const float width = between(generator, recipe.room_min.x, recipe.room_max.x);
+      const float height = between(generator, recipe.room_min.y, recipe.room_max.y);
 
       // Slid along the shared wall rather than centred on it, or every room
       // would line up on the axis of the one it hangs from.
@@ -222,7 +226,7 @@ std::vector<int> distances_from(const level_layout& layout, std::size_t from)
   return steps;
 }
 
-void assign_roles(level_layout& layout, rng& generator)
+void assign_roles(level_layout& layout, rng& generator, float scale, vec2 smallest)
 {
   if (layout.rooms.empty())
   {
@@ -277,10 +281,28 @@ void assign_roles(level_layout& layout, rng& generator)
     }
   }
 
-  if (!dead_ends.empty())
+  if (dead_ends.empty())
   {
-    layout.rooms[dead_ends[generator.below(static_cast<std::uint32_t>(dead_ends.size()))]].role = room_role::station;
+    return;
   }
+
+  const std::size_t desk = dead_ends[generator.below(static_cast<std::uint32_t>(dead_ends.size()))];
+  layout.rooms[desk].role = room_role::station;
+
+  // Shrunk inside the footprint it was placed on rather than placed smaller in
+  // the first place, since the role is only known once the graph is walked.
+  // Taking it in about its own centre cannot bring it onto a neighbour.
+  // Sized against the smallest ordinary room rather than against its own
+  // plot: a fraction of a large plot is still a hall, and what goes in here is
+  // a desk.
+  viewport_rect& bounds = layout.rooms[desk].bounds;
+  const float width = std::min(bounds.width, smallest.x * scale);
+  const float height = std::min(bounds.height, smallest.y * scale);
+
+  bounds.x += (bounds.width - width) * 0.5f;
+  bounds.y += (bounds.height - height) * 0.5f;
+  bounds.width = width;
+  bounds.height = height;
 }
 
 } // namespace
@@ -318,15 +340,22 @@ bool fully_connected(const level_layout& layout)
 
 level_layout generate_level(const level_recipe& recipe, rng& generator)
 {
-  if (recipe.rooms <= 0 || recipe.room_min <= 0.0f || recipe.room_max < recipe.room_min)
+  if (recipe.rooms_min <= 0 || recipe.rooms_max < recipe.rooms_min || recipe.room_min.x <= 0.0f ||
+      recipe.room_min.y <= 0.0f || recipe.room_max.x < recipe.room_min.x || recipe.room_max.y < recipe.room_min.y)
   {
     return level_layout{};
   }
 
-  level_layout out =
-      (recipe.shape == level_shape::organic) ? lay_out_organic(recipe, generator) : lay_out_rigid(recipe, generator);
+  // Drawn here rather than by the caller: the generator owns what is random
+  // about a level, and a biome names the range it is drawn from.
+  const int wanted =
+      recipe.rooms_min +
+      static_cast<int>(generator.below(static_cast<std::uint32_t>(recipe.rooms_max - recipe.rooms_min + 1)));
 
-  assign_roles(out, generator);
+  level_layout out = (recipe.shape == level_shape::organic) ? lay_out_organic(recipe, wanted, generator)
+                                                            : lay_out_rigid(recipe, wanted, generator);
+
+  assign_roles(out, generator, std::clamp(recipe.service_scale, 0.2f, 1.0f), recipe.room_min);
 
   return out;
 }

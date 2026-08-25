@@ -2,6 +2,8 @@
 
 #include <data/enemy_data.hpp>
 
+#include <data/schema.hpp>
+
 #include <algorithm>
 
 namespace arpg
@@ -24,6 +26,13 @@ std::string where(std::size_t index, const std::string& name)
 enemy_catalogue read_enemies(const sol::table& roster, float minimum_sight)
 {
   enemy_catalogue out;
+
+  out.error = schema_error(roster, "this roster", enemies_schema);
+
+  if (!out.error.empty())
+  {
+    return out;
+  }
 
   const auto refuse = [&out](std::string message) -> enemy_catalogue&
   {

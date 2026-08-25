@@ -144,3 +144,107 @@ TTS_CASE("A default watch polls nothing")
 
   TTS_EXPECT_NOT(watch.poll(10.0f));
 };
+
+namespace
+{
+
+/// Stands in for a directory: the test says what it holds.
+struct fake_directory
+{
+  arpg::directory_listing holds{{"lazaret.lua", arpg::file_stamp{}}};
+  int reads = 0;
+
+  arpg::directory_reader reader()
+  {
+    return [this](const std::filesystem::path&)
+    {
+      ++reads;
+      return holds;
+    };
+  }
+};
+
+} // namespace
+
+TTS_CASE("A directory nobody touched never reports a change")
+{
+  fake_directory disk;
+  arpg::directory_watch watch("biomes", 1.0f, disk.reader());
+
+  for (int i = 0; i < 600; ++i)
+  {
+    TTS_EXPECT_NOT(watch.poll(step));
+  }
+};
+
+TTS_CASE("A file dropped in beside the others is a change")
+{
+  fake_directory disk;
+  arpg::directory_watch watch("biomes", 1.0f, disk.reader());
+
+  // The whole point of one file per biome: adding one has to take effect
+  // without anything else being touched.
+  disk.holds.emplace_back("reef.lua", arpg::file_stamp{});
+
+  TTS_EXPECT(watch.poll(1.0f));
+  TTS_EXPECT_NOT(watch.poll(1.0f));
+};
+
+TTS_CASE("A file taken away is a change too")
+{
+  fake_directory disk;
+  disk.holds.emplace_back("reef.lua", arpg::file_stamp{});
+
+  arpg::directory_watch watch("biomes", 1.0f, disk.reader());
+  disk.holds.pop_back();
+
+  TTS_EXPECT(watch.poll(1.0f));
+};
+
+TTS_CASE("A file rewritten in place is a change")
+{
+  fake_directory disk;
+  arpg::directory_watch watch("biomes", 1.0f, disk.reader());
+
+  disk.holds[0].second.size = 4096;
+
+  TTS_EXPECT(watch.poll(1.0f));
+};
+
+TTS_CASE("A directory that reads as empty is no news")
+{
+  fake_directory disk;
+  arpg::directory_watch watch("biomes", 1.0f, disk.reader());
+
+  // What a directory being written to looks like from here. Reporting it would
+  // reload a world with no biome left in it.
+  disk.holds.clear();
+  TTS_EXPECT_NOT(watch.poll(1.0f));
+
+  disk.holds.emplace_back("lazaret.lua", arpg::file_stamp{});
+  disk.holds[0].second.size = 128;
+  TTS_EXPECT(watch.poll(1.0f));
+};
+
+TTS_CASE("A directory is listed on the interval, not every frame")
+{
+  fake_directory disk;
+  arpg::directory_watch watch("biomes", 1.0f, disk.reader());
+
+  const int at_start = disk.reads;
+
+  for (int i = 0; i < 600; ++i)
+  {
+    watch.poll(step);
+  }
+
+  const int asked = disk.reads - at_start;
+  TTS_EXPECT(asked >= 9 && asked <= 11);
+};
+
+TTS_CASE("A default directory watch polls nothing")
+{
+  arpg::directory_watch watch;
+
+  TTS_EXPECT_NOT(watch.poll(10.0f));
+};

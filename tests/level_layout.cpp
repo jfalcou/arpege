@@ -11,10 +11,16 @@ namespace
 {
 
 constexpr arpg::level_recipe rigid{
-    .shape = arpg::level_shape::rigid, .rooms = 8, .room_min = 200.0f, .room_max = 420.0f, .spacing = 48.0f};
+    .shape = arpg::level_shape::rigid, .rooms_min = 8,
+                                   .rooms_max = 8, .room_min = {200.0f, 200.0f}, .room_max = {420.0f, 420.0f}, .spacing = 48.0f};
 
-constexpr arpg::level_recipe organic{
-    .shape = arpg::level_shape::organic, .rooms = 8, .room_min = 200.0f, .room_max = 420.0f, .spacing = 48.0f};
+constexpr arpg::level_recipe organic{.shape = arpg::level_shape::organic,
+                                     .rooms_min = 8,
+                                   .rooms_max = 8,
+                                     .room_min = {200.0f, 200.0f},
+                                     .room_max = {420.0f, 420.0f},
+                                     .spacing = 48.0f,
+                                     .service_scale = 0.5f};
 
 bool overlap(const arpg::viewport_rect& a, const arpg::viewport_rect& b)
 {
@@ -186,6 +192,40 @@ TTS_CASE("Two seeds lay out two levels")
   TTS_EXPECT_NOT(identical);
 };
 
+TTS_CASE("The room that holds no fight is not built like an arena")
+{
+  for (std::uint64_t seed = 1; seed <= 100; ++seed)
+  {
+    arpg::rng generator(seed);
+    const arpg::level_layout level = arpg::generate_level(organic, generator);
+
+    for (const arpg::level_room& room : level.rooms)
+    {
+      if (room.role != arpg::room_role::station)
+      {
+        continue;
+      }
+
+      // A desk and the clerk behind it. Giving it the size of an arena would
+      // promise a fight that never comes, and taking a fraction of whatever
+      // plot it landed on would still leave a hall on a large one.
+      TTS_EXPECT(room.bounds.width <= organic.room_min.x * organic.service_scale);
+      TTS_EXPECT(room.bounds.height <= organic.room_min.y * organic.service_scale);
+    }
+  }
+};
+
+TTS_CASE("Shrinking the station leaves it clear of its neighbours")
+{
+  // It is taken in about its own centre, inside ground it already held, so a
+  // layout that was sound before stays sound.
+  for (std::uint64_t seed = 1; seed <= 100; ++seed)
+  {
+    arpg::rng generator(seed);
+    TTS_EXPECT_NOT(any_overlap(arpg::generate_level(organic, generator)));
+  }
+};
+
 TTS_CASE("Every room is the size the recipe asked for")
 {
   // Both shapes: one draws its sizes and trivially honours them, the other
@@ -198,10 +238,16 @@ TTS_CASE("Every room is the size the recipe asked for")
 
       for (const arpg::level_room& room : arpg::generate_level(recipe, generator).rooms)
       {
-        TTS_EXPECT(room.bounds.width >= recipe.room_min);
-        TTS_EXPECT(room.bounds.height >= recipe.room_min);
-        TTS_EXPECT(room.bounds.width <= recipe.room_max);
-        TTS_EXPECT(room.bounds.height <= recipe.room_max);
+        // The station answers to its own rule, checked on its own above.
+        if (room.role == arpg::room_role::station)
+        {
+          continue;
+        }
+
+        TTS_EXPECT(room.bounds.width >= recipe.room_min.x);
+        TTS_EXPECT(room.bounds.height >= recipe.room_min.y);
+        TTS_EXPECT(room.bounds.width <= recipe.room_max.x);
+        TTS_EXPECT(room.bounds.height <= recipe.room_max.y);
       }
     }
   }
@@ -229,13 +275,13 @@ TTS_CASE("A recipe that asks for nothing lays out nothing")
 {
   arpg::rng generator(3);
 
-  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms = 0}, generator).rooms.empty());
-  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms = -4}, generator).rooms.empty());
+  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms_min = 0, .rooms_max = 0}, generator).rooms.empty());
+  TTS_EXPECT(arpg::generate_level(arpg::level_recipe{.rooms_min = -4, .rooms_max = -4}, generator).rooms.empty());
 
   // A minimum above the maximum has no size to draw from, and guessing which
   // of the two was meant would be worse than refusing.
   TTS_EXPECT(
-      arpg::generate_level(arpg::level_recipe{.rooms = 6, .room_min = 500.0f, .room_max = 100.0f}, generator)
+      arpg::generate_level(arpg::level_recipe{.rooms_min = 6, .rooms_max = 6, .room_min = {500.0f, 500.0f}, .room_max = {100.0f, 100.0f}}, generator)
           .rooms.empty());
 };
 

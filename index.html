@@ -99,16 +99,19 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <p>Everything is drawn as pixel art at a low internal resolution and upscaled by a whole number, so the pixels stay square and sharp; the GPU is left to do the lighting and the post-processing.</p>
 <h1><a class="anchor" id="autotoc_md1"></a>
 Status</h1>
-<p><b>Early — there is no game yet.</b> What exists is the engine foundation, and running the executable opens a menu screen with a bouncing marker that responds to the keyboard and to a gamepad. Nothing else is playable.</p>
-<p>What the foundation covers:</p>
+<p><b>Early — the combat core works, the run around it does not.</b> Starting the game drops you into a single dungeon room: a wave sized against the area of the room, enemies that either close in and hurt on contact or hold at a distance and shoot, and a rift that opens once the last of them falls. Leaving through it returns to the menu, since there is no map for it to lead to yet. Everything is drawn as coloured circles — there is no art.</p>
+<p>What exists:</p>
 <ul>
 <li>a fixed 60 Hz simulation step decoupled from the render rate, with the leftover of the accumulator handed to the renderer so movement interpolates smoothly at any refresh rate</li>
 <li>a stack of screens, where a pause can freeze the dungeon below without hiding it, and screen changes are applied at the end of a frame rather than in the middle of an update</li>
 <li>a low resolution canvas upscaled by an integer factor with letterboxing, and the mapping back from window coordinates to canvas pixels for aiming</li>
 <li>an input layer the gameplay talks to in terms of actions rather than keys, so remapping, AZERTY against QWERTY, keyboard, mouse and gamepad are all a matter of bindings; it does radial deadzones, eight-way movement, input buffering and tracks which device was last used</li>
 <li>an ImGui debug panel, on <code>F1</code></li>
+<li>a room of enemies over an ECS: a budget that sizes the wave against the area it has to fill, archetypes that a room draws from, a flat state machine spread across frames so a crowd costs a quarter of what it looks like, and a uniform grid rebuilt every step for the collisions</li>
+<li>firing patterns that are a count, an arc and a rotation per volley rather than a list of named shapes, which is what lets a fan also turn</li>
+<li>content described in Lua and re-read while the game runs, so a figure is tuned without a rebuild</li>
 </ul>
-<p>What it does not cover yet: the dungeons, the enemies, the bullet patterns, the run map, the audio, and saving.</p>
+<p>What it does not cover yet: the run map, the meta progression, the audio, and saving.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Built with</h1>
 <table class="markdownTable">
@@ -121,8 +124,10 @@ Built with</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><a href="https://github.com/ocornut/imgui">Dear ImGui</a> + <a href="https://github.com/raylib-extras/rlImGui">rlImGui</a>   </td><td class="markdownTableBodyNone">developer tooling only, never the game UI    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><a href="https://github.com/jfalcou/tts">TTS</a>   </td><td class="markdownTableBodyNone">unit tests    </td></tr>
+<td class="markdownTableBodyNone"><a href="https://github.com/lua/lua">Lua</a> + <a href="https://github.com/ThePhD/sol2">sol2</a>   </td><td class="markdownTableBodyNone">the data files, and the boss scripting they will grow into    </td></tr>
 <tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/jfalcou/tts">TTS</a>   </td><td class="markdownTableBodyNone">unit tests    </td></tr>
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><a href="https://github.com/cpm-cmake/CPM.cmake">CPM.cmake</a>   </td><td class="markdownTableBodyNone">dependencies   </td></tr>
 </table>
 <p>C++20, CMake 3.21 or later. Nothing has to be installed by hand: CPM downloads every dependency at configure time.</p>
@@ -130,7 +135,9 @@ Built with</h1>
 Building</h1>
 <div class="fragment"><div class="line">cmake -S . -B build -DCMAKE_BUILD_TYPE=Release</div>
 <div class="line">cmake --build build --config Release</div>
-</div><!-- fragment --><p>The executable lands in <code>build/bin</code>, next to a copy of <code>assets/</code>.</p>
+</div><!-- fragment --><p>The executable lands in <code>build/bin</code>, next to a copy of <code>assets/</code>. That copy is overwritten by the next build, so tuning the data files in place would lose the work: point the game at the working tree instead, and it re-reads what you save.</p>
+<div class="fragment"><div class="line">build/bin/arpg --assets ./assets</div>
+</div><!-- fragment --><p><code>ARPG_ASSETS</code> does the same for a shortcut, and the option wins over it.</p>
 <p>On Linux you also need the usual windowing development packages:</p>
 <div class="fragment"><div class="line">sudo apt install build-essential cmake ninja-build \</div>
 <div class="line">  libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev \</div>
@@ -146,15 +153,20 @@ Controls</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>WASD</code>, arrows, left stick   </td><td class="markdownTableBodyNone">move    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>Esc</code>, gamepad east button   </td><td class="markdownTableBodyNone">leave    </td></tr>
+<td class="markdownTableBodyNone">left mouse button, right trigger   </td><td class="markdownTableBodyNone">shoot    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>F1</code>   </td><td class="markdownTableBodyNone">debug panel   </td></tr>
+<td class="markdownTableBodyNone"><code>Esc</code>, gamepad start   </td><td class="markdownTableBodyNone">leave the room    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>F1</code>   </td><td class="markdownTableBodyNone">debug panel    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>F9</code>   </td><td class="markdownTableBodyNone">clear the room, to reach its end without playing it out   </td></tr>
 </table>
 <p>Both WASD and the arrow keys are bound, so the game is playable on an AZERTY keyboard without touching anything.</p>
 <h1><a class="anchor" id="autotoc_md5"></a>
 Layout</h1>
 <div class="fragment"><div class="line">src/core/     game loop, screen stack, canvas, input layer</div>
 <div class="line">src/screens/  game modes</div>
+<div class="line">src/data/     Lua host, content loading, hot reload</div>
 <div class="line">src/ecs/      components and systems</div>
 <div class="line">src/ui/       widgets</div>
 <div class="line">tests/        unit tests, and compile tests for what cannot be run headless</div>

@@ -158,6 +158,20 @@ calls over a fight. Whatever carries such a behaviour reaches the ECS as a
 handle into a table held by the data layer, since an archetype is copied into
 every entity that uses it and must stay trivially copyable.
 
+**No loader opens a file of its own.** Reading bytes and making sense of them
+are separate: a parser is handed text, and something else decides where that
+text came from. This is what keeps packaging for release an addition rather
+than a rewrite — a pack, or a blob inside the executable, is one more way to
+answer "give me `data/enemies.lua`", and no parser or test moves. The day a
+loader grows an `ifstream` of its own is the day that stops being true.
+
+Packaging itself is deliberately not done yet. It changes nothing until there
+is a game to hand someone, and the decision is tied to modding: a roguelike
+whose enemies, patterns and rooms are Lua is moddable by construction, which
+may be a feature rather than a leak. Hot reload only ever applies to the
+directory source; a packaged build reloads nothing, and that is as it should
+be.
+
 ## Firing patterns
 
 A pattern is composed rather than coded. Aimed shot, fan, circle and spiral

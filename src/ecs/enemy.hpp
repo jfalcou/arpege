@@ -41,6 +41,10 @@ struct enemy_brain
   /// quarter of the crowd thinks on any given step and the rest keep their
   /// velocity, which divides the cost by four and looks identical.
   std::uint8_t slice = 0;
+
+  /// Which way it sidles while holding its ground. Last, so the round-robin
+  /// slice keeps being the third thing anybody writes down.
+  std::int8_t drift = 1;
 };
 
 /// How an archetype fights, which decides how close it wants to be.
@@ -75,6 +79,11 @@ struct enemy_archetype
   float reach = 24.0f;
 
   attack_style style = attack_style::melee;
+
+  /// How fast it sidles while holding its ground, as a share of its walking
+  /// speed. Nothing by default, which is what a body that has to touch the
+  /// player should do.
+  float strafe = 0.0f;
 
   /// How it shoots. Ignored by a melee archetype.
   firing_pattern shots{};

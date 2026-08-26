@@ -594,3 +594,81 @@ TTS_CASE("Time passes for a picture the same way it does for the world")
 
   TTS_EQUAL(world.get<arpg::appearance>(thing).elapsed, 0.5f);
 };
+
+TTS_CASE("A shooter holding its ground sidles across the line it fires along")
+{
+  entt::registry world;
+
+  arpg::enemy_archetype sidling = shooter;
+  sidling.strafe = 0.5f;
+
+  const entt::entity foe = make_enemy(world, arpg::vec2{0.0f, 0.0f}, sidling);
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::attack;
+
+  // The player due east, so sidling means moving along the other axis.
+  arpg::advance_brains(world, 1.0f / 60.0f, 0, arpg::vec2{50.0f, 0.0f});
+
+  const arpg::vec2 moved = world.get<arpg::velocity>(foe).value;
+
+  TTS_ABSOLUTE_EQUAL(moved.x, 0.0f, 1e-4);
+  TTS_EXPECT(std::abs(moved.y) > 0.0f);
+
+  // At the share of its walking speed the archetype states, so what a designer
+  // tunes is one figure and not two.
+  TTS_ABSOLUTE_EQUAL(std::abs(moved.y), sidling.speed * 0.5f, 1e-3);
+};
+
+TTS_CASE("A body that has to touch the player does not sidle")
+{
+  entt::registry world;
+  const entt::entity foe = make_enemy(world, arpg::vec2{0.0f, 0.0f});
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::attack;
+
+  arpg::advance_brains(world, 1.0f / 60.0f, 0, arpg::vec2{10.0f, 0.0f});
+
+  // Its archetype says nothing about sidling, so it holds still as before.
+  TTS_EQUAL(arpg::length_squared(world.get<arpg::velocity>(foe).value), 0.0f);
+};
+
+TTS_CASE("A shooter turns around rather than pressing itself into a wall")
+{
+  entt::registry world;
+
+  arpg::enemy_archetype sidling = shooter;
+  sidling.strafe = 0.5f;
+
+  const entt::entity foe = make_enemy(world, arpg::vec2{0.0f, 0.0f}, sidling);
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::attack;
+
+  const arpg::vec2 target{50.0f, 0.0f};
+
+  arpg::advance_brains(world, 1.0f / 60.0f, 0, target);
+  const float first = world.get<arpg::velocity>(foe).value.y;
+
+  // Two seconds: long enough for it to have thought better of that direction,
+  // short enough not to have thought better of it twice and come back. A room
+  // full of them would otherwise all end up against the same wall.
+  for (int step = 0; step < 120; ++step)
+  {
+    arpg::advance_brains(world, 1.0f / 60.0f, static_cast<std::uint64_t>(step) * 4, target);
+  }
+
+  TTS_EXPECT(world.get<arpg::velocity>(foe).value.y * first < 0.0f);
+};
+
+TTS_CASE("A shooter standing on the player has no side to step to")
+{
+  entt::registry world;
+
+  arpg::enemy_archetype sidling = shooter;
+  sidling.strafe = 0.5f;
+
+  const entt::entity foe = make_enemy(world, arpg::vec2{0.0f, 0.0f}, sidling);
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::attack;
+
+  // No direction to be perpendicular to, and normalising nothing would send it
+  // off at a velocity that is not a number.
+  arpg::advance_brains(world, 1.0f / 60.0f, 0, arpg::vec2{0.0f, 0.0f});
+
+  TTS_EQUAL(arpg::length_squared(world.get<arpg::velocity>(foe).value), 0.0f);
+};

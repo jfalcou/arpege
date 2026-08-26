@@ -42,6 +42,10 @@ return {
     sight = 288,
     reach = 120,
     style = "ranged",
+
+    -- Sidles while it fires, as a share of its walking speed. A shooter that
+    -- holds perfectly still is easy to aim at and easy to ignore.
+    strafe = 0.7,
     shots = {
       aim = "aimed",
       bullets = 3,
@@ -64,6 +68,7 @@ return {
     sight = 288,
     reach = 150,
     style = "ranged",
+    strafe = 0.45,
     shots = {
       aim = "fixed",
       bullets = 2,

@@ -81,6 +81,12 @@ enemy_catalogue read_enemies(const sol::table& roster, float minimum_sight)
     kind.sight = entry->get_or("sight", 0.0f);
     kind.reach = entry->get_or("reach", 0.0f);
     kind.style = (style == "ranged") ? attack_style::ranged : attack_style::melee;
+    kind.strafe = entry->get_or("strafe", 0.0f);
+
+    if (kind.strafe < 0.0f)
+    {
+      return refuse(where(index, name) + " sidles at a speed below nothing");
+    }
     const sol::optional<sol::table> shots = (*entry)["shots"];
 
     if (shots)

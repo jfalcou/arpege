@@ -41,6 +41,11 @@ vec2 follow_camera(vec2 current, vec2 target, viewport_rect room, vec2 view, flo
               hold_within(moved.y, room.y, room.y + room.height, view.y)};
 }
 
+viewport_rect with_margin(viewport_rect room, float margin)
+{
+  return viewport_rect{room.x - margin, room.y - margin, room.width + 2.0f * margin, room.height + 2.0f * margin};
+}
+
 vec2 view_origin(vec2 centre, vec2 view)
 {
   return centre - view * 0.5f;

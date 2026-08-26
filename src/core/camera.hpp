@@ -39,4 +39,12 @@ vec2 follow_camera(vec2 current, vec2 target, viewport_rect room, vec2 view, flo
 /// into a position in the room.
 vec2 view_origin(vec2 centre, vec2 view);
 
+/// @p room grown by @p margin on every side.
+///
+/// What the camera is held inside is not quite the room: an entity is stopped
+/// by its collider, which is a few pixels, while its picture stands taller than
+/// that and reaches past the wall. Holding the view to the wall itself would
+/// cut the player in half every time they walked into one.
+viewport_rect with_margin(viewport_rect room, float margin);
+
 } // namespace arpg

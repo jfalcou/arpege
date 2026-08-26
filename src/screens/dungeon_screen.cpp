@@ -41,6 +41,13 @@ constexpr int boss_depth = 4;
 /// every doorway, since either is somewhere they may appear.
 constexpr float spawn_clearance = 72.0f;
 
+/// How far past the walls the view may look.
+///
+/// A body is stopped by its collider, a couple of pixels, while its picture
+/// stands as tall as its cell and reaches well past that. Sixteen is the height
+/// of a cell, which is what the tallest of them overhangs by.
+constexpr float camera_margin = 16.0f;
+
 /// How eagerly the view catches up, in units per second. Tight enough to feel
 /// attached, loose enough not to judder on a fixed step.
 constexpr float camera_stiffness = 8.0f;
@@ -225,7 +232,7 @@ void dungeon_screen::spawn_player(vec2 at)
 
   // Snapped rather than eased on the first step, or the room would slide into
   // place from a corner every time it opens.
-  m_camera.centre = follow_camera(middle, middle, room(), view(), 0.0f, 0.0f);
+  m_camera.centre = follow_camera(middle, middle, with_margin(room(), camera_margin), view(), 0.0f, 0.0f);
 }
 
 void dungeon_screen::spawn_wave()
@@ -686,8 +693,8 @@ void dungeon_screen::update(float dt)
   confine_to_bounds(m_world, bounds);
   despawn_out_of_bounds(m_world, bounds, 16.0f);
 
-  m_camera.centre =
-      follow_camera(m_camera.centre, m_world.get<transform>(m_player).position, bounds, view(), dt, camera_stiffness);
+  m_camera.centre = follow_camera(m_camera.centre, m_world.get<transform>(m_player).position,
+                                  with_margin(bounds, camera_margin), view(), dt, camera_stiffness);
 
   tick_invulnerability(m_world, dt);
   rebuild_spatial_hash(m_world, m_hash);

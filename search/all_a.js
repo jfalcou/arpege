@@ -24,7 +24,9 @@ var searchData=
   ['loaded_5fatlas_21',['loaded_atlas',['../structarpg_1_1loaded__atlas.html',1,'arpg']]],
   ['loaded_5fbiomes_22',['loaded_biomes',['../structarpg_1_1loaded__biomes.html',1,'arpg']]],
   ['loaded_5fplayer_23',['loaded_player',['../structarpg_1_1loaded__player.html',1,'arpg']]],
-  ['loops_24',['loops',['../structarpg_1_1sprite__animation.html#adb4118623493ec5bb4ba6c0430820535',1,'arpg::sprite_animation']]],
-  ['lose_5femployee_25',['lose_employee',['../namespacearpg.html#a9f35487a0914baa910b30d90dd65f18a',1,'arpg']]],
-  ['lost_26',['lost',['../structarpg_1_1run__state.html#aca9c966a0b9547e6d6036e7e00c94b3c',1,'arpg::run_state']]]
+  ['loader_24',['loader',['../classarpg_1_1resource__cache.html#a2537fb38c37e5b01ada6cc212da279db',1,'arpg::resource_cache']]],
+  ['looks_25',['looks',['../structarpg_1_1enemy__catalogue.html#a7a0264a6fb589beb204e24654d655150',1,'arpg::enemy_catalogue']]],
+  ['loops_26',['loops',['../structarpg_1_1sprite__animation.html#adb4118623493ec5bb4ba6c0430820535',1,'arpg::sprite_animation']]],
+  ['lose_5femployee_27',['lose_employee',['../namespacearpg.html#a9f35487a0914baa910b30d90dd65f18a',1,'arpg']]],
+  ['lost_28',['lost',['../structarpg_1_1run__state.html#aca9c966a0b9547e6d6036e7e00c94b3c',1,'arpg::run_state']]]
 ];

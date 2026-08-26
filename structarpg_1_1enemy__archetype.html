@@ -133,10 +133,23 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>sight</b> = 90.0f</t
 <tr class="memitem:aefa9b49b45f17c1e8f784400a1c47b1c" id="r_aefa9b49b45f17c1e8f784400a1c47b1c"><td class="memItemLeft" align="right" valign="top"><a id="aefa9b49b45f17c1e8f784400a1c47b1c" name="aefa9b49b45f17c1e8f784400a1c47b1c"></a>
 <a class="el" href="namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26">attack_style</a>&#160;</td><td class="memItemRight" valign="bottom"><b>style</b> = <a class="el" href="namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26ae686710e1512ff998541ddd98ee4b7e8">attack_style::melee</a></td></tr>
 <tr class="separator:aefa9b49b45f17c1e8f784400a1c47b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3afc086d0a6851c31509cfb93fd47c2" id="r_aa3afc086d0a6851c31509cfb93fd47c2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1enemy__archetype.html#aa3afc086d0a6851c31509cfb93fd47c2">strafe</a> = 0.0f</td></tr>
+<tr class="memdesc:aa3afc086d0a6851c31509cfb93fd47c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">How fast it sidles while holding its ground, as a share of its walking speed.  <br /></td></tr>
+<tr class="separator:aa3afc086d0a6851c31509cfb93fd47c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a0970d50226563baa37fe6aa31c1d90" id="r_a7a0970d50226563baa37fe6aa31c1d90"><td class="memItemLeft" align="right" valign="top"><a id="a7a0970d50226563baa37fe6aa31c1d90" name="a7a0970d50226563baa37fe6aa31c1d90"></a>
 <a class="el" href="structarpg_1_1firing__pattern.html">firing_pattern</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shots</b> {}</td></tr>
 <tr class="memdesc:a7a0970d50226563baa37fe6aa31c1d90"><td class="mdescLeft">&#160;</td><td class="mdescRight">How it shoots. Ignored by a melee archetype. <br /></td></tr>
 <tr class="separator:a7a0970d50226563baa37fe6aa31c1d90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c0991d1ce4ae5d3593b53019d88448b" id="r_a4c0991d1ce4ae5d3593b53019d88448b"><td class="memItemLeft" align="right" valign="top">std::uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1enemy__archetype.html#a4c0991d1ce4ae5d3593b53019d88448b">sheet</a> = 0</td></tr>
+<tr class="memdesc:a4c0991d1ce4ae5d3593b53019d88448b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which sheet it is drawn from, and which animation stands for each of its states.  <br /></td></tr>
+<tr class="separator:a4c0991d1ce4ae5d3593b53019d88448b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad80fd01c276090542812105f98453727" id="r_ad80fd01c276090542812105f98453727"><td class="memItemLeft" align="right" valign="top"><a id="ad80fd01c276090542812105f98453727" name="ad80fd01c276090542812105f98453727"></a>
+std::uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>clips</b> [static_cast&lt; std::size_t &gt;(<a class="el" href="namespacearpg.html#ac90daee28b5dd644787250e1972aeeb5ae2942a04780e223b215eb8b663cf5353">enemy_state::count</a>)] {}</td></tr>
+<tr class="separator:ad80fd01c276090542812105f98453727"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8c9b023719de6af79f72ad556859c47" id="r_aa8c9b023719de6af79f72ad556859c47"><td class="memItemLeft" align="right" valign="top"><a id="aa8c9b023719de6af79f72ad556859c47" name="aa8c9b023719de6af79f72ad556859c47"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>drawn</b> = false</td></tr>
+<tr class="memdesc:aa8c9b023719de6af79f72ad556859c47"><td class="mdescLeft">&#160;</td><td class="mdescRight">False until a sheet was found, so a roster loaded without one still fields enemies, drawn as the shapes that stood in for them. <br /></td></tr>
+<tr class="separator:aa8c9b023719de6af79f72ad556859c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A kind of enemy, and what one costs to field. </p>
@@ -155,6 +168,40 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>sight</b> = 90.0f</t
 
 <p>Distance at which it stops closing in. </p>
 <p>Short for a body that hurts on contact, long for something that shoots. </p>
+
+</div>
+</div>
+<a id="aa3afc086d0a6851c31509cfb93fd47c2" name="aa3afc086d0a6851c31509cfb93fd47c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3afc086d0a6851c31509cfb93fd47c2">&#9670;&#160;</a></span>strafe</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float arpg::enemy_archetype::strafe = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>How fast it sidles while holding its ground, as a share of its walking speed. </p>
+<p>Nothing by default, which is what a body that has to touch the player should do. </p>
+
+</div>
+</div>
+<a id="a4c0991d1ce4ae5d3593b53019d88448b" name="a4c0991d1ce4ae5d3593b53019d88448b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c0991d1ce4ae5d3593b53019d88448b">&#9670;&#160;</a></span>sheet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t arpg::enemy_archetype::sheet = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Which sheet it is drawn from, and which animation stands for each of its states. </p>
+<p>Filled in once the roster meets the sheets, never read from a file: an archetype is copied into every entity that uses it, so what reaches the world has to be a handle rather than a name. </p>
 
 </div>
 </div>

@@ -116,6 +116,9 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>state_timer</b> = 0.
 <tr class="memitem:aef6ad41b1965792867b261cf2b4212ec" id="r_aef6ad41b1965792867b261cf2b4212ec"><td class="memItemLeft" align="right" valign="top">std::uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1enemy__brain.html#aef6ad41b1965792867b261cf2b4212ec">slice</a> = 0</td></tr>
 <tr class="memdesc:aef6ad41b1965792867b261cf2b4212ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which group of steps this enemy reconsiders on.  <br /></td></tr>
 <tr class="separator:aef6ad41b1965792867b261cf2b4212ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96ee41c86170237174d74989c572b39f" id="r_a96ee41c86170237174d74989c572b39f"><td class="memItemLeft" align="right" valign="top">std::int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1enemy__brain.html#a96ee41c86170237174d74989c572b39f">drift</a> = 1</td></tr>
+<tr class="memdesc:a96ee41c86170237174d74989c572b39f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which way it sidles while holding its ground.  <br /></td></tr>
+<tr class="separator:a96ee41c86170237174d74989c572b39f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The thinking half of an enemy. </p>
@@ -134,6 +137,23 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>state_timer</b> = 0.
 
 <p>Which group of steps this enemy reconsiders on. </p>
 <p>Deciding is spread across steps rather than done by everyone at once: a quarter of the crowd thinks on any given step and the rest keep their velocity, which divides the cost by four and looks identical. </p>
+
+</div>
+</div>
+<a id="a96ee41c86170237174d74989c572b39f" name="a96ee41c86170237174d74989c572b39f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96ee41c86170237174d74989c572b39f">&#9670;&#160;</a></span>drift</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int8_t arpg::enemy_brain::drift = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Which way it sidles while holding its ground. </p>
+<p>Last, so the round-robin slice keeps being the third thing anybody writes down. </p>
 
 </div>
 </div>

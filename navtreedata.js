@@ -50,6 +50,7 @@ var NAVTREE =
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
+        [ "Typedefs", "functions_type.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -62,9 +63,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "action_8hpp_source.html",
-"namespacearpg.html#a0724049d45d3809ad7944fd07ff4ad26ae686710e1512ff998541ddd98ee4b7e8",
-"structarpg_1_1control__codes.html#ac46f1df95dd6b875ea43f4f73459a716",
-"structarpg_1_1weapon.html#ad98127a4e7f5b5802749c89bac9cf735"
+"functions_v.html",
+"structarpg_1_1collider.html",
+"structarpg_1_1run__state.html#ae74d878addda5b3abb6c943455c33f79"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

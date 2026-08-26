@@ -11,9 +11,9 @@
 <!-- Node0 -->
 <g id="Node000000" class="node">
 <title>Node0</title>
-<g id="a_Node000000"><a xlink:href="structarpg_1_1level__recipe.html" target="_top" xlink:title=" ">
+<g id="a_Node000000"><a xlink:href="structarpg_1_1level__layout.html" target="_top" xlink:title="The whole of a level, and the only thing a generator produces.">
 <polygon fill="white" stroke="#666666" points="104,-19 0,-19 0,0 104,0 104,-19"/>
-<text text-anchor="middle" x="52" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">arpg::level_recipe</text>
+<text text-anchor="middle" x="52" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">arpg::level_layout</text>
 </a>
 </g>
 </g>

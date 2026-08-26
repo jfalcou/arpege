@@ -113,6 +113,9 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>frame</b></td>
 <tr class="memitem:aa9a966059c86d396e1ff6b79f636bfae" id="r_aa9a966059c86d396e1ff6b79f636bfae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1animation__frame.html#aa9a966059c86d396e1ff6b79f636bfae">seconds</a> = 0.1f</td></tr>
 <tr class="memdesc:aa9a966059c86d396e1ff6b79f636bfae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seconds it is held.  <br /></td></tr>
 <tr class="separator:aa9a966059c86d396e1ff6b79f636bfae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10469b813f6848f33171b3ea7ae1dd11" id="r_a10469b813f6848f33171b3ea7ae1dd11"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarpg_1_1animation__frame.html#a10469b813f6848f33171b3ea7ae1dd11">index</a> = 0</td></tr>
+<tr class="memdesc:a10469b813f6848f33171b3ea7ae1dd11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where that frame sits in the atlas, worked out when the file is read.  <br /></td></tr>
+<tr class="separator:a10469b813f6848f33171b3ea7ae1dd11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>One picture held for a while. </p>
@@ -131,6 +134,23 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>frame</b></td>
 
 <p>Seconds it is held. </p>
 <p>Per frame rather than one rate for the whole animation: holding the wind-up of a swing and flicking through the swing itself is most of what makes one read. </p>
+
+</div>
+</div>
+<a id="a10469b813f6848f33171b3ea7ae1dd11" name="a10469b813f6848f33171b3ea7ae1dd11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10469b813f6848f33171b3ea7ae1dd11">&#9670;&#160;</a></span>index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t arpg::animation_frame::index = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Where that frame sits in the atlas, worked out when the file is read. </p>
+<p>Last, and after what the file states, so that writing one out by hand stays a matter of a name and a duration. The reader already has to look the name up to refuse a typo, so it keeps what it found: searching a list of names once per bullet per frame is a cost paid sixty times a second for an answer that never changes. </p>
 
 </div>
 </div>

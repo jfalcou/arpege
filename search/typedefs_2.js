@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['stamp_5freader_0',['stamp_reader',['../namespacearpg.html#aed60f4171e7c460081167cc688ced0c8',1,'arpg']]]
+  ['loader_0',['loader',['../classarpg_1_1resource__cache.html#a2537fb38c37e5b01ada6cc212da279db',1,'arpg::resource_cache']]]
 ];

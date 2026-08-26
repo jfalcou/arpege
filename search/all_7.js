@@ -6,5 +6,5 @@ var searchData=
   ['held_3',['held',['../classarpg_1_1action__state.html#aca473531a6ea6f7a0fbcd5da5cebcf45',1,'arpg::action_state']]],
   ['help_4',['help',['../structarpg_1_1launch__options.html#a922be782e9f9193d38879f957f52ec51',1,'arpg::launch_options']]],
   ['hitbox_5',['hitbox',['../structarpg_1_1player__profile.html#a2d014bd31799a2d16d454a5b670bb47d',1,'arpg::player_profile']]],
-  ['holds_6',['holds',['../structarpg_1_1input__snapshot.html#a69d0292222950267eba7a0b6f94067bf',1,'arpg::input_snapshot']]]
+  ['holds_6',['holds',['../structarpg_1_1input__snapshot.html#a69d0292222950267eba7a0b6f94067bf',1,'arpg::input_snapshot::holds()'],['../classarpg_1_1resource__cache.html#aff3dc195852b7691842a2a5a1bdaf703',1,'arpg::resource_cache::holds()']]]
 ];

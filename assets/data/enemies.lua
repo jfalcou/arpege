@@ -27,6 +27,10 @@ return {
     sight = 288,
     reach = 10,
     style = "melee",
+
+    -- One animation per state: what it does while it waits, while it charges,
+    -- and while it strikes. A state left out falls back on the first named.
+    look = { atlas = "placeholder", idle = "crawl", chase = "crawl" },
   },
   {
     name = "cultist",
@@ -38,6 +42,10 @@ return {
     sight = 288,
     reach = 120,
     style = "ranged",
+
+    -- Sidles while it fires, as a share of its walking speed. A shooter that
+    -- holds perfectly still is easy to aim at and easy to ignore.
+    strafe = 0.7,
     shots = {
       aim = "aimed",
       bullets = 3,
@@ -47,6 +55,8 @@ return {
       radius = 2,
       damage = 1,
     },
+
+    look = { atlas = "placeholder", idle = "sway", chase = "sway" },
   },
   {
     name = "acolyte",
@@ -58,6 +68,7 @@ return {
     sight = 288,
     reach = 150,
     style = "ranged",
+    strafe = 0.45,
     shots = {
       aim = "fixed",
       bullets = 2,

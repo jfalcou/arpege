@@ -23,6 +23,21 @@ void integrate_motion(entt::registry& world, float dt);
 /// Ages every lifetime and destroys what ran out.
 void expire_lifetimes(entt::registry& world, float dt);
 
+/// Puts each enemy on the animation its state calls for.
+///
+/// The flat state machine that decides what a creature does decides what it
+/// looks like too, which is the whole reason the states were named rather than
+/// numbered. Switching starts the new animation over: carrying the elapsed time
+/// across would drop into the middle of a lunge.
+void dress_enemies(entt::registry& world);
+
+/// Moves every animation on by @p dt.
+///
+/// Cosmetic, and still on the fixed step: an animation running on the render
+/// clock would play at a different speed on a faster screen, and a replay would
+/// not look like what was recorded.
+void advance_appearances(entt::registry& world, float dt);
+
 /// Destroys projectiles that left @p bounds by more than @p margin.
 ///
 /// Only projectiles: an enemy walking in from off screen is not a stray shot.

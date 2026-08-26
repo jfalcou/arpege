@@ -124,3 +124,36 @@ TTS_CASE("The origin of the view is half a view from its centre")
   TTS_EQUAL(origin.x, 160.0f);
   TTS_EQUAL(origin.y, 90.0f);
 };
+
+TTS_CASE("A room grown by a margin keeps its middle")
+{
+  const arpg::viewport_rect room{100.0f, 50.0f, 400.0f, 300.0f};
+  const arpg::viewport_rect grown = arpg::with_margin(room, 16.0f);
+
+  TTS_EQUAL(grown.x, 84.0f);
+  TTS_EQUAL(grown.y, 34.0f);
+  TTS_EQUAL(grown.width, 432.0f);
+  TTS_EQUAL(grown.height, 332.0f);
+
+  // Grown on every side, so what the view is held inside opens around the room
+  // rather than sliding off it.
+  TTS_EQUAL(grown.x + grown.width * 0.5f, room.x + room.width * 0.5f);
+  TTS_EQUAL(grown.y + grown.height * 0.5f, room.y + room.height * 0.5f);
+};
+
+TTS_CASE("A margin lets the view show what stands past a wall")
+{
+  const arpg::viewport_rect room{0.0f, 0.0f, 640.0f, 360.0f};
+  const arpg::vec2 view{320.0f, 180.0f};
+
+  // A body against the top wall, held there by a collider of two pixels while
+  // its picture stands sixteen tall.
+  const arpg::vec2 against_the_wall{320.0f, 2.0f};
+
+  const arpg::vec2 tight = arpg::follow_camera(against_the_wall, against_the_wall, room, view, 0.0f, 0.0f);
+  const arpg::vec2 loose =
+      arpg::follow_camera(against_the_wall, against_the_wall, arpg::with_margin(room, 16.0f), view, 0.0f, 0.0f);
+
+  // Without the margin the view stops at the wall and cuts the picture in two.
+  TTS_EXPECT(arpg::view_origin(loose, view).y < arpg::view_origin(tight, view).y);
+};

@@ -27,6 +27,10 @@ constexpr const char* player_file = "data/player.lua";
 constexpr const char* roster_file = "data/enemies.lua";
 constexpr const char* biomes_directory = "data/biomes";
 
+/// What the player is drawn from until a mercenary says otherwise.
+constexpr const char* player_sheet = "placeholder";
+constexpr const char* player_clip = "crawl";
+
 /// How close the player must come to a door for it to take them.
 constexpr float door_radius = 22.0f;
 
@@ -37,6 +41,13 @@ constexpr int boss_depth = 4;
 /// How much ground is left clear around where the player sets foot and around
 /// every doorway, since either is somewhere they may appear.
 constexpr float spawn_clearance = 72.0f;
+
+/// How far past the walls the view may look.
+///
+/// A body is stopped by its collider, a couple of pixels, while its picture
+/// stands as tall as its cell and reaches well past that. Sixteen is the height
+/// of a cell, which is what the tallest of them overhangs by.
+constexpr float camera_margin = 16.0f;
 
 /// How eagerly the view catches up, in units per second. Tight enough to feel
 /// attached, loose enough not to judder on a fixed step.
@@ -64,7 +75,12 @@ void dungeon_screen::on_enter()
   m_roster_watch = file_watch{*ctx().assets / roster_file};
   m_biomes_watch = directory_watch{*ctx().assets / biomes_directory};
 
+  m_sprites.emplace(m_scripts, *ctx().assets / "textures");
+  m_sheets.clear();
+  m_sheet_names.clear();
+
   read_content();
+  dress_roster();
 
   // Derived from the posting: a save keeping only its seed must give back the
   // same level, which is what makes a run resumable at all.
@@ -209,9 +225,24 @@ void dungeon_screen::spawn_player(vec2 at)
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
 
+  // Until a mercenary says what they look like, the player borrows a sheet by
+  // name like everything else does.
+  std::uint16_t sheet_at = 0;
+
+  if (m_sprites && sheet_index_of(player_sheet, sheet_at))
+  {
+    const sprite_animation* clip = m_sheets[sheet_at].atlas->find_animation(player_clip);
+
+    if (clip != nullptr)
+    {
+      m_world.emplace<appearance>(m_player, sheet_at,
+                                  static_cast<std::uint16_t>(clip - m_sheets[sheet_at].atlas->animations.data()), 0.0f);
+    }
+  }
+
   // Snapped rather than eased on the first step, or the room would slide into
   // place from a corner every time it opens.
-  m_camera.centre = follow_camera(middle, middle, room(), view(), 0.0f, 0.0f);
+  m_camera.centre = follow_camera(middle, middle, with_margin(room(), camera_margin), view(), 0.0f, 0.0f);
 }
 
 void dungeon_screen::spawn_wave()
@@ -265,6 +296,11 @@ void dungeon_screen::spawn_wave()
     m_world.emplace<weapon>(foe, m_generator.unit() * kind.shots.interval);
     m_world.emplace<confined>(foe);
 
+    if (kind.drawn)
+    {
+      m_world.emplace<appearance>(foe, kind.sheet, kind.clips[static_cast<std::size_t>(enemy_state::idle)], 0.0f);
+    }
+
     // Dealt round-robin so the crowd is spread evenly over the thinking
     // rounds instead of everyone landing in the same one.
     m_world.emplace<enemy_brain>(foe, enemy_state::idle, 0.0f, slice);
@@ -272,6 +308,45 @@ void dungeon_screen::spawn_wave()
   }
 
   m_fight.opened_with = composition.size();
+}
+
+bool dungeon_screen::draw_sprite(entt::entity who, vec2 at)
+{
+  const auto* look = m_world.try_get<appearance>(who);
+
+  if (look == nullptr || look->sheet >= m_sheets.size())
+  {
+    return false;
+  }
+
+  const sheet& from = m_sheets[look->sheet];
+
+  if (!from.usable() || look->clip >= from.atlas->animations.size())
+  {
+    return false;
+  }
+
+  const sprite_animation& clip = from.atlas->animations[look->clip];
+
+  if (clip.frames.empty())
+  {
+    return false;
+  }
+
+  const sprite_frame& picture = from.atlas->frames[clip.frames[frame_at(clip, look->elapsed)].index];
+
+  const Rectangle source{static_cast<float>(picture.x), static_cast<float>(picture.y),
+                         static_cast<float>(picture.width), static_cast<float>(picture.height)};
+
+  // Placed by its origin rather than by its corner: what stands at the entity
+  // is the point the picture was given, which for a body seen from above is
+  // its feet.
+  const Rectangle target{at.x - picture.origin.x, at.y - picture.origin.y, static_cast<float>(picture.width),
+                         static_cast<float>(picture.height)};
+
+  DrawTexturePro(*from.texture, source, target, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+
+  return true;
 }
 
 void dungeon_screen::draw_minimap()
@@ -434,6 +509,95 @@ bool dungeon_screen::read_content()
   return true;
 }
 
+bool dungeon_screen::sheet_index_of(const std::string& name, std::uint16_t& into)
+{
+  const auto found = std::find(m_sheet_names.begin(), m_sheet_names.end(), name);
+
+  if (found != m_sheet_names.end())
+  {
+    into = static_cast<std::uint16_t>(std::distance(m_sheet_names.begin(), found));
+    return m_sheets[into].usable();
+  }
+
+  const sheet loaded = m_sprites->get(name);
+
+  m_sheet_names.push_back(name);
+  m_sheets.push_back(loaded);
+  into = static_cast<std::uint16_t>(m_sheets.size() - 1);
+
+  return loaded.usable();
+}
+
+void dungeon_screen::dress_roster()
+{
+  if (!m_sprites)
+  {
+    return;
+  }
+
+  for (std::size_t index = 0; index < m_roster.kinds.size() && index < m_roster.looks.size(); ++index)
+  {
+    enemy_archetype& kind = m_roster.kinds[index];
+    const enemy_look& look = m_roster.looks[index];
+
+    kind.drawn = false;
+
+    if (look.atlas.empty() || !sheet_index_of(look.atlas, kind.sheet))
+    {
+      continue;
+    }
+
+    const sprite_atlas& atlas = *m_sheets[kind.sheet].atlas;
+
+    // A state the file left out falls back on the first one it did name, since
+    // something has to be drawn and a creature with no picture for a state
+    // would blink out of existence the moment it entered that state.
+    std::uint16_t fallback = 0;
+    bool have_fallback = false;
+
+    for (std::size_t state = 0; state < look.clips.size(); ++state)
+    {
+      const sprite_animation* clip = atlas.find_animation(look.clips[state]);
+
+      if (clip == nullptr)
+      {
+        continue;
+      }
+
+      const std::uint16_t at = static_cast<std::uint16_t>(clip - atlas.animations.data());
+
+      if (!have_fallback)
+      {
+        fallback = at;
+        have_fallback = true;
+      }
+
+      if (state < static_cast<std::size_t>(enemy_state::count))
+      {
+        kind.clips[state] = at;
+      }
+    }
+
+    if (!have_fallback)
+    {
+      m_data_error = m_roster.names[index] + ": nothing in '" + look.atlas + "' answers to what it plays";
+      continue;
+    }
+
+    for (std::size_t state = 0; state < static_cast<std::size_t>(enemy_state::count); ++state)
+    {
+      const bool named = state < look.clips.size() && atlas.find_animation(look.clips[state]) != nullptr;
+
+      if (!named)
+      {
+        kind.clips[state] = fallback;
+      }
+    }
+
+    kind.drawn = true;
+  }
+}
+
 void dungeon_screen::choose_biome()
 {
   if (m_biomes.all.empty())
@@ -477,6 +641,7 @@ void dungeon_screen::reload_content()
   const std::vector<bool> cleared = m_level.cleared;
 
   m_generator = rng{m_seed};
+  dress_roster();
   choose_biome();
   m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
 
@@ -624,6 +789,8 @@ void dungeon_screen::update(float dt)
 
   integrate_motion(m_world, dt);
   expire_lifetimes(m_world, dt);
+  dress_enemies(m_world);
+  advance_appearances(m_world, dt);
 
   const viewport_rect bounds = room();
 
@@ -632,8 +799,8 @@ void dungeon_screen::update(float dt)
   confine_to_bounds(m_world, bounds);
   despawn_out_of_bounds(m_world, bounds, 16.0f);
 
-  m_camera.centre =
-      follow_camera(m_camera.centre, m_world.get<transform>(m_player).position, bounds, view(), dt, camera_stiffness);
+  m_camera.centre = follow_camera(m_camera.centre, m_world.get<transform>(m_player).position,
+                                  with_margin(bounds, camera_margin), view(), dt, camera_stiffness);
 
   tick_invulnerability(m_world, dt);
   rebuild_spatial_hash(m_world, m_hash);
@@ -748,9 +915,16 @@ void dungeon_screen::render(float alpha)
     const bool hurt = shield != nullptr && shield->remaining > 0.0f && !dashing(m_dash);
     const bool blinking = hurt && static_cast<int>(shield->remaining * 20.0f) % 2 == 0;
 
-    if (!blinking)
+    if (blinking)
     {
-      DrawCircleV(to_raylib(interpolated(place, alpha) - origin), drawn, tint);
+      continue;
+    }
+
+    const vec2 at = interpolated(place, alpha) - origin;
+
+    if (!draw_sprite(entity, at))
+    {
+      DrawCircleV(to_raylib(at), drawn, tint);
     }
   }
 

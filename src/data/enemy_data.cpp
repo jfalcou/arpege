@@ -81,6 +81,12 @@ enemy_catalogue read_enemies(const sol::table& roster, float minimum_sight)
     kind.sight = entry->get_or("sight", 0.0f);
     kind.reach = entry->get_or("reach", 0.0f);
     kind.style = (style == "ranged") ? attack_style::ranged : attack_style::melee;
+    kind.strafe = entry->get_or("strafe", 0.0f);
+
+    if (kind.strafe < 0.0f)
+    {
+      return refuse(where(index, name) + " sidles at a speed below nothing");
+    }
     const sol::optional<sol::table> shots = (*entry)["shots"];
 
     if (shots)
@@ -154,8 +160,38 @@ enemy_catalogue read_enemies(const sol::table& roster, float minimum_sight)
       }
     }
 
+    // Read as a name per state so a file can say what a creature does while it
+    // waits and what it does while it charges. A state the file leaves out
+    // falls back on the first one named, since something has to be drawn.
+    enemy_look look;
+    const sol::optional<sol::table> drawn = (*entry)["look"];
+
+    if (drawn)
+    {
+      look.atlas = drawn->get_or("atlas", std::string{});
+
+      for (const char* state : {"idle", "chase", "attack"})
+      {
+        look.clips.push_back(drawn->get_or(state, std::string{}));
+      }
+
+      if (look.atlas.empty())
+      {
+        return refuse(where(index, name) + " says how it looks but names no atlas");
+      }
+
+      const bool says_nothing =
+          std::all_of(look.clips.begin(), look.clips.end(), [](const std::string& each) { return each.empty(); });
+
+      if (says_nothing)
+      {
+        return refuse(where(index, name) + " names an atlas but no animation to play from it");
+      }
+    }
+
     out.kinds.push_back(kind);
     out.names.push_back(name);
+    out.looks.push_back(std::move(look));
   }
 
   if (out.kinds.empty())

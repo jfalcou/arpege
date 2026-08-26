@@ -23,6 +23,11 @@ namespace
 /// How many steps a full round of thinking is spread over.
 constexpr std::uint64_t thinking_slices = 4;
 
+/// How long a shooter sidles one way before turning around. A cadence rather
+/// than a knob a designer needs: what they would want to tune is how fast it
+/// sidles, which its archetype states.
+constexpr float strafe_turn = 1.6f;
+
 } // namespace
 
 void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 target)
@@ -80,12 +85,66 @@ void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 ta
       break;
     }
 
-    speed.value = (brain.state == enemy_state::chase) ? normalized(towards) * kind.speed : vec2{};
+    // Sidling rather than standing: a shooter that holds perfectly still is
+    // easy to aim at, easy to ignore, and looks dead. Moving across the line
+    // it is firing along keeps its distance while forcing the player to keep
+    // adjusting.
+    if (brain.state == enemy_state::chase)
+    {
+      speed.value = normalized(towards) * kind.speed;
+    }
+    else if (brain.state == enemy_state::attack && kind.strafe > 0.0f && distance_squared > 0.0f)
+    {
+      const vec2 facing = normalized(towards);
+
+      speed.value = vec2{-facing.y, facing.x} * (kind.speed * kind.strafe * static_cast<float>(brain.drift));
+    }
+    else
+    {
+      speed.value = vec2{};
+    }
+
+    // Turned around now and then, or a room full of them would all end up
+    // pressed against the same wall and stay there.
+    if (brain.state == enemy_state::attack && brain.state_timer > strafe_turn)
+    {
+      brain.drift = static_cast<std::int8_t>(-brain.drift);
+      brain.state_timer = 0.0f;
+    }
 
     if (brain.state != previous)
     {
       brain.state_timer = 0.0f;
     }
+  }
+}
+
+void dress_enemies(entt::registry& world)
+{
+  for (auto [entity, look, brain, kind] : world.view<appearance, const enemy_brain, const enemy_archetype>().each())
+  {
+    if (!kind.drawn)
+    {
+      continue;
+    }
+
+    const std::uint16_t wanted = kind.clips[static_cast<std::size_t>(brain.state)];
+
+    if (wanted == look.clip)
+    {
+      continue;
+    }
+
+    look.clip = wanted;
+    look.elapsed = 0.0f;
+  }
+}
+
+void advance_appearances(entt::registry& world, float dt)
+{
+  for (auto [entity, look] : world.view<appearance>().each())
+  {
+    look.elapsed += dt;
   }
 }
 

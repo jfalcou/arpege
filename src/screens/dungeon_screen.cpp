@@ -27,8 +27,9 @@ constexpr const char* player_file = "data/player.lua";
 constexpr const char* roster_file = "data/enemies.lua";
 constexpr const char* biomes_directory = "data/biomes";
 
-/// The sheet everything is drawn from while there is only one.
-constexpr const char* placeholder_sheet = "parasite";
+/// What the player is drawn from until a mercenary says otherwise.
+constexpr const char* player_sheet = "placeholder";
+constexpr const char* player_clip = "crawl";
 
 /// How close the player must come to a door for it to take them.
 constexpr float door_radius = 22.0f;
@@ -76,9 +77,10 @@ void dungeon_screen::on_enter()
 
   m_sprites.emplace(m_scripts, *ctx().assets / "textures");
   m_sheets.clear();
-  m_sheets.push_back(m_sprites->get(placeholder_sheet));
+  m_sheet_names.clear();
 
   read_content();
+  dress_roster();
 
   // Derived from the posting: a save keeping only its seed must give back the
   // same level, which is what makes a run resumable at all.
@@ -223,11 +225,19 @@ void dungeon_screen::spawn_player(vec2 at)
   m_world.emplace<confined>(m_player);
   m_world.emplace<player_controlled>(m_player);
 
-  // Drawn from the first animation of the first sheet while there is only one
-  // of each. What decides this is data as soon as an archetype names a look.
-  if (!m_sheets.empty() && m_sheets.front().usable() && !m_sheets.front().atlas->animations.empty())
+  // Until a mercenary says what they look like, the player borrows a sheet by
+  // name like everything else does.
+  std::uint16_t sheet_at = 0;
+
+  if (m_sprites && sheet_index_of(player_sheet, sheet_at))
   {
-    m_world.emplace<appearance>(m_player);
+    const sprite_animation* clip = m_sheets[sheet_at].atlas->find_animation(player_clip);
+
+    if (clip != nullptr)
+    {
+      m_world.emplace<appearance>(m_player, sheet_at,
+                                  static_cast<std::uint16_t>(clip - m_sheets[sheet_at].atlas->animations.data()), 0.0f);
+    }
   }
 
   // Snapped rather than eased on the first step, or the room would slide into
@@ -285,6 +295,11 @@ void dungeon_screen::spawn_wave()
     // Staggered, so a wave that spawns together does not fire in one volley.
     m_world.emplace<weapon>(foe, m_generator.unit() * kind.shots.interval);
     m_world.emplace<confined>(foe);
+
+    if (kind.drawn)
+    {
+      m_world.emplace<appearance>(foe, kind.sheet, kind.clips[static_cast<std::size_t>(enemy_state::idle)], 0.0f);
+    }
 
     // Dealt round-robin so the crowd is spread evenly over the thinking
     // rounds instead of everyone landing in the same one.
@@ -494,6 +509,95 @@ bool dungeon_screen::read_content()
   return true;
 }
 
+bool dungeon_screen::sheet_index_of(const std::string& name, std::uint16_t& into)
+{
+  const auto found = std::find(m_sheet_names.begin(), m_sheet_names.end(), name);
+
+  if (found != m_sheet_names.end())
+  {
+    into = static_cast<std::uint16_t>(std::distance(m_sheet_names.begin(), found));
+    return m_sheets[into].usable();
+  }
+
+  const sheet loaded = m_sprites->get(name);
+
+  m_sheet_names.push_back(name);
+  m_sheets.push_back(loaded);
+  into = static_cast<std::uint16_t>(m_sheets.size() - 1);
+
+  return loaded.usable();
+}
+
+void dungeon_screen::dress_roster()
+{
+  if (!m_sprites)
+  {
+    return;
+  }
+
+  for (std::size_t index = 0; index < m_roster.kinds.size() && index < m_roster.looks.size(); ++index)
+  {
+    enemy_archetype& kind = m_roster.kinds[index];
+    const enemy_look& look = m_roster.looks[index];
+
+    kind.drawn = false;
+
+    if (look.atlas.empty() || !sheet_index_of(look.atlas, kind.sheet))
+    {
+      continue;
+    }
+
+    const sprite_atlas& atlas = *m_sheets[kind.sheet].atlas;
+
+    // A state the file left out falls back on the first one it did name, since
+    // something has to be drawn and a creature with no picture for a state
+    // would blink out of existence the moment it entered that state.
+    std::uint16_t fallback = 0;
+    bool have_fallback = false;
+
+    for (std::size_t state = 0; state < look.clips.size(); ++state)
+    {
+      const sprite_animation* clip = atlas.find_animation(look.clips[state]);
+
+      if (clip == nullptr)
+      {
+        continue;
+      }
+
+      const std::uint16_t at = static_cast<std::uint16_t>(clip - atlas.animations.data());
+
+      if (!have_fallback)
+      {
+        fallback = at;
+        have_fallback = true;
+      }
+
+      if (state < static_cast<std::size_t>(enemy_state::count))
+      {
+        kind.clips[state] = at;
+      }
+    }
+
+    if (!have_fallback)
+    {
+      m_data_error = m_roster.names[index] + ": nothing in '" + look.atlas + "' answers to what it plays";
+      continue;
+    }
+
+    for (std::size_t state = 0; state < static_cast<std::size_t>(enemy_state::count); ++state)
+    {
+      const bool named = state < look.clips.size() && atlas.find_animation(look.clips[state]) != nullptr;
+
+      if (!named)
+      {
+        kind.clips[state] = fallback;
+      }
+    }
+
+    kind.drawn = true;
+  }
+}
+
 void dungeon_screen::choose_biome()
 {
   if (m_biomes.all.empty())
@@ -537,6 +641,7 @@ void dungeon_screen::reload_content()
   const std::vector<bool> cleared = m_level.cleared;
 
   m_generator = rng{m_seed};
+  dress_roster();
   choose_biome();
   m_level = begin_level(generate_level(level_shape_in_use(), m_generator));
 
@@ -684,6 +789,7 @@ void dungeon_screen::update(float dt)
 
   integrate_motion(m_world, dt);
   expire_lifetimes(m_world, dt);
+  dress_enemies(m_world);
   advance_appearances(m_world, dt);
 
   const viewport_rect bounds = room();

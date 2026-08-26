@@ -523,3 +523,74 @@ TTS_CASE("A weighted wave still spends what it was given")
   TTS_EXPECT(spent <= 120);
   TTS_EXPECT(spent > 120 - catalogue[0].cost);
 };
+
+TTS_CASE("The state a creature is in decides the animation it plays")
+{
+  entt::registry world;
+
+  arpg::enemy_archetype dressed = cultist;
+  dressed.drawn = true;
+  dressed.clips[static_cast<std::size_t>(arpg::enemy_state::idle)] = 7;
+  dressed.clips[static_cast<std::size_t>(arpg::enemy_state::chase)] = 8;
+  dressed.clips[static_cast<std::size_t>(arpg::enemy_state::attack)] = 9;
+
+  const entt::entity foe = make_enemy(world, arpg::vec2{}, dressed);
+  world.emplace<arpg::appearance>(foe);
+
+  arpg::dress_enemies(world);
+  TTS_EQUAL(world.get<arpg::appearance>(foe).clip, 7);
+
+  world.get<arpg::enemy_brain>(foe).state = arpg::enemy_state::chase;
+  world.get<arpg::appearance>(foe).elapsed = 3.0f;
+  arpg::dress_enemies(world);
+
+  TTS_EQUAL(world.get<arpg::appearance>(foe).clip, 8);
+
+  // Started over rather than carried across: keeping the elapsed time would
+  // drop into the middle of a lunge.
+  TTS_EQUAL(world.get<arpg::appearance>(foe).elapsed, 0.0f);
+};
+
+TTS_CASE("Staying in a state does not restart what is playing")
+{
+  entt::registry world;
+
+  arpg::enemy_archetype dressed = cultist;
+  dressed.drawn = true;
+
+  const entt::entity foe = make_enemy(world, arpg::vec2{}, dressed);
+  world.emplace<arpg::appearance>(foe);
+
+  arpg::dress_enemies(world);
+  world.get<arpg::appearance>(foe).elapsed = 0.5f;
+  arpg::dress_enemies(world);
+
+  TTS_EQUAL(world.get<arpg::appearance>(foe).elapsed, 0.5f);
+};
+
+TTS_CASE("A creature with no sheet is left alone rather than drawn as nothing")
+{
+  entt::registry world;
+
+  // A roster loaded without its pictures still fields enemies; they fall back
+  // on the shapes that stood in for them.
+  const entt::entity foe = make_enemy(world, arpg::vec2{}, cultist);
+  world.emplace<arpg::appearance>(foe, std::uint16_t{3}, std::uint16_t{4}, 1.5f);
+
+  arpg::dress_enemies(world);
+
+  TTS_EQUAL(world.get<arpg::appearance>(foe).clip, 4);
+  TTS_EQUAL(world.get<arpg::appearance>(foe).elapsed, 1.5f);
+};
+
+TTS_CASE("Time passes for a picture the same way it does for the world")
+{
+  entt::registry world;
+  const entt::entity thing = world.create();
+  world.emplace<arpg::appearance>(thing);
+
+  arpg::advance_appearances(world, 0.25f);
+  arpg::advance_appearances(world, 0.25f);
+
+  TTS_EQUAL(world.get<arpg::appearance>(thing).elapsed, 0.5f);
+};

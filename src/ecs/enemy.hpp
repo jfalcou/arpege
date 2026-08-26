@@ -78,6 +78,17 @@ struct enemy_archetype
 
   /// How it shoots. Ignored by a melee archetype.
   firing_pattern shots{};
+
+  /// Which sheet it is drawn from, and which animation stands for each of its
+  /// states. Filled in once the roster meets the sheets, never read from a
+  /// file: an archetype is copied into every entity that uses it, so what
+  /// reaches the world has to be a handle rather than a name.
+  std::uint16_t sheet = 0;
+  std::uint16_t clips[static_cast<std::size_t>(enemy_state::count)]{};
+
+  /// False until a sheet was found, so a roster loaded without one still
+  /// fields enemies, drawn as the shapes that stood in for them.
+  bool drawn = false;
 };
 
 /// Points a room is worth spending on enemies.

@@ -53,6 +53,13 @@ private:
   /// The room the player stands in, in level coordinates.
   viewport_rect room() const;
 
+  /// Finds @p name among the sheets in play, loading it if it is not there
+  /// yet. Answers where it sits, and whether it could be had at all.
+  bool sheet_index_of(const std::string& name, std::uint16_t& into);
+
+  /// Turns the names a roster states into the handles the world carries.
+  void dress_roster();
+
   /// Draws @p who at @p at from its sheet. False when it has no picture, and
   /// the caller falls back on the shape that stood in for one.
   bool draw_sprite(entt::entity who, vec2 at);
@@ -122,8 +129,10 @@ private:
   /// root, which a screen only has once it has been handed its services.
   std::optional<sprite_store> m_sprites;
 
-  /// The sheets in play, which an appearance indexes into.
+  /// The sheets in play, which an appearance indexes into, and what they are
+  /// called, so a second archetype asking for one already loaded finds it.
   std::vector<sheet> m_sheets;
+  std::vector<std::string> m_sheet_names;
 
   /// Read from assets at every entry, and re-read whenever a file changes.
   player_profile m_profile;

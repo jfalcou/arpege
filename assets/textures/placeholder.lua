@@ -20,7 +20,7 @@ return {
 
   animations = {
     {
-      name = "clip_0",
+      name = "crawl",
       loops = true,
       frames = {
         { "frame_0", 0.1 },
@@ -30,6 +30,16 @@ return {
         { "frame_2", 0.1 },
         { "frame_1", 0.1 },
         { "frame_0", 0.1 },
+      },
+    },
+    {
+      name = "sway",
+      loops = true,
+      frames = {
+        { "frame_4", 0.14 },
+        { "frame_5", 0.14 },
+        { "frame_6", 0.14 },
+        { "frame_7", 0.14 },
       },
     },
   },

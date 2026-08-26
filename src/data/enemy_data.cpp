@@ -154,8 +154,38 @@ enemy_catalogue read_enemies(const sol::table& roster, float minimum_sight)
       }
     }
 
+    // Read as a name per state so a file can say what a creature does while it
+    // waits and what it does while it charges. A state the file leaves out
+    // falls back on the first one named, since something has to be drawn.
+    enemy_look look;
+    const sol::optional<sol::table> drawn = (*entry)["look"];
+
+    if (drawn)
+    {
+      look.atlas = drawn->get_or("atlas", std::string{});
+
+      for (const char* state : {"idle", "chase", "attack"})
+      {
+        look.clips.push_back(drawn->get_or(state, std::string{}));
+      }
+
+      if (look.atlas.empty())
+      {
+        return refuse(where(index, name) + " says how it looks but names no atlas");
+      }
+
+      const bool says_nothing =
+          std::all_of(look.clips.begin(), look.clips.end(), [](const std::string& each) { return each.empty(); });
+
+      if (says_nothing)
+      {
+        return refuse(where(index, name) + " names an atlas but no animation to play from it");
+      }
+    }
+
     out.kinds.push_back(kind);
     out.names.push_back(name);
+    out.looks.push_back(std::move(look));
   }
 
   if (out.kinds.empty())

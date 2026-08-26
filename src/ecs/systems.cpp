@@ -89,6 +89,27 @@ void advance_brains(entt::registry& world, float dt, std::uint64_t step, vec2 ta
   }
 }
 
+void dress_enemies(entt::registry& world)
+{
+  for (auto [entity, look, brain, kind] : world.view<appearance, const enemy_brain, const enemy_archetype>().each())
+  {
+    if (!kind.drawn)
+    {
+      continue;
+    }
+
+    const std::uint16_t wanted = kind.clips[static_cast<std::size_t>(brain.state)];
+
+    if (wanted == look.clip)
+    {
+      continue;
+    }
+
+    look.clip = wanted;
+    look.elapsed = 0.0f;
+  }
+}
+
 void advance_appearances(entt::registry& world, float dt)
 {
   for (auto [entity, look] : world.view<appearance>().each())

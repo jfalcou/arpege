@@ -27,6 +27,10 @@ return {
     sight = 288,
     reach = 10,
     style = "melee",
+
+    -- One animation per state: what it does while it waits, while it charges,
+    -- and while it strikes. A state left out falls back on the first named.
+    look = { atlas = "placeholder", idle = "crawl", chase = "crawl" },
   },
   {
     name = "cultist",
@@ -47,6 +51,8 @@ return {
       radius = 2,
       damage = 1,
     },
+
+    look = { atlas = "placeholder", idle = "sway", chase = "sway" },
   },
   {
     name = "acolyte",
